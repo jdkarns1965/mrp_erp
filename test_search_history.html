@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search History Test</title>
+    <link rel="stylesheet" href="public/css/autocomplete.css">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 50px auto; 
+            padding: 20px; 
+        }
+        .test-section { 
+            margin: 30px 0; 
+            padding: 20px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+        }
+        .form-group { 
+            margin: 15px 0; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+        }
+        input[type="text"] { 
+            width: 100%; 
+            max-width: 400px; 
+        }
+        .btn { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 8px 16px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        .btn:hover { 
+            background: #0056b3; 
+        }
+        .status { 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-radius: 4px; 
+            background: #f8f9fa; 
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Search History Test Page</h1>
+    <p>This page tests the enhanced search history functionality for the MRP/ERP system.</p>
+
+    <div class="test-section">
+        <h2>Materials Search (with History)</h2>
+        <form>
+            <div class="form-group">
+                <label for="materialSearch">Search Materials:</label>
+                <input type="text" 
+                       id="materialSearch" 
+                       name="material_search"
+                       data-autocomplete-preset="materials-search"
+                       placeholder="Search materials by code or name..."
+                       autocomplete="off">
+            </div>
+        </form>
+        <div class="status" id="materialStatus">Ready to search materials...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Products Search (with History)</h2>
+        <form>
+            <div class="form-group">
+                <label for="productSearch">Search Products:</label>
+                <input type="text" 
+                       id="productSearch" 
+                       name="product_search"
+                       data-autocomplete-preset="products-search"
+                       placeholder="Search products by code or name..."
+                       autocomplete="off">
+            </div>
+        </form>
+        <div class="status" id="productStatus">Ready to search products...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Form Field Test (with History)</h2>
+        <form>
+            <div class="form-group">
+                <label for="materialForm">Select Material:</label>
+                <input type="text" 
+                       id="materialForm" 
+                       name="material_name"
+                       data-autocomplete-preset="materials-form"
+                       placeholder="Select a material..."
+                       autocomplete="off">
+                <input type="hidden" name="material_id" value="">
+            </div>
+        </form>
+        <div class="status" id="formStatus">Ready to select materials...</div>
+    </div>
+
+    <div class="test-section">
+        <h2>Search History Management</h2>
+        <button class="btn" onclick="showAllHistory()">Show All History</button>
+        <button class="btn" onclick="clearAllHistory()">Clear All History</button>
+        <button class="btn" onclick="addTestData()">Add Test Data</button>
+        <div class="status" id="historyStatus">History management ready...</div>
+        <pre id="historyDisplay" style="background: #f8f9fa; padding: 10px; margin-top: 10px; border-radius: 4px; font-size: 12px;"></pre>
+    </div>
+
+    <script src="public/js/autocomplete.js"></script>
+    <script src="public/js/search-history-manager.js"></script>
+    <script src="public/js/autocomplete-manager.js"></script>
+
+    <script>
+        // Test functions
+        function showAllHistory() {
+            const history = SearchHistoryManager.getAllHistory();
+            document.getElementById('historyDisplay').textContent = JSON.stringify(history, null, 2);
+            document.getElementById('historyStatus').textContent = 'History displayed below.';
+        }
+
+        function clearAllHistory() {
+            SearchHistoryManager.clearAllHistory();
+            document.getElementById('historyDisplay').textContent = '';
+            document.getElementById('historyStatus').textContent = 'All history cleared.';
+        }
+
+        function addTestData() {
+            // Add some test materials with realistic data
+            SearchHistoryManager.addToHistory('materials', {
+                id: 1,
+                label: 'MAT-001 - Plastic Resin PE-HD',
+                code: 'MAT-001',
+                name: 'Plastic Resin PE-HD',
+                category: 'Raw Materials'
+            });
+            
+            SearchHistoryManager.addToHistory('materials', {
+                id: 2,
+                label: 'MAT-20638 - Steel Insert M6',
+                code: 'MAT-20638',
+                name: 'Steel Insert M6',
+                category: 'Hardware'
+            });
+
+            SearchHistoryManager.addToHistory('materials', {
+                id: 3,
+                label: 'MAT-50789 - Aluminum Housing',
+                code: 'MAT-50789',
+                name: 'Aluminum Housing',
+                category: 'Mechanical Parts'
+            });
+
+            // Add some test products
+            SearchHistoryManager.addToHistory('products', {
+                id: 1,
+                label: 'PROD-001 - Widget Assembly',
+                code: 'PROD-001',
+                name: 'Widget Assembly',
+                category: 'Finished Goods'
+            });
+
+            SearchHistoryManager.addToHistory('products', {
+                id: 2,
+                label: 'PROD-20638 - Motor Housing Assembly',
+                code: 'PROD-20638',
+                name: 'Motor Housing Assembly',
+                category: 'Assemblies'
+            });
+
+            // Add some search queries that match the issue described
+            SearchHistoryManager.addSearchQuery('materials', '20');
+            SearchHistoryManager.addSearchQuery('materials', '206');
+            SearchHistoryManager.addSearchQuery('products', '20638');
+
+            document.getElementById('historyStatus').textContent = 'Test data added to history. Testing codes like "20638" to verify display.';
+            
+            // Refresh the displays to show new chips
+            setTimeout(() => {
+                // This will trigger the AutocompleteManager to recreate the chips
+                location.reload();
+            }, 500);
+        }
+
+        // Add event listeners for status updates
+        document.addEventListener('DOMContentLoaded', function() {
+            const materialInput = document.getElementById('materialSearch');
+            const productInput = document.getElementById('productSearch');
+            const formInput = document.getElementById('materialForm');
+
+            if (materialInput) {
+                materialInput.addEventListener('change', function() {
+                    document.getElementById('materialStatus').textContent = `Materials search value: "${this.value}"`;
+                });
+            }
+
+            if (productInput) {
+                productInput.addEventListener('change', function() {
+                    document.getElementById('productStatus').textContent = `Products search value: "${this.value}"`;
+                });
+            }
+
+            if (formInput) {
+                formInput.addEventListener('change', function() {
+                    const hiddenField = document.querySelector('input[name="material_id"]');
+                    document.getElementById('formStatus').textContent = `Form field - Name: "${this.value}", ID: "${hiddenField ? hiddenField.value : 'none'}"`;
+                });
+            }
+        });
+    </script>
+</body>
+</html>

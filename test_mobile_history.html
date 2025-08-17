@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile-Optimized Recent History Test</title>
+    <link rel="stylesheet" href="public/css/autocomplete.css">
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0;
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .viewport-info {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+        .form-group { 
+            margin: 15px 0; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 5px; 
+            font-weight: bold; 
+            font-size: 14px;
+        }
+        input[type="text"] { 
+            width: 100%; 
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        .btn { 
+            background: #007bff; 
+            color: white; 
+            border: none; 
+            padding: 8px 16px; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 12px;
+            margin: 5px;
+        }
+        .btn:hover { 
+            background: #0056b3; 
+        }
+        .status { 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-radius: 4px; 
+            background: #f8f9fa; 
+            font-size: 12px;
+        }
+        .mobile-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .mobile-indicator.desktop {
+            background: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-indicator" id="mobileIndicator">📱 Mobile View</div>
+    
+    <div class="test-container">
+        <h2>📱 Mobile-First Recent History</h2>
+        
+        <div class="viewport-info">
+            <strong>Viewport:</strong> <span id="viewportSize"></span><br>
+            <strong>Mobile Mode:</strong> <span id="mobileMode"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="materialSearch">Materials Search:</label>
+            <input type="text" 
+                   id="materialSearch" 
+                   name="material_search"
+                   data-autocomplete-preset="materials-search"
+                   placeholder="Search materials..."
+                   autocomplete="off">
+        </div>
+
+        <div class="form-group">
+            <label for="productSearch">Products Search:</label>
+            <input type="text" 
+                   id="productSearch" 
+                   name="product_search"
+                   data-autocomplete-preset="products-search"
+                   placeholder="Search products..."
+                   autocomplete="off">
+        </div>
+
+        <div class="status">
+            <h4>Mobile Optimizations:</h4>
+            <ul style="font-size: 11px; margin: 5px 0; padding-left: 15px;">
+                <li>✅ <strong>Collapsed by default</strong> - Minimal space usage</li>
+                <li>✅ <strong>Toggle button</strong> - Expand/collapse recent chips</li>
+                <li>✅ <strong>Smaller chips</strong> - 22px height vs 32px</li>
+                <li>✅ <strong>Limited count</strong> - Max 3 items vs 6 on desktop</li>
+                <li>✅ <strong>Shorter text</strong> - 12 chars vs 20 on desktop</li>
+                <li>✅ <strong>Compact spacing</strong> - Reduced padding and gaps</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn" onclick="addMobileTestData()">Add Test Data</button>
+            <button class="btn" onclick="clearAllHistory()">Clear History</button>
+            <button class="btn" onclick="toggleViewport()">Toggle Desktop/Mobile</button>
+        </div>
+
+        <div class="status" id="testStatus">Ready for testing...</div>
+    </div>
+
+    <script src="public/js/autocomplete.js"></script>
+    <script src="public/js/search-history-manager.js"></script>
+    <script src="public/js/autocomplete-manager.js"></script>
+
+    <script>
+        function updateViewportInfo() {
+            const width = window.innerWidth;
+            const isMobile = width <= 768;
+            
+            document.getElementById('viewportSize').textContent = `${width}px`;
+            document.getElementById('mobileMode').textContent = isMobile ? 'Yes' : 'No';
+            
+            const indicator = document.getElementById('mobileIndicator');
+            if (isMobile) {
+                indicator.textContent = '📱 Mobile View';
+                indicator.className = 'mobile-indicator';
+            } else {
+                indicator.textContent = '🖥️ Desktop View';
+                indicator.className = 'mobile-indicator desktop';
+            }
+        }
+
+        function addMobileTestData() {
+            // Add test data for mobile testing
+            SearchHistoryManager.addToHistory('materials', {
+                id: 1,
+                label: 'MAT-20638 - Steel Insert',
+                code: 'MAT-20638',
+                name: 'Steel Insert',
+                category: 'Hardware'
+            });
+            
+            SearchHistoryManager.addToHistory('materials', {
+                id: 2,
+                label: 'MAT-50789 - Aluminum',
+                code: 'MAT-50789',
+                name: 'Aluminum',
+                category: 'Materials'
+            });
+
+            SearchHistoryManager.addToHistory('products', {
+                id: 1,
+                label: 'PROD-001 - Widget',
+                code: 'PROD-001',
+                name: 'Widget',
+                category: 'Products'
+            });
+
+            SearchHistoryManager.addToHistory('products', {
+                id: 2,
+                label: 'PROD-20638 - Motor',
+                code: 'PROD-20638',
+                name: 'Motor',
+                category: 'Assemblies'
+            });
+
+            // Add some search queries
+            SearchHistoryManager.addSearchQuery('materials', 'steel');
+            SearchHistoryManager.addSearchQuery('products', 'motor');
+
+            document.getElementById('testStatus').textContent = 'Test data added! Recent history should appear collapsed on mobile (≤768px).';
+            
+            // Refresh the page to show the new history
+            setTimeout(() => location.reload(), 500);
+        }
+
+        function clearAllHistory() {
+            SearchHistoryManager.clearAllHistory();
+            document.getElementById('testStatus').textContent = 'All history cleared.';
+            setTimeout(() => location.reload(), 500);
+        }
+
+        function toggleViewport() {
+            const container = document.querySelector('.test-container');
+            const currentWidth = container.style.maxWidth;
+            
+            if (currentWidth === '800px') {
+                container.style.maxWidth = '400px';
+                document.getElementById('testStatus').textContent = 'Switched to mobile viewport (400px)';
+            } else {
+                container.style.maxWidth = '800px';
+                document.getElementById('testStatus').textContent = 'Switched to desktop viewport (800px)';
+            }
+            
+            setTimeout(updateViewportInfo, 100);
+            setTimeout(() => location.reload(), 1000);
+        }
+
+        // Update viewport info on load and resize
+        window.addEventListener('load', updateViewportInfo);
+        window.addEventListener('resize', updateViewportInfo);
+
+        // Show current viewport on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateViewportInfo();
+            
+            // Add event listeners for status updates
+            const materialInput = document.getElementById('materialSearch');
+            const productInput = document.getElementById('productSearch');
+
+            if (materialInput) {
+                materialInput.addEventListener('change', function() {
+                    document.getElementById('testStatus').textContent = `Materials search: "${this.value}"`;
+                });
+            }
+
+            if (productInput) {
+                productInput.addEventListener('change', function() {
+                    document.getElementById('testStatus').textContent = `Products search: "${this.value}"`;
+                });
+            }
+        });
+    </script>
+</body>
+</html>
