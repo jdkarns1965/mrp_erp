@@ -8,11 +8,12 @@ This is a modular MRP → ERP Manufacturing System built with PHP and MySQL. The
 
 ## Current Development Phase
 
-**Phase 1: Core MRP** (In Progress)
-- Building database schema for materials, products, BOM, and inventory
-- Developing OOP PHP classes for database interaction
-- Creating web forms for data entry
-- Implementing MRP calculation logic
+**Phase 2: Production Scheduling** (In Progress)
+- ✅ Phase 1: Core MRP completed and production-ready
+- Building production scheduling and capacity planning
+- Implementing work center management and calendars
+- Creating Gantt chart visualization for production schedules
+- Adding production order tracking and operation management
 
 ## Development Environment Setup
 
@@ -74,13 +75,27 @@ This is a modular MRP → ERP Manufacturing System built with PHP and MySQL. The
 - UTC timestamps for all date/time fields
 - Soft deletes where appropriate (deleted_at field)
 
-### Key Database Tables (Phase 1)
+### Key Database Tables
+**Phase 1 (Core MRP):**
 - `materials` - Raw materials (resins, inserts, packaging)
 - `products` - Finished goods with part numbers
-- `bom` - Bill of Materials linking products to materials
+- `bom_headers` & `bom_details` - Bill of Materials structure
 - `inventory` - Current stock levels with lot tracking
-- `production_orders` - Manufacturing orders (Phase 2)
-- `purchase_orders` - Supplier orders (Phase 3)
+- `customer_orders` - Customer order management
+
+**Phase 2 (Production Scheduling):**
+- `work_centers` - Machines, assembly stations, work areas
+- `work_center_calendar` - Shift schedules and availability
+- `production_routes` - Manufacturing sequences per product
+- `production_orders` - Manufacturing orders from customer demand
+- `production_order_operations` - Detailed operation scheduling
+- `production_order_materials` - Material reservations
+- `production_order_status_history` - Status change tracking
+
+**Phase 3+ (Purchasing & ERP):**
+- `purchase_orders` - Supplier orders (planned)
+- `suppliers` - Supplier management (ready)
+- `financial_transactions` - Cost tracking (planned)
 
 ## Development Commands
 
@@ -163,23 +178,30 @@ echo renderEntityName('product', $productId, $productName);
 
 ## Phase-Specific Focus Areas
 
-### Current (Phase 1): Core MRP
-- Focus on accurate BOM explosion
-- Reliable inventory tracking
-- Clear shortage reporting
-- Simple, functional UI
+### ✅ Completed (Phase 1): Core MRP
+- ✅ Accurate BOM explosion logic
+- ✅ Reliable inventory tracking with lot control
+- ✅ Clear shortage reporting and MRP calculations
+- ✅ Mobile-responsive UI with autocomplete
+- ✅ Customer order management
+- ✅ Dashboard with real-time metrics
 
-### Upcoming (Phase 2): Scheduling
-- Machine capacity planning
-- Forward and backward scheduling
-- Gantt chart visualization
-- Production status tracking
+### 🔄 Current (Phase 2): Production Scheduling
+- ✅ Work center and capacity management
+- ✅ Production order creation from customer orders
+- ✅ Forward and backward scheduling algorithms
+- ✅ Gantt chart visualization with capacity planning
+- ✅ Production operation tracking and status updates
+- ✅ Material reservation and allocation
+- 🔄 Production reporting and analytics (in development)
 
-### Future (Phase 3+): Purchasing & ERP
-- Automated PO generation
-- Supplier management
-- Financial integration
-- Quality control modules  
+### 📋 Future (Phase 3+): Purchasing & ERP
+- Automated PO generation from MRP shortages
+- Advanced supplier management and EDI
+- Financial integration and cost accounting
+- Quality control modules and testing
+- Advanced analytics and reporting
+- Integration with external systems  
 
 ## Autocomplete/Autosuggest Implementation Guidelines
 
@@ -347,3 +369,66 @@ All autocomplete APIs should return JSON arrays with this structure:
 - Offline support with localStorage
 - Advanced filtering options
 - Multi-select autocomplete for tags/categories
+
+## Phase 2: Production Scheduling Implementation Guidelines
+
+### Core Classes
+- `ProductionScheduler.php` - Main scheduling engine with forward/backward scheduling
+- Handles production order creation from customer orders
+- Manages work center capacity allocation and availability
+- Provides Gantt chart data for visualization
+
+### Production Order Workflow
+1. **Order Creation**: Convert customer orders to production orders via `production/create.php`
+2. **Scheduling**: Automatic or manual scheduling using `ProductionScheduler` class
+3. **Execution**: Track operations through `production/operations.php`
+4. **Monitoring**: Visual timeline via Gantt chart in `production/gantt.php`
+
+### Key Features Implemented
+- **Work Center Management**: Machines, assembly stations with capacity and calendars
+- **Production Routes**: Define operation sequences per product
+- **Capacity Planning**: Calculate work center utilization and availability
+- **Operation Tracking**: Real-time status updates for individual operations
+- **Material Reservations**: Automatic allocation from BOM requirements
+- **Status History**: Complete audit trail of production order changes
+
+### Database Views for Performance
+- `v_work_center_capacity` - Aggregated capacity data for planning
+- `v_production_schedule` - Production order progress and completion metrics
+
+### Scheduling Algorithms
+- **Forward Scheduling**: Start ASAP, schedule operations sequentially
+- **Backward Scheduling**: Work backward from customer due date
+- **Capacity Checks**: Automatic conflict detection and resolution
+- **Setup/Teardown**: Includes machine setup times in calculations
+
+### UI Components
+- **Production Dashboard**: Order status overview with statistics
+- **Gantt Chart**: Interactive timeline with capacity visualization  
+- **Operations Tracking**: Real-time operation status and progress
+- **Mobile-Responsive**: Touch-friendly interface for shop floor use
+
+### Status Management
+Production orders flow through: `planned` → `released` → `in_progress` → `completed`
+Operations flow through: `planned` → `ready` → `in_progress` → `completed`
+
+### Integration Points
+- Connects to Phase 1 MRP data (BOMs, inventory, customer orders)
+- Prepares for Phase 3 financial integration (cost tracking ready)
+- Material reservations integrate with inventory management
+
+### Performance Considerations
+- Indexed scheduling queries for large datasets
+- Efficient Gantt chart rendering with date range limits
+- Optimized capacity calculation views
+- Background scheduling for large production runs
+
+## Next Phase Planning
+
+### Phase 3: Purchasing & Advanced ERP
+Ready to implement:
+- Purchase order generation from MRP shortages
+- Supplier portal and EDI integration
+- Advanced cost accounting and financial integration
+- Quality control and testing workflows
+- Advanced reporting and analytics dashboard

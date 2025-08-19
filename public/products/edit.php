@@ -47,7 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Validate numeric fields
     $numericFields = ['weight_kg', 'cycle_time_seconds', 'cavity_count', 'min_stock_qty', 
-                      'max_stock_qty', 'safety_stock_qty', 'standard_cost', 'selling_price'];
+                      'max_stock_qty', 'safety_stock_qty', 'lead_time_days', 'lot_size_qty', 
+                      'lot_size_multiple', 'standard_cost', 'selling_price'];
     
     foreach ($numericFields as $field) {
         if (!empty($_POST[$field]) && !is_numeric($_POST[$field])) {
@@ -68,6 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'min_stock_qty' => !empty($_POST['min_stock_qty']) ? $_POST['min_stock_qty'] : 0,
             'max_stock_qty' => !empty($_POST['max_stock_qty']) ? $_POST['max_stock_qty'] : 0,
             'safety_stock_qty' => !empty($_POST['safety_stock_qty']) ? $_POST['safety_stock_qty'] : 0,
+            'lead_time_days' => !empty($_POST['lead_time_days']) ? $_POST['lead_time_days'] : 0,
+            'lot_size_rule' => $_POST['lot_size_rule'] ?? 'lot-for-lot',
+            'lot_size_qty' => !empty($_POST['lot_size_qty']) ? $_POST['lot_size_qty'] : 0,
+            'lot_size_multiple' => !empty($_POST['lot_size_multiple']) ? $_POST['lot_size_multiple'] : 1,
             'standard_cost' => !empty($_POST['standard_cost']) ? $_POST['standard_cost'] : 0,
             'selling_price' => !empty($_POST['selling_price']) ? $_POST['selling_price'] : 0,
             'is_lot_controlled' => isset($_POST['is_lot_controlled']) ? 1 : 0,
@@ -218,9 +223,56 @@ require_once '../../includes/header.php';
                     <div class="form-group">
                         <label for="safety_stock_qty">Safety Stock</label>
                         <input type="number" id="safety_stock_qty" name="safety_stock_qty" 
-                               value="<?php echo htmlspecialchars($_POST['safety_stock_qty'] ?? '0'); ?>" 
+                               value="<?php echo htmlspecialchars($_POST['safety_stock_qty'] ?? $productData['safety_stock_qty'] ?? '0'); ?>" 
                                step="0.0001" min="0">
                         <span class="tooltip">Buffer stock to prevent stockouts</span>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="lead_time_days">Lead Time (days)</label>
+                        <input type="number" id="lead_time_days" name="lead_time_days" 
+                               value="<?php echo htmlspecialchars($_POST['lead_time_days'] ?? $productData['lead_time_days'] ?? '0'); ?>" 
+                               min="0" step="1">
+                        <span class="tooltip">Manufacturing lead time in working days</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lot_size_rule">Lot Sizing Rule</label>
+                        <select id="lot_size_rule" name="lot_size_rule">
+                            <option value="lot-for-lot" <?php echo ($_POST['lot_size_rule'] ?? $productData['lot_size_rule'] ?? 'lot-for-lot') === 'lot-for-lot' ? 'selected' : ''; ?>>
+                                Lot-for-Lot (Order exact quantity)
+                            </option>
+                            <option value="fixed" <?php echo ($_POST['lot_size_rule'] ?? $productData['lot_size_rule'] ?? '') === 'fixed' ? 'selected' : ''; ?>>
+                                Fixed Order Quantity
+                            </option>
+                            <option value="min-max" <?php echo ($_POST['lot_size_rule'] ?? $productData['lot_size_rule'] ?? '') === 'min-max' ? 'selected' : ''; ?>>
+                                Min-Max (Order up to max when below min)
+                            </option>
+                            <option value="economic" <?php echo ($_POST['lot_size_rule'] ?? $productData['lot_size_rule'] ?? '') === 'economic' ? 'selected' : ''; ?>>
+                                Economic Order Quantity (EOQ)
+                            </option>
+                        </select>
+                        <span class="tooltip">Method for determining production order quantities</span>
+                    </div>
+                </div>
+                
+                <div class="form-row" id="lot-size-params">
+                    <div class="form-group">
+                        <label for="lot_size_qty">Lot Size Quantity</label>
+                        <input type="number" id="lot_size_qty" name="lot_size_qty" 
+                               value="<?php echo htmlspecialchars($_POST['lot_size_qty'] ?? $productData['lot_size_qty'] ?? '0'); ?>" 
+                               step="0.0001" min="0">
+                        <span class="tooltip">Fixed quantity (for Fixed rule) or minimum quantity (for Min-Max rule)</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="lot_size_multiple">Lot Multiple</label>
+                        <input type="number" id="lot_size_multiple" name="lot_size_multiple" 
+                               value="<?php echo htmlspecialchars($_POST['lot_size_multiple'] ?? $productData['lot_size_multiple'] ?? '1'); ?>" 
+                               step="0.0001" min="0.0001">
+                        <span class="tooltip">Round order quantities to multiples of this value</span>
                     </div>
                 </div>
                 

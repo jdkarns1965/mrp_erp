@@ -44,13 +44,26 @@ $pendingOrders = $db->select("
         <div class="card-header">
             MRP (Material Requirements Planning)
             <div style="float: right;">
-                <a href="run.php" class="btn btn-primary">Run New MRP</a>
+                <a href="run.php" class="btn btn-secondary">Basic MRP</a>
+                <a href="run-enhanced.php" class="btn btn-primary">Enhanced MRP</a>
             </div>
             <div style="clear: both;"></div>
         </div>
         
         <p>The MRP system calculates material requirements based on customer orders and current inventory levels. 
            It identifies shortages and suggests purchase orders to fulfill demand.</p>
+        
+        <div class="alert alert-info">
+            <strong>New!</strong> Enhanced MRP now available with:
+            <ul style="margin-bottom: 0;">
+                <li>Time-phased planning with lead time offsetting</li>
+                <li>Master Production Schedule (MPS) integration</li>
+                <li>Lot sizing rules (Fixed, Lot-for-Lot, Min-Max, EOQ)</li>
+                <li>Safety stock management</li>
+                <li>Purchase and production order suggestions</li>
+            </ul>
+            <a href="run-enhanced.php" class="btn btn-sm btn-primary mt-2">Try Enhanced MRP</a>
+        </div>
     </div>
 
     <!-- Pending Orders -->

@@ -27,6 +27,7 @@
                 <li><a href="<?php echo $base_url; ?>/inventory/" <?php echo strpos($current_uri, '/inventory/') !== false ? 'class="active"' : ''; ?>>Inventory</a></li>
                 <li><a href="<?php echo $base_url; ?>/orders/" <?php echo strpos($current_uri, '/orders/') !== false ? 'class="active"' : ''; ?>>Orders</a></li>
                 <li><a href="<?php echo $base_url; ?>/mrp/" <?php echo strpos($current_uri, '/mrp/') !== false ? 'class="active"' : ''; ?>>MRP</a></li>
+                <li><a href="<?php echo $base_url; ?>/production/" <?php echo strpos($current_uri, '/production/') !== false ? 'class="active"' : ''; ?>>Production</a></li>
             </ul>
         </div>
     </nav>

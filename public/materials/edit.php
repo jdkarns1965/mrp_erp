@@ -59,6 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'max_stock_qty' => $_POST['max_stock_qty'] ?? 0,
                 'reorder_point' => $_POST['reorder_point'] ?? 0,
                 'lead_time_days' => $_POST['lead_time_days'] ?? 0,
+                'safety_stock_qty' => $_POST['safety_stock_qty'] ?? 0,
+                'lot_size_rule' => $_POST['lot_size_rule'] ?? 'lot-for-lot',
+                'lot_size_qty' => $_POST['lot_size_qty'] ?? 0,
+                'lot_size_multiple' => $_POST['lot_size_multiple'] ?? 1,
+                'order_cost' => $_POST['order_cost'] ?? 0,
+                'carrying_cost_percent' => $_POST['carrying_cost_percent'] ?? 20,
                 'default_supplier_id' => !empty($_POST['default_supplier_id']) ? $_POST['default_supplier_id'] : null,
                 'cost_per_unit' => $_POST['cost_per_unit'] ?? 0,
                 'supplier_moq' => $_POST['supplier_moq'] ?? 0,
@@ -218,7 +224,7 @@ $formData = $_POST ?: $material;
                 </div>
             </div>
             
-            <div class="grid grid-2">
+            <div class="grid grid-3">
                 <div class="form-group">
                     <label for="lead_time_days">
                         Lead Time (Days)
@@ -226,6 +232,15 @@ $formData = $_POST ?: $material;
                     </label>
                     <input type="number" id="lead_time_days" name="lead_time_days" min="0"
                            value="<?php echo htmlspecialchars($formData['lead_time_days'] ?? '0'); ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="safety_stock_qty">
+                        Safety Stock
+                        <span class="field-help" data-help="Buffer stock to prevent stockouts during lead time" tabindex="0"></span>
+                    </label>
+                    <input type="number" id="safety_stock_qty" name="safety_stock_qty" step="0.01" min="0"
+                           value="<?php echo htmlspecialchars($formData['safety_stock_qty'] ?? '0'); ?>">
                 </div>
                 
                 <div class="form-group">
@@ -239,6 +254,70 @@ $formData = $_POST ?: $material;
                             </option>
                         <?php endforeach; ?>
                     </select>
+                </div>
+            </div>
+            
+            <!-- MRP Planning Settings -->
+            <h3>MRP Planning Settings</h3>
+            
+            <div class="grid grid-2">
+                <div class="form-group">
+                    <label for="lot_size_rule">
+                        Lot Sizing Rule
+                        <span class="field-help" data-help="Method for determining purchase order quantities" tabindex="0"></span>
+                    </label>
+                    <select id="lot_size_rule" name="lot_size_rule">
+                        <option value="lot-for-lot" <?php echo ($formData['lot_size_rule'] ?? 'lot-for-lot') === 'lot-for-lot' ? 'selected' : ''; ?>>
+                            Lot-for-Lot (Order exact quantity)
+                        </option>
+                        <option value="fixed" <?php echo ($formData['lot_size_rule'] ?? '') === 'fixed' ? 'selected' : ''; ?>>
+                            Fixed Order Quantity
+                        </option>
+                        <option value="min-max" <?php echo ($formData['lot_size_rule'] ?? '') === 'min-max' ? 'selected' : ''; ?>>
+                            Min-Max (Order up to max when below min)
+                        </option>
+                        <option value="economic" <?php echo ($formData['lot_size_rule'] ?? '') === 'economic' ? 'selected' : ''; ?>>
+                            Economic Order Quantity (EOQ)
+                        </option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lot_size_qty">
+                        Lot Size Quantity
+                        <span class="field-help" data-help="Fixed quantity (for Fixed rule) or minimum quantity (for Min-Max rule)" tabindex="0"></span>
+                    </label>
+                    <input type="number" id="lot_size_qty" name="lot_size_qty" step="0.01" min="0"
+                           value="<?php echo htmlspecialchars($formData['lot_size_qty'] ?? '0'); ?>">
+                </div>
+            </div>
+            
+            <div class="grid grid-3">
+                <div class="form-group">
+                    <label for="lot_size_multiple">
+                        Lot Multiple
+                        <span class="field-help" data-help="Round order quantities to multiples of this value" tabindex="0"></span>
+                    </label>
+                    <input type="number" id="lot_size_multiple" name="lot_size_multiple" step="0.01" min="0.01"
+                           value="<?php echo htmlspecialchars($formData['lot_size_multiple'] ?? '1'); ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="order_cost">
+                        Order Cost
+                        <span class="field-help" data-help="Fixed cost per purchase order (for EOQ calculation)" tabindex="0"></span>
+                    </label>
+                    <input type="number" id="order_cost" name="order_cost" step="0.01" min="0"
+                           value="<?php echo htmlspecialchars($formData['order_cost'] ?? '0'); ?>">
+                </div>
+                
+                <div class="form-group">
+                    <label for="carrying_cost_percent">
+                        Carrying Cost %
+                        <span class="field-help" data-help="Annual inventory carrying cost as percentage of unit cost (for EOQ)" tabindex="0"></span>
+                    </label>
+                    <input type="number" id="carrying_cost_percent" name="carrying_cost_percent" step="0.1" min="0" max="100"
+                           value="<?php echo htmlspecialchars($formData['carrying_cost_percent'] ?? '20'); ?>">
                 </div>
             </div>
             

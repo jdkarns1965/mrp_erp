@@ -1,0 +1,19 @@
+<?php
+/**
+ * Production Database Configuration Template
+ * Copy this file to database.php and update with production credentials
+ */
+
+return [
+    'host' => $_ENV['DB_HOST'] ?? 'localhost',
+    'database' => $_ENV['DB_DATABASE'] ?? 'mrp_erp',
+    'username' => $_ENV['DB_USERNAME'] ?? 'mrp_user',
+    'password' => $_ENV['DB_PASSWORD'] ?? 'your_secure_password_here',
+    'charset' => 'utf8mb4',
+    'port' => $_ENV['DB_PORT'] ?? 3306,
+    'options' => [
+        'error_mode' => MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT,
+        'ssl_verify' => $_ENV['DB_SSL_VERIFY'] ?? false,
+        'ssl_ca' => $_ENV['DB_SSL_CA'] ?? null,
+    ]
+];
