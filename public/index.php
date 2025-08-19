@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../includes/header.php';
+require_once '../includes/help-system.php';
 
 // Dashboard data
 require_once '../classes/Material.php';
@@ -17,8 +18,13 @@ $belowSafetyProducts = $productModel->getBelowSafetyStock();
 $expiringInventory = $inventoryModel->getExpiringInventory(30);
 ?>
 
+<?php echo HelpSystem::getHelpStyles(); ?>
+
 <div class="container">
-    <h2 class="mb-3">MRP Dashboard</h2>
+    <h2 class="mb-3">MRP Dashboard <?php echo help_tooltip('dashboard', 'Your command center for monitoring the MRP system'); ?></h2>
+    
+    <?php echo HelpSystem::renderHelpPanel('dashboard'); ?>
+    <?php echo HelpSystem::renderHelpButton(); ?>
     
     <!-- Statistics Cards -->
     <div class="grid grid-4 mb-3">
@@ -152,6 +158,21 @@ $expiringInventory = $inventoryModel->getExpiringInventory(30);
             <a href="inventory/receive.php" class="btn btn-warning">Receive Inventory</a>
         </div>
     </div>
+    
+    <?php 
+    // Show workflow guide for new users
+    if (!isset($_COOKIE['hide_workflow_guide'])) {
+        echo HelpSystem::workflowGuide([
+            'Check dashboard for alerts and low stock warnings',
+            'Create customer orders as they come in',
+            'Run MRP to calculate material requirements',
+            'Create production orders based on demand',
+            'Monitor production progress on Gantt chart'
+        ]);
+    }
+    ?>
 </div>
+
+<?php echo HelpSystem::getHelpScript(); ?>
 
 <?php require_once '../includes/footer.php'; ?>

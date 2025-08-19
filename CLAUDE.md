@@ -432,3 +432,713 @@ Ready to implement:
 - Advanced cost accounting and financial integration
 - Quality control and testing workflows
 - Advanced reporting and analytics dashboard
+
+---
+
+## System Development Manual
+
+### Purpose
+This manual documents the current state and workflow of the MRP/ERP system to:
+1. **Familiarization** - Provide clear understanding of how the application operates
+2. **Continuation** - Identify incomplete areas for systematic development
+3. **Consistency** - Maintain structured development tracking
+
+### System Workflow Overview
+
+#### Core Business Flow
+```
+1. Materials Management → 2. Products → 3. BOMs → 4. Inventory → 5. Customer Orders → 6. MRP Calculation → 7. Production Scheduling → 8. Execution
+```
+
+#### Module Interactions
+- **Materials** feed into **BOMs** and **Inventory**
+- **Products** use **BOMs** to define component requirements
+- **Customer Orders** trigger **MRP calculations**
+- **MRP** identifies shortages and suggests **Production Orders**
+- **Production Scheduling** allocates **Work Centers** and manages capacity
+- **Inventory** is consumed by production and replenished by purchasing
+
+### Module-by-Module Documentation
+
+#### 1. Materials Management (`/public/materials/`)
+**Status:** ✅ 100% Complete
+
+**Features:**
+- Full CRUD operations (Create, Read, Update, Delete)
+- Material categorization (Raw Materials, Components, Packaging)
+- Units of measure (UOM) tracking
+- Supplier linkage
+- Cost tracking
+- Reorder points and safety stock levels
+
+**Key Files:**
+- `index.php` - Material listing with search/filter (uses AutocompleteManager)
+- `create.php` - New material entry form
+- `edit.php` - Material modification
+- `view.php` - Detailed material information
+
+**Database Tables:**
+- `materials` - Main material records
+- `material_categories` - Category definitions
+- `units_of_measure` - UOM definitions
+
+#### 2. Products Management (`/public/products/`)
+**Status:** ✅ 100% Complete
+
+**Features:**
+- Product creation with part numbers
+- Category management
+- Safety stock configuration
+- Lead time tracking
+- Product search with autocomplete
+
+**Key Files:**
+- `index.php` - Product listing (migrated to AutocompleteManager)
+- `create.php` - New product creation
+- `edit.php` - Product editing
+- `view.php` - Product details
+- `search-api.php` - Autocomplete API endpoint
+
+**Database Tables:**
+- `products` - Finished goods records
+- `product_categories` - Product categorization
+
+#### 3. Bill of Materials (`/public/bom/`)
+**Status:** ✅ 100% Complete
+
+**Features:**
+- Multi-level BOM support
+- Recursive explosion for nested components
+- Version control
+- Visual BOM tree display
+- Material quantity calculations
+- Edit links for quick navigation
+
+**Key Files:**
+- `index.php` - BOM listing
+- `create.php` - BOM creation (uses AutocompleteManager)
+- `edit.php` - BOM modification
+- `view.php` - BOM tree visualization with edit links
+
+**Database Tables:**
+- `bom_headers` - BOM master records
+- `bom_details` - Component relationships and quantities
+
+#### 4. Inventory Management (`/public/inventory/`)
+**Status:** ✅ 100% Complete
+
+**Features:**
+- Real-time stock tracking
+- Lot control with expiry dates
+- Multiple warehouse support
+- Transaction history
+- Stock adjustments
+- Low stock alerts
+
+**Key Files:**
+- `index.php` - Inventory overview
+- `adjust.php` - Stock adjustments
+- `transactions.php` - Transaction history
+- `lots.php` - Lot tracking
+
+**Database Tables:**
+- `inventory` - Current stock levels
+- `inventory_transactions` - All stock movements
+- `inventory_lots` - Lot/batch tracking
+- `warehouses` - Location management
+
+#### 5. Customer Orders (`/public/orders/`)
+**Status:** ✅ 100% Complete
+
+**Features:**
+- Order entry and management
+- Due date tracking
+- Order status workflow
+- Integration with MRP engine
+- Order history
+
+**Key Files:**
+- `index.php` - Order listing
+- `create.php` - New order entry
+- `edit.php` - Order modification
+- `view.php` - Order details
+
+**Database Tables:**
+- `customer_orders` - Order headers
+- `customer_order_items` - Order line items
+- `customers` - Customer records
+
+#### 6. MRP Engine (`/public/mrp/`)
+**Status:** ✅ 100% Complete
+
+**Features:**
+- BOM explosion algorithm
+- Gross to net requirements calculation
+- Shortage identification
+- Purchase order suggestions
+- Lead time consideration
+- Safety stock management
+
+**Key Files:**
+- `index.php` - MRP dashboard
+- `calculate.php` - Run MRP calculations
+- `results.php` - Shortage reports
+
+**Core Classes:**
+- `MRP.php` - Main calculation engine
+- `MRPEngine.php` - Advanced MRP algorithms
+
+#### 7. Production Scheduling (`/public/production/`)
+**Status:** 🔄 85% Complete
+
+**Features Implemented:**
+- Production order creation from customer orders
+- Work center capacity management
+- Forward/backward scheduling
+- Gantt chart visualization
+- Operation tracking
+- Material reservations
+- Status history tracking
+
+**Features Missing:**
+- Production reporting dashboard
+- Shift management enhancements
+- Performance analytics
+
+**Key Files:**
+- `index.php` - Production dashboard
+- `create.php` - Create production orders
+- `gantt.php` - Visual scheduling timeline
+- `operations.php` - Operation tracking
+- `update-status.php` - Status management API
+
+**Database Tables:**
+- `production_orders` - Manufacturing orders
+- `production_order_operations` - Operation details
+- `production_order_materials` - Material allocations
+- `work_centers` - Machine/station definitions
+- `work_center_calendar` - Capacity schedules
+- `production_routes` - Manufacturing sequences
+
+**Core Classes:**
+- `ProductionScheduler.php` - Scheduling algorithms
+
+#### 8. Master Production Schedule (`/public/mps/`)
+**Status:** 🔄 60% Complete
+
+**Features:**
+- Basic MPS framework
+- Integration points defined
+
+**Missing:**
+- Full implementation
+- Capacity planning integration
+- Demand forecasting
+
+### Database Architecture
+
+#### Key Relationships
+```sql
+materials → bom_details → bom_headers → products
+products → customer_order_items → customer_orders
+customer_orders → production_orders → production_order_operations
+production_orders → production_order_materials → inventory
+work_centers → production_order_operations
+```
+
+#### Critical Views
+- `v_work_center_capacity` - Capacity analysis
+- `v_production_schedule` - Schedule overview
+- `v_inventory_status` - Stock levels with reorder points
+
+### API Endpoints
+
+#### Autocomplete APIs
+- `/api/materials-search.php` - Material search
+- `/api/categories-search.php` - Category lookup
+- `/api/uom-search.php` - Units of measure
+- `/api/suppliers-search.php` - Supplier search
+- `/api/locations-search.php` - Warehouse lookup
+- `/products/search-api.php` - Product search
+
+#### Action APIs
+- `/production/update-status.php` - Production status updates
+- `/production/get-order-details.php` - Order information
+
+### UI/UX Patterns
+
+#### Design Principles
+1. **Mobile-First**: All interfaces responsive
+2. **Touch-Friendly**: 44px minimum touch targets
+3. **Progressive Enhancement**: Works without JavaScript
+4. **Consistent Navigation**: Standard header/footer
+5. **Contextual Help**: Tooltips and inline guidance
+
+#### Common Components
+- **AutocompleteManager**: Centralized search functionality
+- **Entity Edit Links**: Quick navigation with edit icons
+- **Status Badges**: Visual status indicators
+- **Data Tables**: Sortable, filterable lists
+- **Form Validation**: Client and server-side
+
+### Testing Procedures
+
+#### Phase 1 Testing (Complete)
+- ✅ Material CRUD operations
+- ✅ BOM explosion accuracy
+- ✅ MRP calculations with multi-level BOMs
+- ✅ Inventory transaction integrity
+- ✅ Order processing workflow
+
+#### Phase 2 Testing (In Progress)
+- ✅ Production order creation
+- ✅ Scheduling algorithm accuracy
+- ✅ Gantt chart visualization
+- 🔄 Capacity conflict resolution
+- 🔄 Performance under load
+
+### Known Issues & Incomplete Areas
+
+#### Critical Issues
+1. **Database Not Initialized**: Run `mysql -u root -p mrp_erp < database/schema.sql`
+2. **No Authentication**: System lacks user login/permissions
+
+#### Incomplete Features
+1. **Production Reporting**: Analytics dashboard needed
+2. **Purchase Orders**: No automated PO generation
+3. **Financial Integration**: Cost tracking not implemented
+4. **Quality Control**: QC workflows missing
+5. **User Management**: No role-based access control
+
+#### Technical Debt
+- Test files in production directory
+- Some legacy autocomplete implementations
+- Limited error logging
+- No automated testing framework
+
+### Development Priorities
+
+#### Immediate (This Week)
+1. Import database schema
+2. Complete production reporting module
+3. Clean up test files
+4. Document user workflows
+
+#### Short-term (2-4 Weeks)
+1. Implement basic authentication
+2. Add purchase order automation
+3. Enhance shift management
+4. Create user training materials
+
+#### Medium-term (1-3 Months)
+1. Financial integration
+2. Quality control module
+3. Advanced reporting
+4. API documentation
+5. External system integration
+
+### Development Guidelines
+
+#### When Adding New Features
+1. Check existing patterns in similar modules
+2. Use AutocompleteManager for search fields
+3. Maintain mobile responsiveness
+4. Include database migrations
+5. Update this manual
+
+#### Code Standards
+- PHP 7.4+ features allowed
+- Prepared statements for all queries
+- Follow existing file structure
+- Comment complex logic
+- Use meaningful variable names
+
+#### Database Changes
+1. Add migrations to `/database/migrations/`
+2. Update `/database/schema.sql`
+3. Document new tables here
+4. Maintain referential integrity
+5. Index foreign keys
+
+### Version History
+- **v1.0** - Phase 1 Core MRP Complete
+- **v1.5** - Phase 2 Production Scheduling 85% Complete (Current)
+- **v2.0** - Phase 2 Complete (Planned)
+- **v3.0** - Phase 3 Purchasing & ERP (Future)
+
+---
+
+## Documentation Maintenance System
+
+### Purpose
+Ensures all user documentation remains accurate and up-to-date with system changes.
+
+### Documentation Files to Maintain
+1. **USER_GUIDE.md** - Comprehensive user manual
+2. **QUICK_REFERENCE.md** - Printable quick reference card
+3. **CLAUDE.md User Operations Manual** - Integrated guidance
+4. **includes/help-system.php** - In-app contextual help
+
+### Maintenance Triggers
+
+#### **Immediate Update Required**
+- ✅ New page/feature added
+- ✅ Navigation structure changes
+- ✅ Status codes or workflows modified
+- ✅ Database schema changes affecting user experience
+- ✅ User interface changes
+
+#### **Documentation Review Schedule**
+- **After each feature completion** - Update relevant sections
+- **Phase completion** - Comprehensive documentation review
+- **Monthly** - Accuracy check against codebase
+- **When users report documentation issues** - Priority fix
+
+#### **Automated Review Agent**
+Run this agent task when needed:
+```
+Task: Review MRP/ERP system documentation for accuracy
+Agent: general-purpose
+Trigger: After major changes or monthly
+```
+
+### Documentation Update Checklist
+
+#### When Adding New Features:
+- [ ] Update file structure in System Development Manual
+- [ ] Add feature to appropriate USER_GUIDE.md section
+- [ ] Update navigation paths in QUICK_REFERENCE.md
+- [ ] Add help content to help-system.php
+- [ ] Update status codes if changed
+- [ ] Test all documented workflows
+- [ ] Update version stamps
+
+#### When Modifying Existing Features:
+- [ ] Review affected USER_GUIDE.md sections
+- [ ] Update workflows in QUICK_REFERENCE.md
+- [ ] Modify help-system.php tooltips/content
+- [ ] Check navigation consistency
+- [ ] Verify status codes still accurate
+- [ ] Update troubleshooting guides
+
+#### When Removing Features:
+- [ ] Remove from all documentation files
+- [ ] Update navigation references
+- [ ] Remove from help system
+- [ ] Update workflows that reference removed feature
+- [ ] Add to "Known Limitations" if users might expect it
+
+### Quality Assurance Process
+
+#### Documentation Testing
+1. **Navigation Test**: Follow each documented path in actual system
+2. **Workflow Test**: Execute each step-by-step guide
+3. **Status Code Test**: Verify all status codes match system
+4. **Help System Test**: Check all tooltips and help panels
+5. **Quick Reference Test**: Validate all quick paths work
+
+#### User Feedback Integration
+- Monitor for documentation-related support requests
+- Track common user confusion points  
+- Update based on real usage patterns
+- Incorporate feedback into next review cycle
+
+### Documentation Standards
+
+#### Writing Standards
+- **User perspective**: Write from user's viewpoint, not technical
+- **Action-oriented**: Focus on "how to do" rather than "what is"
+- **Consistent terminology**: Use same terms throughout
+- **Visual hierarchy**: Use consistent heading structure
+- **Mobile-friendly**: Consider tablet/phone users
+
+#### Update Standards
+- **Version stamps**: Update last-modified dates
+- **Change logs**: Document what changed
+- **Cross-references**: Update related sections
+- **Completeness**: Don't leave partial updates
+
+### File-Specific Guidelines
+
+#### **USER_GUIDE.md**
+- Complete section rewrite when major feature changes
+- Update table of contents if new sections added
+- Maintain step-by-step format
+- Include troubleshooting for new features
+- Keep examples current with system
+
+#### **QUICK_REFERENCE.md**
+- Update navigation table for any menu changes
+- Verify all keyboard shortcuts work
+- Update status codes immediately when changed
+- Keep workflows concise and accurate
+- Test printability after changes
+
+#### **help-system.php**
+- Add new contexts for new pages
+- Update field tooltips when forms change
+- Review help panel content for accuracy
+- Test all help interactions
+- Update workflow guides for new features
+
+#### **CLAUDE.md User Operations Manual**
+- Update daily workflows when process changes
+- Modify color codes/symbols if system changes
+- Update troubleshooting with new common issues
+- Keep getting help section current
+
+### Version Control Integration
+
+#### Git Hooks for Documentation
+Consider adding git pre-commit hook reminder:
+```bash
+echo "📝 Documentation Checklist:"
+echo "[ ] Updated relevant user documentation?"
+echo "[ ] Tested documented workflows?"
+echo "[ ] Updated status codes if changed?"
+echo "[ ] Added help content for new features?"
+```
+
+#### Commit Message Standards
+- Include documentation changes in commit messages
+- Tag documentation-only commits clearly
+- Reference documentation updates in feature commits
+
+### Maintenance History
+
+#### Recent Updates (August 2025)
+- ✅ Fixed status codes in QUICK_REFERENCE.md (abbreviated → full words)
+- ✅ Removed references to non-existent pages (results.php, orders/view.php)
+- ✅ Updated MRP navigation paths (Calculate → Run MRP)
+- ✅ Fixed inventory operations documentation (adjust → receive/issue)
+- ✅ Added missing MPS functionality documentation
+- ✅ Established maintenance process and standards
+- ✅ **CRITICAL FIXES (Agent-Identified Issues):**
+  - Added MPS to main navigation menu
+  - Created production order view page (production/view.php)
+  - Created MRP results page (mrp/results.php)
+  - Fixed MPS database setup issue (planning tables required)
+  - Enhanced help system with MPS context
+
+#### Ongoing Maintenance Tasks
+- [ ] Complete Phase 2 production features in USER_GUIDE.md
+- [ ] Add in-app help to all major pages
+- [ ] Create video tutorials for complex workflows
+- [ ] Develop role-based documentation when authentication added
+
+### Success Metrics
+- User support requests about "how to" decrease
+- New users can navigate system without assistance
+- Documentation accuracy verified through testing
+- User feedback indicates documentation helpfulness
+
+This maintenance system ensures documentation evolves with the system and remains a valuable resource for users.
+
+---
+
+## User Operations Manual
+
+### Purpose
+This manual helps you (the human operator) understand how to use the MRP/ERP system for daily operations. It focuses on practical workflows rather than technical details.
+
+### Quick Start - Processing a Customer Order
+
+#### Complete Order-to-Production Workflow
+1. **Create Customer Order**
+   - Navigate to **Orders** → **New Order**
+   - Use autocomplete to search for product
+   - Enter quantity and due date
+   - Click Save
+
+2. **Check Material Requirements**
+   - Go to **MRP** → **Calculate**
+   - System shows all required materials
+   - Red items = shortages that need attention
+   - Green items = sufficient inventory
+
+3. **Create Production Order**
+   - Go to **Production** → **Create New**
+   - Select the customer order from dropdown
+   - System auto-schedules based on capacity
+   - Review the suggested schedule
+   - Click Create Production Order
+
+4. **Monitor Production**
+   - **Production** → **Gantt Chart** for visual timeline
+   - **Production** → **Operations** for detailed tracking
+   - Update operation status as work progresses
+   - Mark complete when finished
+
+### Common Daily Tasks
+
+#### "How do I check current inventory?"
+- **Inventory** → **Overview** shows all stock levels
+- Yellow warning = below reorder point
+- Red alert = below safety stock
+- Click material name to see details
+
+#### "How do I add a new product?"
+1. **Products** → **Add New Product**
+2. Fill in part number, name, category
+3. Set safety stock levels
+4. Save product
+5. Go to **BOM** → **Create BOM** to define components
+
+#### "How do I see what's in production?"
+- **Production** → **Dashboard** - List view with statuses
+- **Production** → **Gantt Chart** - Visual timeline
+- **Dashboard** (home) - Quick metrics overview
+
+#### "How do I handle material shortages?"
+1. Run **MRP** → **Calculate**
+2. Review shortage report
+3. Either:
+   - Adjust inventory if materials arrived
+   - Create purchase order (Phase 3)
+   - Reschedule production if needed
+
+### Navigation Guide
+
+```
+Home Dashboard
+├── Materials Management
+│   ├── View All Materials
+│   ├── Add New Material
+│   └── Categories & Suppliers
+├── Products
+│   ├── Product List
+│   ├── Add Product
+│   └── Product Search
+├── Bill of Materials (BOM)
+│   ├── BOM List
+│   ├── Create BOM
+│   └── View BOM Tree
+├── Inventory
+│   ├── Current Stock
+│   ├── Adjust Stock
+│   ├── Transaction History
+│   └── Lot Tracking
+├── Customer Orders
+│   ├── Order List
+│   ├── New Order
+│   └── Order Status
+├── MRP
+│   ├── Run Calculation
+│   ├── Shortage Report
+│   └── Requirements Planning
+└── Production
+    ├── Production Orders
+    ├── Create from Order
+    ├── Gantt Chart
+    └── Operations Tracking
+```
+
+### Understanding the Interface
+
+#### Color Codes
+- **Green** = Good/Complete/Sufficient
+- **Yellow** = Warning/Attention Needed
+- **Red** = Critical/Shortage/Overdue
+- **Blue** = Information/In Progress
+- **Gray** = Inactive/Cancelled
+
+#### Icons and Symbols
+- ✏️ = Click to edit
+- 🔍 = Search/Filter
+- ➕ = Add new item
+- 📊 = View report
+- 📅 = Schedule/Calendar
+- ⚠️ = Warning/Alert
+
+#### Form Fields
+- **Red asterisk (*)** = Required field
+- **Autocomplete fields** = Start typing to search
+- **Date fields** = Click for calendar picker
+- **Number fields** = Use +/- for adjustments
+
+### Tips for Efficient Use
+
+#### Data Entry
+1. Use TAB key to move between fields
+2. Autocomplete accepts partial matches
+3. Dates can be typed (MM/DD/YYYY) or selected
+4. Save frequently when entering multiple items
+
+#### Search and Filter
+- Most lists have search boxes at top
+- Partial text matching works
+- Use filters to narrow results
+- Sort columns by clicking headers
+
+#### Mobile/Tablet Usage
+- All pages are touch-friendly
+- Swipe tables horizontally to see all columns
+- Landscape orientation shows more data
+- Pinch to zoom if needed
+
+### Troubleshooting Guide
+
+#### "Autocomplete isn't showing results"
+- Type at least 2 characters
+- Check if item exists in system
+- Try refreshing the page (F5)
+- Clear browser cache if persistent
+
+#### "Can't create production order"
+- Verify customer order exists
+- Check product has BOM defined
+- Ensure work centers are configured
+- Verify materials are available
+
+#### "Data seems missing"
+- Check active filters
+- Look for status filters (active/completed)
+- Try "Show All" option
+- Check date range if applicable
+
+#### "Page loads slowly"
+- Check internet connection
+- Clear browser cache
+- Try different browser
+- Contact IT if persistent
+
+### Workflow Scenarios
+
+#### Morning Routine
+1. Check **Dashboard** for alerts
+2. Review **Production** → **Gantt Chart**
+3. Check **Inventory** for low stock warnings
+4. Process new **Customer Orders**
+5. Run **MRP** if new orders added
+
+#### End of Day
+1. Update **Production** → **Operations** statuses
+2. Complete any inventory adjustments
+3. Review tomorrow's production schedule
+4. Check for any critical alerts
+
+#### Weekly Planning
+1. Run comprehensive **MRP** analysis
+2. Review all **Customer Orders** due dates
+3. Check **Inventory** reorder points
+4. Plan production schedule for week
+5. Identify material purchase needs
+
+### Getting Help
+
+#### In-Application Help
+- Look for (?) icons for contextual help
+- Hover over fields for tooltips
+- Check page headers for instructions
+
+#### Documentation
+- This manual in CLAUDE.md
+- Detailed USER_GUIDE.md
+- Technical documentation in System Development Manual section
+
+#### Support Process
+1. Check this manual first
+2. Try the troubleshooting guide
+3. Ask colleagues who use the system
+4. Contact system administrator
+5. Report bugs/issues for fixes

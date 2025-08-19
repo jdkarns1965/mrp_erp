@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../../includes/help-system.php';
 
 // Debug: Check if we can access basic functions
 echo "<!-- Debug: Starting MPS page -->\n";
@@ -30,7 +31,16 @@ try {
     $sql = "SHOW TABLES LIKE 'planning_calendar'";
     $result = $db->select($sql);
     if (empty($result)) {
-        echo "<div class='container'><div class='alert alert-danger'>Planning calendar table not found. Please run the MRP enhancement schema first.</div></div>";
+        echo "<div class='container'>";
+        echo "<div class='alert alert-warning'>";
+        echo "<h3>⚠️ MPS Setup Required</h3>";
+        echo "<p>The Master Production Schedule requires additional database tables. Please run:</p>";
+        echo "<pre style='background: #f8f9fa; padding: 15px; border-radius: 4px; margin: 15px 0;'>";
+        echo "mysql -u root -p mrp_erp < database/create_planning_tables.sql</pre>";
+        echo "<p>This will create the planning calendar and MPS tables with initial data.</p>";
+        echo "<p><strong>After running the script, refresh this page.</strong></p>";
+        echo "</div>";
+        echo "</div>";
         require_once '../../includes/footer.php';
         exit;
     }
@@ -98,10 +108,12 @@ if (!empty($products) && !empty($periods)) {
 }
 ?>
 
+<?php echo HelpSystem::getHelpStyles(); ?>
+
 <div class="container">
     <div class="card">
         <div class="card-header">
-            <h2>Master Production Schedule (MPS)</h2>
+            <h2>Master Production Schedule (MPS) <?php echo help_tooltip('mps', 'Plan production quantities for each time period'); ?></h2>
             <div style="float: right;">
                 <button type="button" class="btn btn-primary" onclick="saveMPS()">Save MPS</button>
                 <a href="../mrp/run-enhanced.php?include_mps=1" class="btn btn-success">Run Enhanced MRP</a>
@@ -111,6 +123,9 @@ if (!empty($products) && !empty($periods)) {
         
         <p style="padding: 1rem;">Plan production quantities for each period. The MPS drives MRP calculations and helps balance demand with production capacity.</p>
     </div>
+    
+    <?php echo HelpSystem::renderHelpPanel('mps'); ?>
+    <?php echo HelpSystem::renderHelpButton(); ?>
 
     <?php if (empty($periods)): ?>
         <div class="alert alert-warning">
@@ -290,5 +305,7 @@ function showMessage(text, type) {
     }
 }
 </script>
+
+<?php echo HelpSystem::getHelpScript(); ?>
 
 <?php require_once '../../includes/footer.php'; ?>

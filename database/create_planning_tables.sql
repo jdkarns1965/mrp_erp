@@ -41,11 +41,11 @@ CREATE TABLE IF NOT EXISTS master_production_schedule (
 
 -- Add lead_time_days to products if it doesn't exist
 ALTER TABLE products 
-ADD COLUMN IF NOT EXISTS lead_time_days INT DEFAULT 0 AFTER safety_stock_qty;
+ADD COLUMN lead_time_days INT DEFAULT 0 AFTER safety_stock_qty;
 
 -- Add safety_stock_qty to materials if it doesn't exist  
 ALTER TABLE materials
-ADD COLUMN IF NOT EXISTS safety_stock_qty DECIMAL(15,4) DEFAULT 0 AFTER reorder_point;
+ADD COLUMN safety_stock_qty DECIMAL(15,4) DEFAULT 0 AFTER reorder_point;
 
 -- Generate initial planning calendar (next 13 weeks)
 INSERT IGNORE INTO planning_calendar (period_start, period_end, period_type, period_name, is_working_period)
