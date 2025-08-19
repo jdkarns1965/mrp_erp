@@ -22,18 +22,36 @@ This directory contains database schemas, backups, and migration scripts for the
 
 ## Restoring Database
 
-### Full Restore (Schema + Data)
+### Option 1: Clean Install from Full Backup (Recommended)
 ```bash
+# Drop existing database if it exists (optional)
+mysql -u root -p -e "DROP DATABASE IF EXISTS mrp_erp;"
+
+# Restore complete database with all data
 mysql -u root -p < mrp_erp_full_backup.sql
 ```
 
-### Schema Only
+### Option 2: Using phpMyAdmin
+1. Open phpMyAdmin in your browser
+2. Drop the `mrp_erp` database if it exists
+3. Click "Import" tab
+4. Choose file: `database/mrp_erp_full_backup.sql`
+5. Click "Go" to import
+
+### Option 3: Schema Only (Fresh Install)
 ```bash
+# Drop existing database if it exists
+mysql -u root -p -e "DROP DATABASE IF EXISTS mrp_erp;"
+
+# Restore schema only
 mysql -u root -p < mrp_erp_schema_only.sql
 ```
 
-### With Test Data
+### Option 4: Schema with Test Data
 ```bash
+# Drop existing database if it exists
+mysql -u root -p -e "DROP DATABASE IF EXISTS mrp_erp;"
+
 # First restore schema
 mysql -u root -p < mrp_erp_schema_only.sql
 
