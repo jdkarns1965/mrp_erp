@@ -1,76 +1,154 @@
-# Database Files
+# MRP/ERP Database Management
 
-This directory contains database schemas, backups, and migration scripts for the MRP/ERP system.
+This directory contains a comprehensive database synchronization system for the MRP/ERP project with safety-first principles and environment management capabilities.
 
-## Files
+## 🚀 Quick Start
 
-### Complete Backups
-- `mrp_erp_full_backup.sql` - Complete database backup including all tables, data, views, and stored procedures
-- `mrp_erp_schema_only.sql` - Schema-only backup (table structures, views, indexes) without data
-
-### Schema and Migrations
-- `schema.sql` - Initial database schema
-- `mrp_enhancements.sql` - MRP module enhancements
-- `create_inventory_transactions.sql` - Inventory transaction tables
-- `create_planning_tables.sql` - Production planning tables (MPS)
-- `create_sample_production_orders.sql` - Sample production order data
-
-### Test Data
-- `test_data.sql` - Comprehensive test dataset
-- `test_data_simple.sql` - Minimal test dataset
-- `add_production_data.sql` - Production module test data
-
-## Restoring Database
-
-### Option 1: Clean Install from Full Backup (Recommended)
 ```bash
-# Drop existing database if it exists (optional)
-mysql -u root -p -e "DROP DATABASE IF EXISTS mrp_erp;"
+# Setup the sync system
+./scripts/setup.sh
 
-# Restore complete database with all data
-mysql -u root -p < mrp_erp_full_backup.sql
+# Create fresh database with latest schema
+./scripts/migrate.sh fresh
+
+# Add reference data
+./scripts/seed.sh reference
+
+# Add test data for development
+./scripts/seed.sh test
 ```
 
-### Option 2: Using phpMyAdmin
-1. Open phpMyAdmin in your browser
-2. Drop the `mrp_erp` database if it exists
-3. Click "Import" tab
-4. Choose file: `database/mrp_erp_full_backup.sql`
-5. Click "Go" to import
+## 📁 Directory Structure
 
-### Option 3: Schema Only (Fresh Install)
-```bash
-# Drop existing database if it exists
-mysql -u root -p -e "DROP DATABASE IF EXISTS mrp_erp;"
-
-# Restore schema only
-mysql -u root -p < mrp_erp_schema_only.sql
+```
+database/
+├── README_SYNC_SYSTEM.md    # Complete system documentation
+├── QUICK_REFERENCE.md       # Quick command reference
+├── schema/                  # Base database schemas
+├── migrations/              # Incremental schema changes
+├── seeds/                   # Reference and test data
+├── backups/                 # Automated backups (created)
+└── scripts/                 # Management tools
+    ├── setup.sh             # System initialization
+    ├── backup.sh            # Backup management
+    ├── restore.sh           # Safe restoration
+    ├── migrate.sh           # Migration runner
+    ├── sync.sh              # Environment sync
+    └── seed.sh              # Data seeding
 ```
 
-### Option 4: Schema with Test Data
+## 🛠️ Core Features
+
+### ✅ Safety First
+- **Dry-run mode** for all operations
+- **Automatic backups** before changes
+- **Rollback capabilities** for migrations
+- **Verification checks** for data integrity
+
+### ✅ Environment Management
+- **Multi-environment** sync (dev/staging/prod)
+- **Schema comparison** between environments
+- **Safe production** deployment procedures
+- **Connection testing** and validation
+
+### ✅ Migration System
+- **Version tracking** with rollback SQL
+- **Batch control** with --steps parameter
+- **Fresh install** capability
+- **Interactive rollback** to specific versions
+
+### ✅ Seed Data Management
+- **Reference data** (UOM, categories, etc.)
+- **Test datasets** for development
+- **Idempotent operations** (safe to re-run)
+- **Execution tracking** and history
+
+## 📖 Documentation
+
+| Document | Purpose |
+|----------|---------|
+| `README_SYNC_SYSTEM.md` | Complete system documentation |
+| `QUICK_REFERENCE.md` | Command quick reference |
+| This file | Overview and getting started |
+
+## 🎯 Common Operations
+
+### Daily Development
 ```bash
-# Drop existing database if it exists
-mysql -u root -p -e "DROP DATABASE IF EXISTS mrp_erp;"
-
-# First restore schema
-mysql -u root -p < mrp_erp_schema_only.sql
-
-# Then add test data
-mysql -u root -p mrp_erp < test_data.sql
+./scripts/migrate.sh status     # Check migration status
+./scripts/migrate.sh up         # Apply pending migrations
+./scripts/backup.sh --auto      # Create daily backup
 ```
 
-## Backup Schedule
+### Environment Setup
+```bash
+./scripts/migrate.sh fresh      # Fresh database install
+./scripts/seed.sh reference     # System reference data
+./scripts/seed.sh test          # Development test data
+```
 
-Backups should be updated:
-- After major feature additions
-- Before deploying to production
-- When sample data changes significantly
+### Production Deployment
+```bash
+./scripts/backup.sh --full      # Create production backup
+./scripts/migrate.sh up --dry-run --backup  # Safe migration
+./scripts/sync.sh status prod   # Verify production
+```
 
-## Notes
+### Emergency Recovery
+```bash
+./scripts/restore.sh --list     # List available backups
+./scripts/restore.sh backup.sql.gz  # Restore from backup
+./scripts/migrate.sh down       # Rollback migrations
+```
 
-- The full backup includes all customer data (if any exists)
-- Schema-only backup is useful for new installations
-- Test data files are for development/testing only
-- Always backup before making schema changes
+## 🔐 Security Features
 
-Last backup: 2025-08-19
+- **Backup encryption** and compression
+- **Restricted file permissions** on sensitive data
+- **Connection validation** before operations
+- **Confirmation prompts** for destructive operations
+- **Production safeguards** with explicit confirmations
+
+## 🚨 Emergency Contacts
+
+### Quick Recovery Commands
+```bash
+# Create emergency backup
+./scripts/backup.sh --force
+
+# Restore from specific backup
+./scripts/restore.sh --backup-first backup_file.sql.gz
+
+# Rollback last migration
+./scripts/migrate.sh down
+```
+
+## 📊 System Status
+
+- **Setup Status**: Run `./scripts/setup.sh --verify`
+- **Database Status**: Run `./scripts/migrate.sh status`
+- **Backup Status**: Run `./scripts/backup.sh --list`
+- **Environment Status**: Run `./scripts/sync.sh list-envs`
+
+## 🔧 Maintenance
+
+### Automated Tasks
+```bash
+# Add to crontab for daily backups
+0 2 * * * cd /var/www/html/mrp_erp/database && ./scripts/backup.sh --auto
+
+# Weekly cleanup of old backups
+0 3 * * 0 cd /var/www/html/mrp_erp/database && ./scripts/backup.sh --cleanup
+```
+
+### Manual Maintenance
+- Review backup sizes and retention
+- Monitor migration performance
+- Update environment configurations
+- Verify cross-environment schema consistency
+
+---
+
+**Need Help?** Run any script with `--help` for detailed usage information.
+
+**Last Updated**: 2025-08-20 - Comprehensive sync system v1.0

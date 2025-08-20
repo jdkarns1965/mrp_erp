@@ -168,12 +168,20 @@ class HelpSystem {
      * Render inline help text
      */
     public static function inlineHelp($text, $type = 'info') {
-        $icon = match($type) {
-            'warning' => '⚠️',
-            'error' => '❌',
-            'success' => '✓',
-            default => 'ℹ️'
-        };
+        switch($type) {
+            case 'warning':
+                $icon = '⚠️';
+                break;
+            case 'error':
+                $icon = '❌';
+                break;
+            case 'success':
+                $icon = '✓';
+                break;
+            default:
+                $icon = 'ℹ️';
+                break;
+        }
         
         return sprintf(
             '<div class="inline-help %s-help">%s %s</div>',

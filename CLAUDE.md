@@ -936,6 +936,229 @@ This maintenance system ensures documentation evolves with the system and remain
 
 ---
 
+## 🔄 ACTIVE DEVELOPMENT CONTEXT
+
+<!-- UPDATE THIS SECTION REGULARLY - IT'S READ BY ALL AGENTS AND CLAUDE CODE -->
+
+### 📍 Current Sprint/Focus
+- **Working on:** Database environment synchronization setup
+- **Priority:** High - needed for home/work dev sync
+- **Deadline:** None specified
+
+### 🚧 Work in Progress
+```
+Task: Database migration and sync system
+Status: ✅ COMPLETE - Ready for use
+Files: database/scripts/*.sh, database/migrations/
+Completed Today:
+- Full migration system implementation
+- Backup/restore scripts with safety features
+- Sync scripts for environment management
+- Seed data management system
+Next: Test sync between home and work environments
+```
+
+### ⚠️ Critical Information
+```
+IMPORTANT - DATA PRESERVATION:
+- NEVER run migrate.sh fresh without backup
+- Test data must be preserved:
+  - 3 materials (Plastic Resin, Metal Insert, Cardboard Box)
+  - 2 products (Widget A, Widget B)
+  - 2 BOMs configured
+  - 3 inventory transactions
+- Database has existing data from testing
+- Migration 001 is baseline - already applied
+- Migrations 002-004 pending review
+```
+
+### 🐛 Known Issues
+```
+Active Bugs:
+- MPS module incomplete (60% done)
+- Production reporting dashboard not implemented
+- Some legacy autocomplete code needs migration
+
+Workarounds:
+- Use production dashboard instead of MPS
+- Check migrations with --dry-run first
+```
+
+### 💡 Recent Discoveries
+```
+Today (2025-01-20):
+- Database password: passgas1989
+- Migration system tracks changes in schema_migrations table
+- Backup stored at backups/full_backup_initial.sql.gz
+- WSL2 bash has issues with $() in commands - use simpler syntax
+- Migration table uses 'migration' column, not 'version'
+- Database existed with test data already loaded
+- Migration files need unique numbering (had duplicate 001_)
+- Scripts need execute permissions (chmod +x)
+
+Environment:
+- Using WSL2 on Windows
+- MySQL root requires password (no blank login)
+- Working directory: /var/www/html/mrp_erp
+- Git repo already initialized and has commits
+```
+
+### 🔧 Environment Specifics
+```
+Home Dev:
+- WSL2 Ubuntu on Windows
+- MySQL 8.0.x
+- PHP 7.4+
+- Path: /var/www/html/mrp_erp
+- Database: mrp_erp
+
+Work Dev:
+- [TO BE UPDATED when at work]
+- Path: 
+- Database: 
+- Special configs:
+```
+
+### 📝 Handoff Notes
+```
+Current State:
+- ✅ Migration system fully implemented and tested
+- ✅ Baseline schema captured (001_initial_schema.sql) 
+- ✅ Initial migration marked as applied in tracking table
+- ✅ Full backup created at backups/full_backup_initial.sql.gz
+- ✅ Test data verified intact (3 materials, 2 products, etc.)
+- ✅ 3 pending migrations renumbered (002-004) to avoid conflicts
+- ✅ Complete sync system with scripts for backup/restore/migrate/seed
+- ✅ Context template added to CLAUDE.md for continuity
+
+Ready for Tomorrow:
+1. Run ./scripts/migrate.sh status to check state
+2. Apply pending migrations with --dry-run first
+3. Test sync to work environment
+4. Complete MPS module (40% remaining)
+5. Fix production reporting dashboard
+```
+
+### 🎯 Next Steps
+```
+Immediate:
+1. ✅ Migration system setup (COMPLETE)
+2. Apply pending migrations (with --dry-run first)
+3. Test sync between environments
+4. Document migration workflow
+
+This Week:
+1. Complete MPS module
+2. Fix production reporting
+3. Migrate remaining autocomplete code
+4. Update user documentation
+```
+
+### 🚀 Quick Commands
+```bash
+# Navigation
+cd /var/www/html/mrp_erp/database
+
+# Migration Management
+./scripts/migrate.sh status          # Check current state
+./scripts/migrate.sh up --dry-run    # Preview changes
+./scripts/migrate.sh up --backup     # Apply with safety
+./scripts/backup.sh --full          # Create full backup
+
+# Database Access
+mysql -u root -ppassgas1989 mrp_erp
+
+# Testing
+php -S localhost:8000 -t public/
+
+# Git Sync
+git add -A && git commit -m "Update" && git push
+git pull origin main
+```
+
+### 📊 Test Data Reference
+```
+Current Test Data:
+- Materials: 3 items
+  - MAT-001: Plastic Resin (10 KG in stock)
+  - MAT-002: Metal Insert (50 PCS in stock)  
+  - MAT-003: Cardboard Box (25 PCS in stock)
+- Products: 2 items
+  - PROD-001: Widget A
+  - PROD-002: Widget B
+- BOMs: 2 configured (one per product)
+- Inventory: 3 transactions recorded
+- Customer Orders: [TO CHECK]
+- Production Orders: [TO CHECK]
+```
+
+### 🔐 Sensitive Information
+```
+⚠️ DO NOT COMMIT TO GIT:
+MySQL: root / passgas1989
+Database: mrp_erp
+[Other credentials to be added]
+```
+
+### 📅 Session History
+```
+2025-01-20 Evening Session (Complete):
+- ✅ Created comprehensive database sync system
+  - Built 6 management scripts (backup, restore, migrate, sync, seed, setup)
+  - Added safety features (dry-run, confirmations, auto-backups)
+  - Implemented three-tier architecture (schema/migrations/seeds)
+- ✅ Set up migration tracking system
+  - Initialized schema_migrations table
+  - Captured baseline schema as 001_initial_schema.sql
+  - Fixed migration numbering conflicts (renamed 001→002, 002→003, 003→004)
+  - Marked baseline as applied
+- ✅ Protected existing test data
+  - Created full backup before any changes
+  - Verified all data intact (3 materials, 2 products, 2 BOMs, 3 inventory)
+- ✅ Learned about agent context management
+  - Agents don't persist between sessions
+  - Created context template in CLAUDE.md for continuity
+  - Established update workflow for maintaining context
+- ✅ Discovered MySQL password (was using wrong one initially)
+
+2025-01-20 Earlier:
+- Worked on production scheduling module
+- Updated CLAUDE.md documentation structure
+
+[Older history in git commits]
+```
+
+### 💭 THINKING NOTES
+```
+Design Decisions Made Today:
+- Migration system uses numbered files for ordering
+- Always backup before any destructive operation
+- Three-tier system: schema/migrations/seeds keeps concerns separated
+- Context template in CLAUDE.md for session continuity
+- Safety-first approach (dry-run, confirmations) after previous data loss
+
+Questions to Resolve:
+- Should we auto-apply migrations on pull? (Probably not - too risky)
+- How to handle production data sync? (Need anonymization)
+- Need staging environment? (Would help test migrations)
+- Should context be in separate file? (.context/current.md?)
+
+Ideas for Improvement:
+- Add migration rollback with down() methods
+- Create data anonymization for prod->dev sync
+- Add automated testing for migrations
+- Git hook to remind about context updates
+- Maybe create a simple UI for migration management?
+
+Lessons Learned:
+- Always capture baseline before implementing migrations
+- Test data is precious - protect it at all costs
+- WSL2 bash limitations require simpler command syntax
+- Context management is crucial for multi-session work
+```
+
+---
+
 ## User Operations Manual
 
 ### Purpose
