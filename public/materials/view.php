@@ -30,9 +30,9 @@ try {
     
     // Add any missing fields with default values
     $material['category'] = $material['category_name'] ?? null;
-    $material['reorder_quantity'] = $material['reorder_quantity'] ?? $material['supplier_moq'] ?? 0;
+    $material['reorder_quantity'] = $material['reorder_quantity'] ?? $material['safety_stock_qty'] ?? 0;
     $material['supplier_name'] = $material['supplier_name'] ?? null;
-    $material['supplier_part_number'] = $material['supplier_part_number'] ?? null;
+    $material['supplier_part_number'] = null; // Not in current schema
     
     // Get current stock information
     $currentStock = $inventoryModel->getAvailableQuantity('material', $materialId);

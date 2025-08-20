@@ -38,7 +38,7 @@ class Material extends BaseModel {
                        uom.code as uom_code,
                        uom.description as uom_description,
                        s.name as supplier_name,
-                       m.supplier_moq as reorder_quantity,
+                       m.safety_stock_qty as reorder_quantity,
                        m.reorder_point,
                        m.lead_time_days,
                        m.cost_per_unit

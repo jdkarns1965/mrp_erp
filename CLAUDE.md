@@ -517,20 +517,20 @@ For complete maintenance procedures, checklists, standards, and update workflows
 <!-- UPDATE THIS SECTION REGULARLY - IT'S READ BY ALL AGENTS AND CLAUDE CODE -->
 
 ### 📍 Current Sprint/Focus
-- **Working on:** PHP version requirements and compatibility standards
-- **Priority:** Medium - prevent future compatibility issues
+- **Working on:** Fixing Material view page database schema mismatch
+- **Priority:** High - fixing broken functionality
 - **Deadline:** None specified
 
 ### 🚧 Work in Progress
 ```
-Task: PHP requirements documentation
-Status: ✅ COMPLETE - Added comprehensive PHP compatibility guide
-Files: CLAUDE.md
-Completed Today:
-- Added PHP version requirements (7.4-8.2 supported)
-- Specified safe PHP features vs. features to avoid
-- Added required extensions and code standards
-- Defined strict typing and null safety requirements
+Task: Fix Material view page errors
+Status: ✅ COMPLETE - Fixed database schema mismatch
+Files: classes/Material.php, public/materials/view.php
+Completed Today (Jan 20):
+- Fixed Apache PHP module not enabled (user ran sudo a2enmod php7.4)
+- Fixed Material::findWithDetails() using non-existent supplier_moq column
+- Changed to use safety_stock_qty instead
+- Removed supplier_part_number references (not in current schema)
 Next: Apply pending database migrations, complete MPS module
 ```
 
@@ -646,6 +646,12 @@ Database: mrp_erp
 
 ### 📅 Session History
 ```
+2025-01-20 Night: ✅ Fixed Material view page database issues
+- Fixed Apache PHP module not loading (sudo a2enmod php7.4)
+- Fixed Material::findWithDetails() querying non-existent supplier_moq column
+- Updated to use safety_stock_qty from actual database schema
+- Materials view page now working correctly
+
 2025-01-20 Evening: ✅ PHP requirements documentation added
 - Added PHP version compatibility guide (7.4-8.2 supported)
 - Specified safe vs. avoid PHP features for consistent coding
@@ -665,6 +671,8 @@ Questions: Auto-migration on pull? Production data anonymization? Staging env?
 Ideas: Rollback methods, data anonymization, testing automation, migration UI
 Lessons: Protect test data, capture baselines, context continuity crucial
 ```
+
+# TODO URGENT: Run ./scripts/migrate.sh status before any other work
 
 ---
 
