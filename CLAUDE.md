@@ -517,8 +517,8 @@ For complete maintenance procedures, checklists, standards, and update workflows
 <!-- UPDATE THIS SECTION REGULARLY - IT'S READ BY ALL AGENTS AND CLAUDE CODE -->
 
 ### 📍 Current Sprint/Focus
-- **Working on:** Fixing Material view page database schema mismatch
-- **Priority:** High - fixing broken functionality
+- **Working on:** Session complete - schema mismatch fixes documented
+- **Priority:** Ready for next session
 - **Deadline:** None specified
 
 ### 🚧 Work in Progress
@@ -555,9 +555,16 @@ Active Bugs:
 - Production reporting dashboard not implemented
 - Some legacy autocomplete code needs migration
 
+COMMON SCHEMA MISMATCH ISSUE:
+- Problem: Blank pages after database migration/restore
+- Cause: PHP code expects columns that don't exist (supplier_moq, supplier_part_number)
+- Quick Fix: Run http://localhost/mrp_erp/public/check_health.php
+- Permanent Fix: Either update PHP code OR add missing columns via migration
+
 Workarounds:
 - Use production dashboard instead of MPS
 - Check migrations with --dry-run first
+- Run health check after any database changes
 ```
 
 ### 💡 Recent Discoveries
@@ -651,6 +658,7 @@ Database: mrp_erp
 - Fixed Material::findWithDetails() querying non-existent supplier_moq column
 - Updated to use safety_stock_qty from actual database schema
 - Materials view page now working correctly
+- Decided against health check script - quick fixes via error messages work better
 
 2025-01-20 Evening: ✅ PHP requirements documentation added
 - Added PHP version compatibility guide (7.4-8.2 supported)
@@ -666,10 +674,10 @@ Previous: Production scheduling, CLAUDE.md structure updates
 
 ### 💭 THINKING NOTES
 ```
-Key Decisions: Numbered migrations, safety-first backups, three-tier architecture
+Key Decisions: Keep it simple - no over-engineering diagnostic tools for quick fixes
 Questions: Auto-migration on pull? Production data anonymization? Staging env?
 Ideas: Rollback methods, data anonymization, testing automation, migration UI
-Lessons: Protect test data, capture baselines, context continuity crucial
+Lessons: Schema/code mismatches are inevitable and quick to fix - don't over-engineer
 ```
 
 # TODO URGENT: Run ./scripts/migrate.sh status before any other work
