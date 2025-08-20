@@ -2,6 +2,7 @@
 session_start();
 require_once '../../includes/header.php';
 require_once '../../classes/Database.php';
+require_once '../../includes/enum-helper.php';
 
 $db = Database::getInstance();
 
@@ -94,24 +95,13 @@ function getStatusColor($status) {
                         <label for="status">Status</label>
                         <select id="status" name="status">
                             <option value="all">All Status</option>
-                            <option value="pending" <?php echo $status === 'pending' ? 'selected' : ''; ?>>
-                                Pending (<?php echo $statusMap['pending'] ?? 0; ?>)
-                            </option>
-                            <option value="confirmed" <?php echo $status === 'confirmed' ? 'selected' : ''; ?>>
-                                Confirmed (<?php echo $statusMap['confirmed'] ?? 0; ?>)
-                            </option>
-                            <option value="in_production" <?php echo $status === 'in_production' ? 'selected' : ''; ?>>
-                                In Production (<?php echo $statusMap['in_production'] ?? 0; ?>)
-                            </option>
-                            <option value="completed" <?php echo $status === 'completed' ? 'selected' : ''; ?>>
-                                Completed (<?php echo $statusMap['completed'] ?? 0; ?>)
-                            </option>
-                            <option value="on_hold" <?php echo $status === 'on_hold' ? 'selected' : ''; ?>>
-                                On Hold (<?php echo $statusMap['on_hold'] ?? 0; ?>)
-                            </option>
-                            <option value="cancelled" <?php echo $status === 'cancelled' ? 'selected' : ''; ?>>
-                                Cancelled (<?php echo $statusMap['cancelled'] ?? 0; ?>)
-                            </option>
+                            <?php 
+                            $orderStatuses = getEnumValues('customer_orders', 'status');
+                            foreach ($orderStatuses as $value => $label): ?>
+                                <option value="<?= htmlspecialchars($value) ?>" <?= $status === $value ? 'selected' : '' ?>>
+                                    <?= htmlspecialchars($label) ?> (<?= $statusMap[$value] ?? 0 ?>)
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     

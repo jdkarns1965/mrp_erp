@@ -8,6 +8,7 @@ session_start();
 require_once '../../includes/header.php';
 require_once '../../classes/Database.php';
 require_once '../../classes/ProductionScheduler.php';
+require_once '../../includes/enum-helper.php';
 
 $db = Database::getInstance();
 $scheduler = new ProductionScheduler();
@@ -228,22 +229,22 @@ $stats = $db->select("
                 <label for="status">Status</label>
                 <select id="status" name="status">
                     <option value="">All Statuses</option>
-                    <option value="planned" <?= $statusFilter === 'planned' ? 'selected' : '' ?>>Planned</option>
-                    <option value="released" <?= $statusFilter === 'released' ? 'selected' : '' ?>>Released</option>
-                    <option value="in_progress" <?= $statusFilter === 'in_progress' ? 'selected' : '' ?>>In Progress</option>
-                    <option value="completed" <?= $statusFilter === 'completed' ? 'selected' : '' ?>>Completed</option>
-                    <option value="on_hold" <?= $statusFilter === 'on_hold' ? 'selected' : '' ?>>On Hold</option>
-                    <option value="cancelled" <?= $statusFilter === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                    <?php 
+                    $statuses = getEnumValues('production_orders', 'status');
+                    foreach ($statuses as $value => $label): ?>
+                        <option value="<?= htmlspecialchars($value) ?>" <?= $statusFilter === $value ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div>
                 <label for="priority">Priority</label>
                 <select id="priority" name="priority">
                     <option value="">All Priorities</option>
-                    <option value="urgent" <?= $priorityFilter === 'urgent' ? 'selected' : '' ?>>Urgent</option>
-                    <option value="high" <?= $priorityFilter === 'high' ? 'selected' : '' ?>>High</option>
-                    <option value="normal" <?= $priorityFilter === 'normal' ? 'selected' : '' ?>>Normal</option>
-                    <option value="low" <?= $priorityFilter === 'low' ? 'selected' : '' ?>>Low</option>
+                    <?php 
+                    $priorities = getEnumValues('production_orders', 'priority_level');
+                    foreach ($priorities as $value => $label): ?>
+                        <option value="<?= htmlspecialchars($value) ?>" <?= $priorityFilter === $value ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
             <div>

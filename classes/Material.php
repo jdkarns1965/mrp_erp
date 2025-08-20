@@ -18,10 +18,10 @@ class Material extends BaseModel {
         'min_stock_qty',
         'max_stock_qty',
         'reorder_point',
+        'safety_stock_qty',
         'lead_time_days',
         'default_supplier_id',
         'cost_per_unit',
-        'supplier_moq',
         'is_lot_controlled',
         'is_active'
     ];

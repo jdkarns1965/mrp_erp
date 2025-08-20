@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MRP System Manual</title>
+    <meta charset="UTF-8">
+    <style>
+        body { 
+            font-family: "Arial", sans-serif; 
+            margin: 40px; 
+            line-height: 1.6; 
+            color: #333;
+            max-width: 1200px;
+        }
+        h1 { 
+            color: #2c3e50; 
+            border-bottom: 3px solid #3498db; 
+            padding-bottom: 10px; 
+            margin-top: 40px;
+            page-break-before: auto;
+        }
+        h2 { 
+            color: #34495e; 
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        h3 { 
+            color: #7f8c8d; 
+            margin-top: 20px;
+        }
+        h4 {
+            color: #95a5a6;
+            margin-top: 15px;
+        }
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+        th, td { 
+            border: 1px solid #ddd; 
+            padding: 12px 8px; 
+            text-align: left;
+            vertical-align: top;
+        }
+        th { 
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        code { 
+            background-color: #f4f4f4; 
+            padding: 2px 6px; 
+            border-radius: 3px;
+            font-family: "Courier New", monospace;
+            font-size: 0.9em;
+        }
+        pre { 
+            background-color: #f8f9fa; 
+            padding: 15px; 
+            border-radius: 5px; 
+            overflow-x: auto;
+            border-left: 4px solid #3498db;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+        .page-break {
+            page-break-before: always;
+        }
+        @media print { 
+            body { 
+                margin: 20px; 
+                font-size: 11px;
+            }
+            h1 { 
+                page-break-before: always;
+                font-size: 18px;
+            }
+            h2 {
+                page-break-after: avoid;
+                font-size: 16px;
+            }
+            h3 {
+                page-break-after: avoid;
+                font-size: 14px;
+            }
+            table {
+                page-break-inside: avoid;
+            }
+            pre {
+                page-break-inside: avoid;
+            }
+        }
+        .toc {
+            background-color: #ecf0f1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        .cover-page {
+            text-align: center;
+            padding: 100px 0;
+            page-break-after: always;
+        }
+        .cover-title {
+            font-size: 36px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .cover-subtitle {
+            font-size: 24px;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+        }
+        .cover-info {
+            font-size: 16px;
+            color: #95a5a6;
+        }
+    </style>
+</head>
+<body>
+<div class="cover-page">
+    <h1 class="cover-title">MRP System Manual</h1>
+    <h2 class="cover-subtitle">Complete Feature Guide for Basic and Enhanced MRP</h2>
+    <div class="cover-info">
+        <p><strong>Version:</strong> 1.0</p>
+        <p><strong>Created:</strong> January 2025</p>
+        <p><strong>System:</strong> MRP/ERP Manufacturing System</p>
+    </div>
+</div>
+
+<h1>MRP System Manual</h1><br />
+<h2>Complete Feature Guide for Basic and Enhanced MRP</h2><br />
+<br />
+<hr><br />
+<br />
+<h2>Table of Contents</h2><br />
+<br />
+1. [System Overview](#system-overview)<br />
+2. [Basic MRP System](#basic-mrp-system)<br />
+3. [Enhanced MRP Engine](#enhanced-mrp-engine)<br />
+4. [Feature Comparison](#feature-comparison)<br />
+5. [Usage Guide](#usage-guide)<br />
+6. [Technical Reference](#technical-reference)<br />
+7. [Best Practices](#best-practices)<br />
+<br />
+<hr><br />
+<br />
+<h2>System Overview</h2><br />
+<br />
+The MRP/ERP system provides two distinct MRP calculation engines designed for different business needs:<br />
+<br />
+- <strong>Basic MRP</strong>: Quick, order-specific material requirements planning<br />
+- <strong>Enhanced MRP</strong>: Enterprise-level, time-phased planning with advanced features<br />
+<br />
+Both systems share core functionality but differ in scope, complexity, and planning capabilities.<br />
+<br />
+<hr><br />
+<br />
+<h2>Basic MRP System</h2><br />
+<br />
+<h3>Purpose</h3><br />
+Single-order material requirements calculation with immediate shortage identification.<br />
+<br />
+<h3>Core Features</h3><br />
+<br />
+<h4>1. Order-Based Calculation</h4><br />
+- <strong>Function</strong>: <code>runMRP($orderId)</code><br />
+- Processes individual customer orders<br />
+- Real-time material requirement calculation<br />
+- Immediate shortage reporting<br />
+<br />
+<h4>2. BOM Explosion</h4><br />
+- Recursive bill of materials processing<br />
+- Multi-level component breakdown<br />
+- Consolidated material requirements across products<br />
+- Support for complex product structures<br />
+<br />
+<h4>3. Inventory Netting</h4><br />
+- <strong>Function</strong>: <code>getAvailableQuantity()</code><br />
+- Real-time inventory checking<br />
+- Available stock consideration<br />
+- Reserved quantity tracking<br />
+- Net requirement calculation<br />
+<br />
+<h4>4. Order Quantity Calculation</h4><br />
+- <strong>Function</strong>: <code>calculateSuggestedOrderQuantity()</code><br />
+- Minimum/maximum stock level consideration<br />
+- Reorder point logic<br />
+- Automatic rounding to pack sizes<br />
+- Economic quantity suggestions<br />
+<br />
+<h4>5. Lead Time Management</h4><br />
+- <strong>Function</strong>: <code>calculateOrderDate()</code><br />
+- Backward scheduling from required date<br />
+- Lead time offset calculation<br />
+- Past-due order detection<br />
+- Automatic date adjustment<br />
+<br />
+<h4>6. Cost Calculation</h4><br />
+- Unit cost tracking<br />
+- Total purchase cost estimation<br />
+- Material cost aggregation<br />
+- Order value calculation<br />
+<br />
+<h4>7. Purchase Order Suggestions</h4><br />
+- <strong>Function</strong>: <code>generatePurchaseOrderSuggestions()</code><br />
+- Supplier-grouped recommendations<br />
+- Consolidated material requirements<br />
+- Priority-based ordering<br />
+- Cost optimization<br />
+<br />
+<h3>Database Operations</h3><br />
+<br />
+<h4>Tables Used</h4><br />
+- <code>customer_orders</code> - Order information<br />
+- <code>customer_order_details</code> - Line items<br />
+- <code>products</code> - Product master data<br />
+- <code>materials</code> - Material master data<br />
+- <code>bom_headers</code> - BOM structure<br />
+- <code>bom_details</code> - BOM components<br />
+- <code>inventory</code> - Stock levels<br />
+- <code>mrp_requirements</code> - Calculation results<br />
+<br />
+<h4>Data Storage</h4><br />
+- Persistent MRP calculation history<br />
+- Order-linked requirements<br />
+- Audit trail maintenance<br />
+- Historical analysis support<br />
+<br />
+<h3>Output Structure</h3><br />
+<br />
+<pre><code>php<br />
+[<br />
+    'success' => true/false,<br />
+    'order_id' => 123,<br />
+    'calculation_date' => '2025-01-20 14:30:00',<br />
+    'requirements' => [<br />
+        [<br />
+            'material_id' => 1,<br />
+            'material_code' => 'MAT-001',<br />
+            'material_name' => 'Plastic Resin',<br />
+            'gross_requirement' => 100,<br />
+            'available_stock' => 30,<br />
+            'net_requirement' => 70,<br />
+            'suggested_order_qty' => 100,<br />
+            'suggested_order_date' => '2025-01-15',<br />
+            'lead_time_days' => 5,<br />
+            'supplier_name' => 'ABC Supplier',<br />
+            'unit_cost' => 2.50,<br />
+            'total_cost' => 250.00<br />
+        ]<br />
+    ],<br />
+    'summary' => [<br />
+        'total_materials' => 5,<br />
+        'materials_with_shortage' => 3,<br />
+        'total_purchase_cost' => 1250.00,<br />
+        'urgent_orders' => 2,<br />
+        'can_fulfill' => false<br />
+    ]<br />
+]<br />
+</code></pre><br />
+<br />
+<hr><br />
+<br />
+<h2>Enhanced MRP Engine</h2><br />
+<br />
+<h3>Purpose</h3><br />
+Enterprise-wide, time-phased material and production planning with multiple demand sources.<br />
+<br />
+<h3>Advanced Features</h3><br />
+<br />
+<h4>1. Time-Phased Planning</h4><br />
+- <strong>Function</strong>: <code>runTimePhasedMRP($options)</code><br />
+- Planning horizon configuration (default 90 days)<br />
+- Period-based bucketing<br />
+- Rolling forecast support<br />
+- Time fence management<br />
+<br />
+<h4>2. Multiple Demand Sources</h4><br />
+- <strong>Customer Orders</strong>: Active order processing<br />
+- <strong>Master Production Schedule (MPS)</strong>: Forecast integration<br />
+- <strong>Safety Stock</strong>: Automatic replenishment<br />
+- Demand consolidation and prioritization<br />
+<br />
+<h4>3. Planning Calendar Integration</h4><br />
+- <strong>Function</strong>: <code>loadPlanningPeriods()</code><br />
+- Working day calculation<br />
+- Holiday consideration<br />
+- Shift calendar support<br />
+- Capacity-aware scheduling<br />
+<br />
+<h4>4. Lot Sizing Rules</h4><br />
+- <strong>Function</strong>: <code>calculateLotSize()</code><br />
+- <strong>Lot-for-Lot</strong>: Exact requirement matching<br />
+- <strong>Fixed Order Quantity</strong>: Predetermined batch sizes<br />
+- <strong>Min-Max</strong>: Range-based ordering<br />
+- <strong>Economic Order Quantity (EOQ)</strong>: Cost-optimized batches<br />
+- Lot multiple consideration<br />
+<br />
+<h4>5. MRP Run Management</h4><br />
+- <strong>Function</strong>: <code>initializeMRPRun()</code><br />
+- Run type selection (regenerative/net-change)<br />
+- Parameter tracking<br />
+- Execution monitoring<br />
+- Performance metrics<br />
+<br />
+<h4>6. Advanced BOM Processing</h4><br />
+- <strong>Function</strong>: <code>explodeAndProcessBOM()</code><br />
+- Parent-child relationship tracking<br />
+- Where-used analysis<br />
+- Phantom assembly handling<br />
+- Co-product/by-product support<br />
+<br />
+<h4>7. Time-Phased Requirements</h4><br />
+- <strong>Function</strong>: <code>calculateTimePhasedRequirements()</code><br />
+- Period-by-period planning<br />
+- Projected available balance<br />
+- Planned order releases<br />
+- Action message generation<br />
+<br />
+<h4>8. Order Suggestions</h4><br />
+- <strong>Purchase Orders</strong>: Material procurement<br />
+- <strong>Production Orders</strong>: Manufacturing scheduling<br />
+- Priority classification (urgent/high/normal)<br />
+- Due date calculation<br />
+<br />
+<h4>9. Economic Calculations</h4><br />
+- <strong>Function</strong>: <code>calculateEOQ()</code><br />
+- Ordering cost consideration<br />
+- Carrying cost analysis<br />
+- Optimal batch size determination<br />
+- Cost trade-off optimization<br />
+<br />
+<h4>10. Advanced Scheduling</h4><br />
+- <strong>Function</strong>: <code>calculateOrderReleaseDate()</code><br />
+- Working day calculation<br />
+- Lead time offsetting<br />
+- Backward/forward scheduling<br />
+- Capacity consideration<br />
+<br />
+<h3>Configuration Options</h3><br />
+<br />
+<pre><code>php<br />
+$options = [<br />
+    'run_type' => 'regenerative',        // regenerative/net-change<br />
+    'planning_horizon' => 90,            // days<br />
+    'include_orders' => true,            // customer orders<br />
+    'include_mps' => true,               // master schedule<br />
+    'include_safety_stock' => true,      // safety stock demands<br />
+    'user' => 'john.doe'                 // run initiator<br />
+]<br />
+</code></pre><br />
+<br />
+<h3>Database Operations</h3><br />
+<br />
+<h4>Additional Tables</h4><br />
+- <code>mrp_runs</code> - Run history and parameters<br />
+- <code>planning_calendar</code> - Period definitions<br />
+- <code>master_production_schedule</code> - MPS data<br />
+- <code>purchase_order_suggestions</code> - PO recommendations<br />
+- <code>production_order_suggestions</code> - Production recommendations<br />
+- <code>v_mrp_actions</code> - Action view for urgent items<br />
+<br />
+<h3>Time-Phased Output</h3><br />
+<br />
+<pre><code>php<br />
+'time_phased_plan' => [<br />
+    [<br />
+        'period_id' => 1,<br />
+        'period_name' => 'Week 1',<br />
+        'period_start' => '2025-01-20',<br />
+        'period_end' => '2025-01-26',<br />
+        'gross_requirements' => 100,<br />
+        'scheduled_receipts' => 0,<br />
+        'on_hand' => 50,<br />
+        'projected_available' => -50,<br />
+        'net_requirements' => 50,<br />
+        'planned_receipts' => 100,<br />
+        'planned_orders' => 100,<br />
+        'order_release_date' => '2025-01-15'<br />
+    ]<br />
+]<br />
+</code></pre><br />
+<br />
+<hr><br />
+<br />
+<h2>Feature Comparison</h2><br />
+<br />
+<table>
+<tr><td>Feature</td><td>Basic MRP</td><td>Enhanced MRP</td><td><br /></td></tr>
+<tr><td><hr><hr><hr></td><td><hr><hr><hr>--</td><td><hr><hr><hr><hr>--</td><td><br /></td></tr>
+<tr><td><strong>Scope</strong></td><td>Single order</td><td>Enterprise-wide</td><td><br /></td></tr>
+<tr><td><strong>Planning Horizon</strong></td><td>Order due date</td><td>Configurable (90+ days)</td><td><br /></td></tr>
+<tr><td><strong>Demand Sources</strong></td><td>Customer orders only</td><td>Orders + MPS + Safety Stock</td><td><br /></td></tr>
+<tr><td><strong>Time Phasing</strong></td><td>No</td><td>Yes</td><td><br /></td></tr>
+<tr><td><strong>Lot Sizing</strong></td><td>Simple rounding</td><td>Multiple rules (EOQ, Min-Max, etc.)</td><td><br /></td></tr>
+<tr><td><strong>Calendar Integration</strong></td><td>Basic lead time</td><td>Full working calendar</td><td><br /></td></tr>
+<tr><td><strong>Run Types</strong></td><td>Single calculation</td><td>Regenerative/Net-change</td><td><br /></td></tr>
+<tr><td><strong>Performance</strong></td><td>Fast (<1 second)</td><td>Comprehensive (5-30 seconds)</td><td><br /></td></tr>
+<tr><td><strong>Audit Trail</strong></td><td>Basic</td><td>Complete with run history</td><td><br /></td></tr>
+<tr><td><strong>Order Suggestions</strong></td><td>Purchase only</td><td>Purchase + Production</td><td><br /></td></tr>
+<tr><td><strong>Cost Optimization</strong></td><td>Basic</td><td>Advanced (EOQ, carrying costs)</td><td><br /></td></tr>
+<tr><td><strong>Reporting</strong></td><td>Simple shortage list</td><td>Time-phased reports</td><td><br /></td></tr>
+<tr><td><strong>Database Load</strong></td><td>Light</td><td>Heavy</td><td><br /></td></tr>
+<tr><td><strong>Use Case</strong></td><td>Quick checks</td><td>Full planning cycles</td><td><br /></td></tr>
+</table>
+<br />
+<hr><br />
+<br />
+<h2>Usage Guide</h2><br />
+<br />
+<h3>When to Use Basic MRP</h3><br />
+<br />
+<strong>Ideal for:</strong><br />
+- Quick order feasibility checks<br />
+- Single customer order processing<br />
+- Immediate shortage identification<br />
+- Simple purchase requirements<br />
+- Manual order management<br />
+- Small-scale operations<br />
+<br />
+<strong>Example Scenarios:</strong><br />
+1. Customer calls asking about order availability<br />
+2. Rush order evaluation<br />
+3. Quick material check before quoting<br />
+4. Daily shortage review<br />
+5. Manual purchase order creation<br />
+<br />
+<h3>When to Use Enhanced MRP</h3><br />
+<br />
+<strong>Ideal for:</strong><br />
+- Weekly/monthly planning cycles<br />
+- Multi-order consolidation<br />
+- Forecast-based planning<br />
+- Automated suggestion generation<br />
+- Complex manufacturing environments<br />
+- Large-scale operations<br />
+<br />
+<strong>Example Scenarios:</strong><br />
+1. Weekly MRP regeneration<br />
+2. Monthly purchase planning<br />
+3. Production scheduling<br />
+4. Capacity planning<br />
+5. Strategic inventory management<br />
+6. Cost optimization initiatives<br />
+<br />
+<h3>Workflow Integration</h3><br />
+<br />
+<h4>Basic MRP Workflow</h4><br />
+1. Receive customer order<br />
+2. Run Basic MRP calculation<br />
+3. Review shortages<br />
+4. Generate purchase suggestions<br />
+5. Create purchase orders manually<br />
+6. Update inventory on receipt<br />
+<br />
+<h4>Enhanced MRP Workflow</h4><br />
+1. Update forecasts (MPS)<br />
+2. Configure run parameters<br />
+3. Execute Enhanced MRP run<br />
+4. Review time-phased plan<br />
+5. Approve suggested orders<br />
+6. Auto-generate purchase/production orders<br />
+7. Monitor execution<br />
+8. Analyze performance metrics<br />
+<br />
+<hr><br />
+<br />
+<h2>Technical Reference</h2><br />
+<br />
+<h3>Basic MRP Methods</h3><br />
+<br />
+<table>
+<tr><td>Method</td><td>Purpose</td><td>Parameters</td><td>Returns</td><td><br /></td></tr>
+<tr><td><hr><hr>--</td><td><hr><hr><hr></td><td><hr><hr><hr><hr></td><td><hr><hr><hr></td><td><br /></td></tr>
+<tr><td><code>runMRP()</code></td><td>Execute MRP calculation</td><td><code>$orderId</code></td><td>Results array</td><td><br /></td></tr>
+<tr><td><code>getOrderDetails()</code></td><td>Fetch order information</td><td><code>$orderId</code></td><td>Order data</td><td><br /></td></tr>
+<tr><td><code>clearPreviousCalculations()</code></td><td>Clean old results</td><td><code>$orderId</code></td><td>void</td><td><br /></td></tr>
+<tr><td><code>saveMRPRequirement()</code></td><td>Store calculation</td><td>Multiple</td><td>void</td><td><br /></td></tr>
+<tr><td><code>calculateSuggestedOrderQuantity()</code></td><td>Determine order size</td><td>Requirements</td><td>Quantity</td><td><br /></td></tr>
+<tr><td><code>calculateOrderDate()</code></td><td>Schedule orders</td><td>Date, lead time</td><td>Date</td><td><br /></td></tr>
+<tr><td><code>generateMRPSummary()</code></td><td>Create summary</td><td>Requirements</td><td>Summary array</td><td><br /></td></tr>
+<tr><td><code>getMRPHistory()</code></td><td>Retrieve history</td><td><code>$orderId</code></td><td>History array</td><td><br /></td></tr>
+<tr><td><code>generatePurchaseOrderSuggestions()</code></td><td>Create PO suggestions</td><td><code>$orderId</code></td><td>Suggestions</td><td><br /></td></tr>
+</table>
+<br />
+<h3>Enhanced MRP Methods</h3><br />
+<br />
+<table>
+<tr><td>Method</td><td>Purpose</td><td>Parameters</td><td>Returns</td><td><br /></td></tr>
+<tr><td><hr><hr>--</td><td><hr><hr><hr></td><td><hr><hr><hr><hr></td><td><hr><hr><hr></td><td><br /></td></tr>
+<tr><td><code>runTimePhasedMRP()</code></td><td>Execute time-phased MRP</td><td><code>$options</code></td><td>Results array</td><td><br /></td></tr>
+<tr><td><code>initializeMRPRun()</code></td><td>Start MRP session</td><td><code>$options</code></td><td>Run ID</td><td><br /></td></tr>
+<tr><td><code>loadPlanningPeriods()</code></td><td>Get calendar periods</td><td>None</td><td>Periods array</td><td><br /></td></tr>
+<tr><td><code>collectDemands()</code></td><td>Gather all demands</td><td><code>$options</code></td><td>Demands array</td><td><br /></td></tr>
+<tr><td><code>processMRPItems()</code></td><td>Process requirements</td><td><code>$demands</code></td><td>Results array</td><td><br /></td></tr>
+<tr><td><code>calculateTimePhasedRequirements()</code></td><td>Time-phase calculation</td><td><code>$item</code></td><td>Plan array</td><td><br /></td></tr>
+<tr><td><code>calculateLotSize()</code></td><td>Determine lot size</td><td>Requirements, rules</td><td>Quantity</td><td><br /></td></tr>
+<tr><td><code>calculateEOQ()</code></td><td>Economic order quantity</td><td>Item, demand</td><td>EOQ</td><td><br /></td></tr>
+<tr><td><code>generateOrderSuggestions()</code></td><td>Create suggestions</td><td>Results</td><td>void</td><td><br /></td></tr>
+<tr><td><code>finalizeMRPRun()</code></td><td>Complete run</td><td>None</td><td>void</td><td><br /></td></tr>
+<tr><td><code>getMRPRunSummary()</code></td><td>Get run summary</td><td>None</td><td>Summary</td><td><br /></td></tr>
+</table>
+<br />
+<h3>Configuration Parameters</h3><br />
+<br />
+<h4>Basic MRP</h4><br />
+- None required (order ID only)<br />
+<br />
+<h4>Enhanced MRP</h4><br />
+<pre><code>php<br />
+[<br />
+<table>
+<tr><td>'run_type' => 'regenerative</td><td>net-change',<br /></td></tr>
+</table>
+    'planning_horizon' => 30-365,<br />
+<table>
+<tr><td>'include_orders' => true</td><td>false,<br /></td></tr>
+<tr><td>'include_mps' => true</td><td>false,<br /></td></tr>
+<tr><td>'include_safety_stock' => true</td><td>false,<br /></td></tr>
+</table>
+    'user' => 'username'<br />
+]<br />
+</code></pre><br />
+<br />
+<hr><br />
+<br />
+<h2>Best Practices</h2><br />
+<br />
+<h3>Performance Optimization</h3><br />
+<br />
+<h4>Basic MRP</h4><br />
+1. <strong>Index key fields</strong>: order_id, material_id, product_id<br />
+2. <strong>Limit BOM depth</strong>: Maximum 5-7 levels recommended<br />
+3. <strong>Cache frequently used data</strong>: Materials, suppliers<br />
+4. <strong>Batch similar orders</strong>: Process together when possible<br />
+<br />
+<h4>Enhanced MRP</h4><br />
+1. <strong>Schedule off-peak runs</strong>: Night/weekend processing<br />
+2. <strong>Use net-change for updates</strong>: Faster than regenerative<br />
+3. <strong>Limit planning horizon</strong>: 90 days optimal<br />
+4. <strong>Archive old runs</strong>: Keep 30-60 days active<br />
+5. <strong>Optimize lot sizing rules</strong>: Review quarterly<br />
+<br />
+<h3>Data Quality</h3><br />
+<br />
+1. <strong>Maintain accurate BOMs</strong>: Regular validation<br />
+2. <strong>Update lead times</strong>: Monthly review<br />
+3. <strong>Verify inventory accuracy</strong>: Cycle counting<br />
+4. <strong>Clean master data</strong>: Remove obsolete items<br />
+5. <strong>Validate supplier information</strong>: Quarterly updates<br />
+<br />
+<h3>Process Guidelines</h3><br />
+<br />
+<h4>Planning Frequency</h4><br />
+- <strong>Basic MRP</strong>: On-demand, per order<br />
+- <strong>Enhanced MRP</strong>: <br />
+  - Daily: Net-change for urgent items<br />
+  - Weekly: Full regeneration<br />
+  - Monthly: Complete review with optimization<br />
+<br />
+<h4>Order Management</h4><br />
+1. <strong>Review suggestions before approval</strong><br />
+2. <strong>Consolidate orders by supplier</strong><br />
+3. <strong>Consider minimum order quantities</strong><br />
+4. <strong>Factor in volume discounts</strong><br />
+5. <strong>Plan for safety stock</strong><br />
+<br />
+<h4>System Maintenance</h4><br />
+1. <strong>Regular database optimization</strong><br />
+2. <strong>Archive historical data</strong><br />
+3. <strong>Update planning calendars</strong><br />
+4. <strong>Review lot sizing parameters</strong><br />
+5. <strong>Monitor system performance</strong><br />
+<br />
+<h3>Troubleshooting</h3><br />
+<br />
+<h4>Common Issues - Basic MRP</h4><br />
+<table>
+<tr><td>Issue</td><td>Cause</td><td>Solution</td><td><br /></td></tr>
+<tr><td><hr><hr>-</td><td><hr><hr>-</td><td><hr><hr><hr>-</td><td><br /></td></tr>
+<tr><td>No requirements generated</td><td>Missing BOM</td><td>Create/activate BOM</td><td><br /></td></tr>
+<tr><td>Incorrect quantities</td><td>Wrong BOM quantities</td><td>Update BOM details</td><td><br /></td></tr>
+<tr><td>Past-due orders</td><td>Short lead times</td><td>Adjust lead times</td><td><br /></td></tr>
+<tr><td>Zero inventory showing</td><td>Reservation issues</td><td>Check reserved quantities</td><td><br /></td></tr>
+</table>
+<br />
+<h4>Common Issues - Enhanced MRP</h4><br />
+<table>
+<tr><td>Issue</td><td>Cause</td><td>Solution</td><td><br /></td></tr>
+<tr><td><hr><hr>-</td><td><hr><hr>-</td><td><hr><hr><hr>-</td><td><br /></td></tr>
+<tr><td>Long execution time</td><td>Large data volume</td><td>Reduce planning horizon</td><td><br /></td></tr>
+<tr><td>Missing periods</td><td>Calendar not configured</td><td>Set up planning calendar</td><td><br /></td></tr>
+<tr><td>No MPS demands</td><td>MPS not populated</td><td>Enter forecast data</td><td><br /></td></tr>
+<tr><td>Incorrect lot sizes</td><td>Wrong rule configuration</td><td>Review lot sizing rules</td><td><br /></td></tr>
+<tr><td>Memory errors</td><td>Too many items</td><td>Use net-change mode</td><td><br /></td></tr>
+</table>
+<br />
+<hr><br />
+<br />
+<h2>Appendix A: Database Schema</h2><br />
+<br />
+<h3>Core Tables Structure</h3><br />
+<br />
+<pre><code>sql<br />
+-- MRP Requirements (Basic)<br />
+CREATE TABLE mrp_requirements (<br />
+    id INT PRIMARY KEY,<br />
+    calculation_date DATETIME,<br />
+    order_id INT,<br />
+    product_id INT,<br />
+    material_id INT,<br />
+    gross_requirement DECIMAL(15,4),<br />
+    available_stock DECIMAL(15,4),<br />
+    net_requirement DECIMAL(15,4),<br />
+    suggested_order_qty DECIMAL(15,4),<br />
+    suggested_order_date DATE<br />
+);<br />
+<br />
+-- MRP Runs (Enhanced)<br />
+CREATE TABLE mrp_runs (<br />
+    id INT PRIMARY KEY,<br />
+    run_date DATETIME,<br />
+    run_type VARCHAR(20),<br />
+    planning_horizon_days INT,<br />
+    status VARCHAR(20),<br />
+    run_by VARCHAR(100),<br />
+    parameters JSON,<br />
+    total_products INT,<br />
+    total_materials INT,<br />
+    total_po_suggestions INT,<br />
+    total_prod_suggestions INT,<br />
+    execution_time_seconds INT,<br />
+    error_log TEXT<br />
+);<br />
+<br />
+-- Planning Calendar<br />
+CREATE TABLE planning_calendar (<br />
+    id INT PRIMARY KEY,<br />
+    period_name VARCHAR(50),<br />
+    period_start DATE,<br />
+    period_end DATE,<br />
+    is_working_period BOOLEAN,<br />
+    working_days INT,<br />
+    period_type VARCHAR(20)<br />
+);<br />
+</code></pre><br />
+<br />
+<hr><br />
+<br />
+<h2>Appendix B: API Integration</h2><br />
+<br />
+<h3>REST API Endpoints</h3><br />
+<br />
+<h4>Basic MRP</h4><br />
+<pre><code><br />
+POST /api/mrp/calculate<br />
+{<br />
+    "order_id": 123<br />
+}<br />
+<br />
+GET /api/mrp/history/{order_id}<br />
+GET /api/mrp/suggestions/{order_id}<br />
+</code></pre><br />
+<br />
+<h4>Enhanced MRP</h4><br />
+<pre><code><br />
+POST /api/mrp/run<br />
+{<br />
+    "run_type": "regenerative",<br />
+    "planning_horizon": 90,<br />
+    "include_orders": true,<br />
+    "include_mps": true,<br />
+    "include_safety_stock": true<br />
+}<br />
+<br />
+GET /api/mrp/runs<br />
+GET /api/mrp/runs/{run_id}<br />
+GET /api/mrp/time-phased/{item_type}/{item_id}<br />
+</code></pre><br />
+<br />
+<hr><br />
+<br />
+<h2>Appendix C: Report Examples</h2><br />
+<br />
+<h3>Basic MRP Shortage Report</h3><br />
+<pre><code><br />
+Order: #ORD-2025-001<br />
+Customer: ABC Manufacturing<br />
+Required Date: 2025-02-01<br />
+<br />
+Material Shortages:<br />
+┌──────────────┬──────────────┬──────────┬───────────┬──────────┐<br />
+│ Material     │ Required     │ On Hand  │ Shortage  │ Order By │<br />
+├──────────────┼──────────────┼──────────┼───────────┼──────────┤<br />
+│ MAT-001      │ 100 KG       │ 30 KG    │ 70 KG     │ Jan 27   │<br />
+│ MAT-002      │ 50 PCS       │ 0 PCS    │ 50 PCS    │ Jan 25   │<br />
+│ MAT-003      │ 25 BOX       │ 10 BOX   │ 15 BOX    │ Jan 28   │<br />
+└──────────────┴──────────────┴──────────┴───────────┴──────────┘<br />
+<br />
+Total Purchase Value: $1,250.00<br />
+Urgent Orders: 2<br />
+</code></pre><br />
+<br />
+<h3>Enhanced MRP Time-Phased Report</h3><br />
+<pre><code><br />
+Item: MAT-001 - Plastic Resin<br />
+Lead Time: 5 days<br />
+Safety Stock: 20 KG<br />
+<br />
+Week    Gross Req  Sched Rec  On Hand  Proj Avail  Net Req  Plan Order<br />
+──────────────────────────────────────────────────────────────────────<br />
+Jan 20   50         0          100      50          0         0<br />
+Jan 27   75         0          50       -25         45        100<br />
+Feb 03   60         100        75       15          0         0<br />
+Feb 10   80         0          15       -65         85        100<br />
+──────────────────────────────────────────────────────────────────────<br />
+<br />
+Planned Orders:<br />
+- Jan 22: Order 100 KG (Due Jan 27)<br />
+- Feb 05: Order 100 KG (Due Feb 10)<br />
+</code></pre><br />
+<br />
+<hr><br />
+<br />
+<h2>Document Information</h2><br />
+<br />
+<strong>Version</strong>: 1.0  <br />
+<strong>Created</strong>: January 2025  <br />
+<strong>System</strong>: MRP/ERP Manufacturing System  <br />
+<strong>Purpose</strong>: Complete MRP Feature Documentation  <br />
+<br />
+<hr><br />
+<br />
+<em>End of Manual</em>
+
+<hr>
+<div style="text-align: center; color: #7f8c8d; margin-top: 40px;">
+    <p><em>End of MRP System Manual</em></p>
+    <p>Generated on 2025-08-20 12:54:40</p>
+</div>
+
+</body>
+</html>

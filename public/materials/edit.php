@@ -3,6 +3,7 @@ session_start();
 require_once '../../includes/header.php';
 require_once '../../classes/Material.php';
 require_once '../../classes/Database.php';
+require_once '../../includes/enum-helper.php';
 
 $materialModel = new Material();
 $db = Database::getInstance();
@@ -67,7 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'carrying_cost_percent' => $_POST['carrying_cost_percent'] ?? 20,
                 'default_supplier_id' => !empty($_POST['default_supplier_id']) ? $_POST['default_supplier_id'] : null,
                 'cost_per_unit' => $_POST['cost_per_unit'] ?? 0,
-                'supplier_moq' => $_POST['supplier_moq'] ?? 0,
                 'is_lot_controlled' => isset($_POST['is_lot_controlled']) ? 1 : 0,
                 'is_active' => isset($_POST['is_active']) ? 1 : 0
             ];
@@ -137,13 +137,10 @@ $formData = $_POST ?: $material;
                         <span class="field-help" data-help="Classification of material (resin, insert, packaging, etc.)" tabindex="0"></span>
                     </label>
                     <select id="material_type" name="material_type" required>
-                        <option value="">Select Type</option>
-                        <option value="resin" <?php echo ($formData['material_type'] ?? '') === 'resin' ? 'selected' : ''; ?>>Resin</option>
-                        <option value="insert" <?php echo ($formData['material_type'] ?? '') === 'insert' ? 'selected' : ''; ?>>Insert</option>
-                        <option value="packaging" <?php echo ($formData['material_type'] ?? '') === 'packaging' ? 'selected' : ''; ?>>Packaging</option>
-                        <option value="component" <?php echo ($formData['material_type'] ?? '') === 'component' ? 'selected' : ''; ?>>Component</option>
-                        <option value="consumable" <?php echo ($formData['material_type'] ?? '') === 'consumable' ? 'selected' : ''; ?>>Consumable</option>
-                        <option value="other" <?php echo ($formData['material_type'] ?? '') === 'other' ? 'selected' : ''; ?>>Other</option>
+                        <?php 
+                        $materialTypes = getEnumValues('materials', 'material_type');
+                        echo generateEnumOptions($materialTypes, $formData['material_type'] ?? '', true);
+                        ?>
                     </select>
                 </div>
                 
@@ -206,22 +203,10 @@ $formData = $_POST ?: $material;
                 </div>
             </div>
             
-            <div class="grid grid-2">
-                <div class="form-group">
-                    <label for="cost_per_unit">Cost per Unit</label>
-                    <input type="number" id="cost_per_unit" name="cost_per_unit" step="0.01" min="0"
-                           value="<?php echo htmlspecialchars($formData['cost_per_unit'] ?? '0'); ?>">
-                </div>
-                
-                <div class="form-group">
-                    <label for="supplier_moq">
-                        Supplier Min Order Qty (MOQ)
-                        <span class="field-help" data-help="Minimum quantity supplier requires for orders" tabindex="0"></span>
-                    </label>
-                    <input type="number" id="supplier_moq" name="supplier_moq" step="0.01" min="0"
-                           placeholder="Minimum qty supplier will sell"
-                           value="<?php echo htmlspecialchars($formData['supplier_moq'] ?? '0'); ?>">
-                </div>
+            <div class="form-group">
+                <label for="cost_per_unit">Cost per Unit</label>
+                <input type="number" id="cost_per_unit" name="cost_per_unit" step="0.01" min="0"
+                       value="<?php echo htmlspecialchars($formData['cost_per_unit'] ?? '0'); ?>">
             </div>
             
             <div class="grid grid-3">

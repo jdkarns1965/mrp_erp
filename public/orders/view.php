@@ -61,7 +61,7 @@ $productionOrders = $db->select("
 // Check MRP results if any
 $mrpResults = $db->select("
     SELECT DISTINCT mr.*, m.material_code, m.name as material_name
-    FROM mrp_results mr
+    FROM mrp_requirements mr
     LEFT JOIN materials m ON mr.material_id = m.id
     WHERE mr.order_id = ?
     ORDER BY mr.material_id
