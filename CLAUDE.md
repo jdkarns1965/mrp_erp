@@ -21,7 +21,7 @@ This is a modular MRP → ERP Manufacturing System built with PHP and MySQL. The
    - LAMP stack (Linux, Apache, MySQL, PHP)
    - WSL2 environment with VS Code
    - MySQL database server
-   - PHP 7.4+ with mysqli extension
+   - **PHP 7.4+ with mysqli extension** (see PHP Requirements below)
 
 2. **Database Setup:**
    ```bash
@@ -36,6 +36,42 @@ This is a modular MRP → ERP Manufacturing System built with PHP and MySQL. The
    - Create `.env` file in project root with database credentials
    - Configure Apache virtual host to point to project directory
    - Ensure proper permissions: `chmod 755` for directories, `chmod 644` for files
+
+## PHP Requirements
+
+**Target PHP Version:** 7.4 - 8.2
+- **Minimum:** PHP 7.4 (current production environment)
+- **Maximum:** PHP 8.2 (tested compatibility)
+- **Recommended:** PHP 8.1 for optimal performance
+
+### Required Extensions
+- `mysqli` - Database connectivity
+- `json` - JSON handling
+- `session` - Session management
+- `filter` - Input validation
+- `date` - Date/time functions
+
+### Acceptable PHP Features
+**✅ Safe to Use:**
+- Arrow functions `fn() =>` (PHP 7.4+)
+- Typed properties (PHP 7.4+)
+- Null coalescing assignment `??=` (PHP 7.4+)
+- Union types `string|int` (PHP 8.0+)
+- Match expressions (PHP 8.0+)
+- Constructor property promotion (PHP 8.0+)
+- Named arguments (PHP 8.0+)
+
+**❌ Avoid:**
+- Enums (PHP 8.1+) - not critical for this project
+- Readonly properties (PHP 8.1+) - use private/protected instead
+- Fibers (PHP 8.1+) - not needed for this application
+- `never` return type (PHP 8.1+) - use `void` instead
+
+### Code Standards
+- Use strict typing: `declare(strict_types=1);` in all new files
+- Prepared statements only (no string concatenation in SQL)
+- Type hints on all function parameters and return types
+- Use `??` and `?:` operators for null safety
 
 ## Project Structure (Planned)
 
@@ -481,20 +517,20 @@ For complete maintenance procedures, checklists, standards, and update workflows
 <!-- UPDATE THIS SECTION REGULARLY - IT'S READ BY ALL AGENTS AND CLAUDE CODE -->
 
 ### 📍 Current Sprint/Focus
-- **Working on:** CLAUDE.md optimization and documentation reorganization
-- **Priority:** High - performance impact resolved
+- **Working on:** PHP version requirements and compatibility standards
+- **Priority:** Medium - prevent future compatibility issues
 - **Deadline:** None specified
 
 ### 🚧 Work in Progress
 ```
-Task: CLAUDE.md optimization
-Status: ✅ COMPLETE - Size reduced from 43.6k to 22.8k chars
-Files: CLAUDE.md, docs/*.md
+Task: PHP requirements documentation
+Status: ✅ COMPLETE - Added comprehensive PHP compatibility guide
+Files: CLAUDE.md
 Completed Today:
-- Moved large sections to docs/ directory (3 files)
-- Compressed active development context
-- Created reference links for external documentation
-- Maintained all essential guidance
+- Added PHP version requirements (7.4-8.2 supported)
+- Specified safe PHP features vs. features to avoid
+- Added required extensions and code standards
+- Defined strict typing and null safety requirements
 Next: Apply pending database migrations, complete MPS module
 ```
 
@@ -610,13 +646,15 @@ Database: mrp_erp
 
 ### 📅 Session History
 ```
-2025-01-20 Evening: ✅ CLAUDE.md optimization - reduced 43.6k→22.8k chars
-- Moved System Development Manual to docs/SYSTEM_DEVELOPMENT.md
-- Moved Documentation Maintenance to docs/DOCUMENTATION_MAINTENANCE.md  
-- Moved User Operations Manual to docs/USER_OPERATIONS.md
-- Compressed active context while preserving essential info
+2025-01-20 Evening: ✅ PHP requirements documentation added
+- Added PHP version compatibility guide (7.4-8.2 supported)
+- Specified safe vs. avoid PHP features for consistent coding
+- Defined code standards: strict typing, prepared statements, type hints
+- Added required extensions list and null safety requirements
 
-2025-01-20 Earlier: ✅ Complete database sync system with migration tracking
+2025-01-20 Earlier: ✅ CLAUDE.md optimization - reduced 43.6k→22.8k chars
+- Moved large documentation sections to docs/ directory (3 files)
+- ✅ Complete database sync system with migration tracking
 Previous: Production scheduling, CLAUDE.md structure updates
 ```
 
