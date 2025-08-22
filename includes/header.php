@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MRP/ERP System</title>
-    <link rel="stylesheet" href="<?php echo $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']; ?>/mrp_erp/public/css/style.css">
+    <link rel="stylesheet" href="/mrp_erp/public/css/style.css">
     <script>
         function openManual() {
             const manualUrl = '<?php echo $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST']; ?>/mrp_erp/MRP_SYSTEM_MANUAL.html';
@@ -35,6 +35,7 @@
                 <li><a href="<?php echo $base_url; ?>/mrp/" <?php echo strpos($current_uri, '/mrp/') !== false ? 'class="active"' : ''; ?>>MRP</a></li>
                 <li><a href="<?php echo $base_url; ?>/mps/" <?php echo strpos($current_uri, '/mps/') !== false ? 'class="active"' : ''; ?>>MPS</a></li>
                 <li><a href="<?php echo $base_url; ?>/production/" <?php echo strpos($current_uri, '/production/') !== false ? 'class="active"' : ''; ?>>Production</a></li>
+                <li><a href="<?php echo $base_url; ?>/documents/" <?php echo strpos($current_uri, '/documents/') !== false ? 'class="active"' : ''; ?>>Documents</a></li>
                 <li style="float: right;"><a href="#" onclick="openManual(); return false;" title="Open MRP System Manual">📖 Manual</a></li>
             </ul>
         </div>

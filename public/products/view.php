@@ -446,4 +446,20 @@ require_once '../../includes/header.php';
 }
 </style>
 
+<!-- Documents Section -->
+<div class="product-details">
+    <fieldset class="view-fieldset">
+        <legend>Documents</legend>
+        <div id="documents-container"></div>
+    </fieldset>
+</div>
+
+<script src="../js/document-manager.js"></script>
+<script>
+// Initialize document manager
+document.addEventListener('DOMContentLoaded', function() {
+    documentManager = new DocumentManager('product', <?php echo $productId; ?>);
+});
+</script>
+
 <?php require_once '../../includes/footer.php'; ?>

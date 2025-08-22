@@ -256,6 +256,11 @@ try {
         </div>
         <?php endif; ?>
         
+        <!-- Documents -->
+        <div class="detail-section">
+            <div id="documents-container"></div>
+        </div>
+        
         <!-- Audit Information -->
         <div class="detail-section">
             <h3>Audit Information</h3>
@@ -443,7 +448,13 @@ table td {
 }
 </style>
 
+<script src="../js/document-manager.js"></script>
 <script>
+// Initialize document manager
+document.addEventListener('DOMContentLoaded', function() {
+    documentManager = new DocumentManager('material', <?php echo $materialId; ?>);
+});
+
 function confirmDeactivate(materialId) {
     if (confirm('Are you sure you want to deactivate this material? It will no longer be available for selection in new BOMs.')) {
         window.location.href = 'deactivate.php?id=' + materialId;

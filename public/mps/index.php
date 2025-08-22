@@ -106,6 +106,66 @@ if (!empty($products) && !empty($periods)) {
         $mpsData = [];
     }
 }
+
+// Get demand forecast data (customer orders)
+$demandData = [];
+if (!empty($products) && !empty($periods)) {
+    try {
+        $sql = "SELECT 
+                    cod.product_id,
+                    DATE(co.required_date) as required_date,
+                    SUM(cod.quantity) as total_demand
+                FROM customer_order_details cod
+                JOIN customer_orders co ON cod.order_id = co.id
+                WHERE cod.product_id IN (" . implode(',', array_column($products, 'id')) . ")
+                  AND co.status IN ('pending', 'confirmed', 'in_production')
+                  AND co.required_date BETWEEN (SELECT MIN(period_start) FROM planning_calendar WHERE id IN (" . implode(',', array_column($periods, 'id')) . "))
+                                           AND (SELECT MAX(period_end) FROM planning_calendar WHERE id IN (" . implode(',', array_column($periods, 'id')) . "))
+                GROUP BY cod.product_id, DATE(co.required_date)";
+        
+        $demands = $db->select($sql);
+        
+        // Map demands to periods
+        foreach ($demands as $demand) {
+            foreach ($periods as $period) {
+                if ($demand['required_date'] >= $period['period_start'] && 
+                    $demand['required_date'] <= $period['period_end']) {
+                    if (!isset($demandData[$demand['product_id']][$period['id']])) {
+                        $demandData[$demand['product_id']][$period['id']] = 0;
+                    }
+                    $demandData[$demand['product_id']][$period['id']] += $demand['total_demand'];
+                    break;
+                }
+            }
+        }
+        echo "<!-- Debug: Loaded demand forecast data -->\n";
+    } catch (Exception $e) {
+        echo "<!-- Debug: Error loading demand data: " . $e->getMessage() . " -->\n";
+    }
+}
+
+// Get current inventory levels
+$inventoryData = [];
+if (!empty($products)) {
+    try {
+        $sql = "SELECT 
+                    item_id as product_id,
+                    SUM(quantity - COALESCE(reserved_quantity, 0)) as current_stock
+                FROM inventory
+                WHERE item_type = 'product' 
+                  AND item_id IN (" . implode(',', array_column($products, 'id')) . ")
+                  AND status = 'available'
+                GROUP BY item_id";
+        
+        $inventory = $db->select($sql);
+        foreach ($inventory as $inv) {
+            $inventoryData[$inv['product_id']] = $inv['current_stock'];
+        }
+        echo "<!-- Debug: Loaded inventory data -->\n";
+    } catch (Exception $e) {
+        echo "<!-- Debug: Error loading inventory: " . $e->getMessage() . " -->\n";
+    }
+}
 ?>
 
 <?php echo HelpSystem::getHelpStyles(); ?>
@@ -115,6 +175,8 @@ if (!empty($products) && !empty($periods)) {
         <div class="card-header">
             <h2>Master Production Schedule (MPS) <?php echo help_tooltip('mps', 'Plan production quantities for each time period'); ?></h2>
             <div style="float: right;">
+                <a href="reports.php" class="btn btn-info">View Reports</a>
+                <button type="button" class="btn btn-secondary" onclick="checkCapacity()">Check Capacity</button>
                 <button type="button" class="btn btn-primary" onclick="saveMPS()">Save MPS</button>
                 <a href="../mrp/run-enhanced.php?include_mps=1" class="btn btn-success">Run Enhanced MRP</a>
             </div>
@@ -146,11 +208,12 @@ if (!empty($products) && !empty($periods)) {
                     <table>
                         <thead>
                             <tr>
-                                <th style="min-width: 200px;">Product</th>
-                                <th style="text-align: center;">Safety Stock</th>
-                                <th style="text-align: center;">Lead Time</th>
+                                <th rowspan="2" style="min-width: 200px;">Product</th>
+                                <th rowspan="2" style="text-align: center;">Current<br>Stock</th>
+                                <th rowspan="2" style="text-align: center;">Safety<br>Stock</th>
+                                <th rowspan="2" style="text-align: center;">Lead<br>Time</th>
                                 <?php foreach ($periods as $period): ?>
-                                    <th style="text-align: center; min-width: 100px;">
+                                    <th colspan="2" style="text-align: center; min-width: 150px; border-bottom: 1px solid #dee2e6;">
                                         <?= htmlspecialchars($period['period_name']) ?><br>
                                         <small style="color: #666;">
                                             <?= date('M d', strtotime($period['period_start'])) ?>
@@ -160,13 +223,26 @@ if (!empty($products) && !empty($periods)) {
                                     </th>
                                 <?php endforeach; ?>
                             </tr>
+                            <tr>
+                                <?php foreach ($periods as $period): ?>
+                                    <th style="text-align: center; font-size: 0.85rem; padding: 0.25rem;">Demand</th>
+                                    <th style="text-align: center; font-size: 0.85rem; padding: 0.25rem;">Plan</th>
+                                <?php endforeach; ?>
+                            </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($products as $product): ?>
+                                <?php 
+                                $currentStock = $inventoryData[$product['id']] ?? 0;
+                                $stockClass = $currentStock < $product['safety_stock_qty'] ? 'text-danger' : '';
+                                ?>
                                 <tr>
                                     <td>
                                         <strong><?= htmlspecialchars($product['product_code']) ?></strong><br>
                                         <small style="color: #666;"><?= htmlspecialchars($product['name']) ?></small>
+                                    </td>
+                                    <td style="text-align: center;" class="<?= $stockClass ?>">
+                                        <?= number_format($currentStock, 0) ?>
                                     </td>
                                     <td style="text-align: center;">
                                         <?= number_format($product['safety_stock_qty'], 0) ?>
@@ -178,17 +254,25 @@ if (!empty($products) && !empty($periods)) {
                                         <?php 
                                         $mpsEntry = $mpsData[$product['id']][$period['id']] ?? null;
                                         $currentValue = $mpsEntry ? $mpsEntry['firm_planned_qty'] : '';
+                                        $demand = $demandData[$product['id']][$period['id']] ?? 0;
+                                        $demandClass = $demand > 0 ? 'font-weight-bold' : 'text-muted';
                                         ?>
+                                        <td style="padding: 0.25rem; text-align: center; background-color: #f8f9fa;" class="<?= $demandClass ?>">
+                                            <?= $demand > 0 ? number_format($demand, 0) : '-' ?>
+                                        </td>
                                         <td style="padding: 0.25rem; text-align: center;">
                                             <input type="number" 
                                                    class="mps-input"
                                                    data-product-id="<?= $product['id'] ?>"
                                                    data-period-id="<?= $period['id'] ?>"
+                                                   data-demand="<?= $demand ?>"
+                                                   data-current-stock="<?= $currentStock ?>"
                                                    value="<?= $currentValue ?>"
                                                    placeholder="0"
                                                    min="0"
                                                    step="1"
-                                                   style="width: 80px; padding: 0.25rem; text-align: center;">
+                                                   title="Demand: <?= $demand ?>, Current Stock: <?= $currentStock ?>"
+                                                   style="width: 60px; padding: 0.25rem; text-align: center; <?= $demand > 0 && empty($currentValue) ? 'border: 2px solid #ffc107;' : '' ?>">
                                         </td>
                                     <?php endforeach; ?>
                                 </tr>
@@ -228,6 +312,129 @@ if (!empty($products) && !empty($periods)) {
 </div>
 
 <script>
+async function checkCapacity() {
+    const checkBtn = document.querySelector('button[onclick="checkCapacity()"]');
+    const originalText = checkBtn.textContent;
+    
+    try {
+        checkBtn.textContent = 'Checking...';
+        checkBtn.disabled = true;
+        
+        // Collect all MPS input data
+        const mpsData = [];
+        const inputs = document.querySelectorAll('.mps-input');
+        
+        inputs.forEach(input => {
+            const value = parseFloat(input.value) || 0;
+            if (value > 0) {
+                mpsData.push({
+                    product_id: input.getAttribute('data-product-id'),
+                    period_id: input.getAttribute('data-period-id'),
+                    firm_planned_qty: value
+                });
+            }
+        });
+        
+        if (mpsData.length === 0) {
+            showMessage('Enter some planned quantities first to check capacity', 'warning');
+            return;
+        }
+        
+        // Send to capacity check endpoint
+        const response = await fetch('check-capacity.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ mps_data: mpsData })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            if (result.has_issues) {
+                let message = `⚠️ Capacity Issues Found (${result.summary.total_issues}):\\n\\n`;
+                result.issues.forEach(issue => {
+                    message += `• ${issue.period} - ${issue.work_center || 'Product'}: ${issue.issue}\\n`;
+                    if (issue.required_hours && issue.available_hours) {
+                        message += `  Required: ${issue.required_hours}h, Available: ${issue.available_hours}h\\n`;
+                    }
+                });
+                
+                showMessage(message, 'warning');
+                showCapacityDetails(result);
+            } else {
+                let message = '✅ Capacity Check Passed!\\n\\n';
+                Object.keys(result.utilization).forEach(period => {
+                    const util = result.utilization[period];
+                    message += `${period}: ${util.utilization}% utilized (${util.used}/${util.available} hours)\\n`;
+                });
+                showMessage(message, 'success');
+            }
+        } else {
+            showMessage('Error checking capacity: ' + (result.error || 'Unknown error'), 'danger');
+        }
+        
+    } catch (error) {
+        console.error('Capacity check error:', error);
+        showMessage('Network error while checking capacity', 'danger');
+    } finally {
+        checkBtn.textContent = originalText;
+        checkBtn.disabled = false;
+    }
+}
+
+function showCapacityDetails(result) {
+    // Create detailed capacity report modal/section
+    const detailsHtml = `
+        <div class="capacity-details" style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 4px;">
+            <h4>Capacity Analysis</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Utilization by Period</h5>
+                    <ul>
+                        ${Object.keys(result.utilization).map(period => {
+                            const util = result.utilization[period];
+                            const statusClass = util.utilization > 100 ? 'text-danger' : 
+                                              util.utilization > 80 ? 'text-warning' : 'text-success';
+                            return `<li class="${statusClass}">
+                                ${period}: ${util.utilization}% (${util.used}/${util.available} hours)
+                            </li>`;
+                        }).join('')}
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>Issues Found</h5>
+                    <ul>
+                        ${result.issues.map(issue => `
+                            <li class="text-danger">
+                                <strong>${issue.period}</strong> - ${issue.work_center}: ${issue.issue}
+                                ${issue.overrun_hours ? `<br><small>Overrun: ${issue.overrun_hours} hours</small>` : ''}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-secondary" onclick="hideCapacityDetails()">Hide Details</button>
+        </div>
+    `;
+    
+    // Remove existing details
+    const existing = document.querySelector('.capacity-details');
+    if (existing) existing.remove();
+    
+    // Insert after message
+    const messages = document.querySelectorAll('.mps-message');
+    if (messages.length > 0) {
+        messages[messages.length - 1].insertAdjacentHTML('afterend', detailsHtml);
+    }
+}
+
+function hideCapacityDetails() {
+    const details = document.querySelector('.capacity-details');
+    if (details) details.remove();
+}
+
 async function saveMPS() {
     const saveBtn = document.querySelector('button[onclick="saveMPS()"]');
     const originalText = saveBtn.textContent;

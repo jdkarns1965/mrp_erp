@@ -1,0 +1,15 @@
+# PHP Settings for Document Upload
+php_value upload_max_filesize 20M
+php_value post_max_size 25M
+php_value max_execution_time 300
+php_value max_input_time 300
+php_value memory_limit 128M
+
+# Security settings
+Options -Indexes
+
+# Document serving (only allow through our API)
+<FilesMatch "\.(pdf|doc|docx|xls|xlsx|jpg|jpeg|png|gif|tiff|dwg|dxf)$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>

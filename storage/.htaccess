@@ -1,0 +1,10 @@
+# Secure document storage directory
+# Block direct access to documents - must go through PHP access control
+
+Options -Indexes
+Deny from all
+
+# Only allow access to PHP scripts that handle document serving
+<Files "serve-document.php">
+    Allow from all
+</Files>
