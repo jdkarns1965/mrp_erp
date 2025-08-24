@@ -962,6 +962,26 @@
     stroke-width: 2;
 }
 
+.action-item.danger {
+    color: #dc2626;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+
+.action-item.danger:hover {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.action-divider {
+    height: 1px;
+    background: #f3f4f6;
+    margin: 0.25rem 0;
+}
+
 /* ================================
    BULK ACTIONS BAR
    ================================ */
@@ -1268,6 +1288,128 @@
 .action-menu-toggle:focus {
     outline: 2px solid #2563eb;
     outline-offset: 2px;
+}
+
+/* ================================
+   BOM-SPECIFIC STYLES
+   ================================ */
+
+/* Enhanced alert for products without BOMs */
+.missing-bom-products {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.missing-bom-products .btn {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.5rem 0.75rem;
+    min-height: 44px;
+    background: #fbbf24;
+    color: #92400e;
+    border: 1px solid #f59e0b;
+}
+
+.missing-bom-products .btn:hover {
+    background: #f59e0b;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.missing-bom-products .product-code {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.missing-bom-products .product-name {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-top: 0.125rem;
+}
+
+.more-products {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    color: #64748b;
+    font-style: italic;
+    font-size: 0.875rem;
+}
+
+/* BOM-specific type badges */
+.type-badge.approved {
+    background: #10b981;
+    color: white;
+}
+
+.type-badge.draft {
+    background: #f59e0b;
+    color: white;
+}
+
+/* Status indicators for BOMs */
+.stock-status.good::before {
+    content: "●";
+}
+
+.stock-status.critical::before {
+    content: "●";
+}
+
+/* Autocomplete BOM-specific styles */
+.autocomplete-item .item-description {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.125rem;
+}
+
+.autocomplete-item .item-meta {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.autocomplete-item .item-status.active {
+    color: #10b981;
+    font-weight: 500;
+}
+
+.autocomplete-item .item-status.inactive {
+    color: #ef4444;
+    font-weight: 500;
+}
+
+.autocomplete-item .item-materials {
+    color: #64748b;
+}
+
+/* Page actions styling for BOM navigation */
+.page-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .missing-bom-products .btn {
+        flex: 1 1 auto;
+        min-width: 140px;
+    }
+    
+    .page-actions {
+        flex-direction: column;
+    }
+    
+    .page-actions .btn {
+        justify-content: center;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {

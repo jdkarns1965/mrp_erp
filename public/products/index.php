@@ -2,7 +2,6 @@
 session_start();
 require_once '../../includes/header.php';
 require_once '../../classes/Product.php';
-
 $product = new Product();
 
 // Handle delete action
@@ -66,6 +65,7 @@ try {
     $_SESSION['error'] = "Error loading products: " . $e->getMessage();
     $products = [];
 }
+
 ?>
 
 <div class="container">

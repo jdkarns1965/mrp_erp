@@ -145,6 +145,38 @@ class AutocompleteManager {
             hiddenField: true,
             enableHistory: true,
             entityType: 'locations'
+        },
+        
+        // BOM search configuration
+        'bom-search': {
+            apiUrl: '../api/bom-search.php',
+            displayField: 'product_code',
+            valueField: 'product_code',
+            showCategory: true,
+            behavior: 'search-submit',
+            placeholder: 'Search BOMs by product code, name, or description...',
+            minChars: 1,
+            enableHistory: false,
+            entityType: 'bom',
+            customTemplate: function(item, index, query) {
+                const highlightedCode = this.highlightMatch(item.product_code, query);
+                const highlightedName = this.highlightMatch(item.product_name, query);
+                const highlightedDesc = item.description ? this.highlightMatch(item.description, query) : '';
+                
+                return `
+                    <div class="autocomplete-item" data-index="${index}">
+                        <div class="item-main">
+                            <div class="item-code">${highlightedCode} v${item.version}</div>
+                            <div class="item-name">${highlightedName}</div>
+                            ${highlightedDesc ? `<div class="item-description">${highlightedDesc}</div>` : ''}
+                        </div>
+                        <div class="item-meta">
+                            <span class="item-status ${item.is_active ? 'active' : 'inactive'}">${item.is_active ? 'Active' : 'Inactive'}</span>
+                            <span class="item-materials">${item.material_count} materials</span>
+                        </div>
+                    </div>
+                `;
+            }
         }
     };
     
