@@ -23,7 +23,7 @@ class AutocompleteManager {
             behavior: 'search-submit',
             placeholder: 'Search products by code or name...',
             minChars: 1,
-            enableHistory: true,
+            enableHistory: false,
             entityType: 'products',
             customTemplate: function(item, index, query) {
                 const highlightedCode = this.highlightMatch(item.code, query);
