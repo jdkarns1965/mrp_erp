@@ -444,9 +444,19 @@
     background: white;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    overflow: hidden;
+    overflow: visible; /* Changed from hidden to allow action menus to show */
     margin-top: 0.5rem;
     width: 100%;
+    position: relative; /* Ensure proper stacking context */
+}
+
+/* Preserve rounded corners on first and last items */
+.materials-list-modern .materials-list-header {
+    border-radius: 8px 8px 0 0;
+}
+
+.materials-list-modern .list-item:last-child {
+    border-radius: 0 0 8px 8px;
 }
 
 .materials-list-header {
@@ -576,6 +586,14 @@
 }
 
 /* ================================
+   MATERIALS LIST WRAPPER
+   ================================ */
+.materials-list {
+    position: relative;
+    overflow: visible; /* Ensure action menus aren't clipped */
+}
+
+/* ================================
    LIST ITEMS
    ================================ */
 .list-item {
@@ -586,14 +604,25 @@
     transition: all 0.2s ease;
     cursor: pointer;
     position: relative;
+    overflow: visible; /* Ensure action menus aren't clipped */
 }
 
+/* Alternating row colors - base zebra striping */
+.list-item:nth-child(even) {
+    background: #fafbfc;
+}
+
+.list-item:nth-child(odd) {
+    background: white;
+}
+
+/* Hover states with proper precedence */
 .list-item:hover {
-    background: #f8fafc;
+    background: #f8fafc !important;
 }
 
 .list-item.selected {
-    background: #eff6ff;
+    background: #eff6ff !important;
     border-left: 4px solid #2563eb;
     padding-left: calc(1.5rem - 4px);
 }
@@ -602,16 +631,30 @@
     opacity: 0.6;
 }
 
-.list-item.critical {
+/* Critical items with alternating shades of red background */
+.list-item.critical:nth-child(odd) {
     border-left: 4px solid #dc2626;
     padding-left: calc(1.5rem - 4px);
     background: #fef9f9;
 }
 
-.list-item.warning {
+.list-item.critical:nth-child(even) {
+    border-left: 4px solid #dc2626;
+    padding-left: calc(1.5rem - 4px);
+    background: #fef2f2;
+}
+
+/* Warning items with alternating shades of yellow background */
+.list-item.warning:nth-child(odd) {
     border-left: 4px solid #f59e0b;
     padding-left: calc(1.5rem - 4px);
     background: #fffbf5;
+}
+
+.list-item.warning:nth-child(even) {
+    border-left: 4px solid #f59e0b;
+    padding-left: calc(1.5rem - 4px);
+    background: #fefdf5;
 }
 
 /* ================================
@@ -809,6 +852,7 @@
     gap: 0.5rem;
     margin-left: 1rem;
     flex-shrink: 0;
+    position: relative;
 }
 
 .action-quick {
@@ -867,9 +911,9 @@
     border: 1px solid #d1d5db;
     border-radius: 8px;
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    z-index: 50;
+    z-index: 1000; /* Increased from 50 to ensure menu appears above everything */
     display: none;
-    min-width: 160px;
+    min-width: 180px; /* Slightly wider for better readability */
     margin-top: 0.25rem;
 }
 

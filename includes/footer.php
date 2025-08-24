@@ -1,4 +1,4 @@
-    <footer style="margin-top: 3rem; padding: 2rem 0; background-color: var(--dark-color); color: white; text-align: center;">
+    <footer style="margin-top: auto; padding: 2rem 0; background-color: var(--dark-color); color: white; text-align: center;">
         <div class="container">
             <p>&copy; 2025 MRP/ERP Manufacturing System - Phase 2: Production Scheduling</p>
         </div>

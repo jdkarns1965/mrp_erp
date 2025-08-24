@@ -222,6 +222,29 @@ find . -name "*.php" -exec php -l {} \; # Run PHP linter on all files
 - Works on phones, tablets, and desktops
 - Tooltips on all form fields that need guidance
 
+### Layout System (Updated August 2025)
+**Flexbox-based layout eliminates footer white space issues**
+
+**Core CSS Structure:**
+```css
+html { height: 100%; margin: 0; padding: 0; }
+body { 
+    min-height: 100vh; 
+    display: flex; 
+    flex-direction: column; 
+    margin: 0; 
+    padding: 0; 
+}
+.container { flex: 1; }  /* Main content grows */
+footer { margin-top: auto; }  /* Footer sticks to bottom */
+```
+
+**Benefits:**
+- ✅ No white space below footer
+- ✅ Footer always at bottom of viewport or content
+- ✅ Flexible content areas that grow/shrink properly
+- ✅ Consistent across all pages
+
 ### Modern UI Patterns & Components
 **Established in Phase 2** - Use these patterns for consistent, professional interfaces across all pages.
 
@@ -394,6 +417,32 @@ find . -name "*.php" -exec php -l {} \; # Run PHP linter on all files
 .autocomplete-dropdown { z-index: 1000; } /* Above everything */
 ```
 
+#### **Action Menu System (Updated August 2025)**
+**Robust event delegation system for ⋮ menu toggles**
+
+**Implementation:**
+```javascript
+// Uses setupActionMenus() function with event delegation
+// No inline onclick handlers - purely event-driven
+// Automatically handles both full list and search results
+```
+
+**Required CSS for proper positioning:**
+```css
+.item-actions { position: relative; }           // Parent positioning
+.action-menu { z-index: 1000; overflow: visible; }  // Menu layering
+.materials-list-modern { overflow: visible; }   // Prevent clipping
+.list-item { overflow: visible; }              // Allow menu overflow
+```
+
+**Key Features:**
+- ✅ Works in all scenarios (full list + search results)
+- ✅ Event delegation prevents onclick conflicts
+- ✅ Debug logging for troubleshooting
+- ✅ Proper z-index layering (1000)
+- ✅ Click-outside to close functionality
+- ✅ No clipping issues with containers
+
 #### **Implementation Checklist**
 **Use this checklist when applying to new pages:**
 
@@ -402,8 +451,8 @@ find . -name "*.php" -exec php -l {} \; # Run PHP linter on all files
 - [ ] Add filter buttons with consistent heights and badges
 - [ ] Configure autocomplete with `enableHistory: false`
 - [ ] Add bulk selection and actions bar
-- [ ] Implement quick actions (⚡ button pattern)
-- [ ] Add proper z-index layering
+- [ ] Implement action menus using setupActionMenus() pattern
+- [ ] Add proper z-index layering and overflow:visible
 - [ ] Test mobile responsiveness
 - [ ] Ensure touch-friendly targets (44px minimum)
 
@@ -920,6 +969,17 @@ Database: mrp_erp
 
 ### 📅 Session History
 ```
+2025-08-24 Evening: ✅ Action Menu System & Layout Fixes Complete
+- Fixed action menu toggle not working in materials search results
+- Replaced problematic inline onclick handlers with robust event delegation system
+- Implemented setupActionMenus() function for centralized menu management
+- Fixed menu clipping issues by updating CSS overflow properties (.materials-list-modern, .list-item)
+- Increased z-index from 50 to 1000 for proper menu layering
+- Added position:relative to .item-actions for proper absolute positioning
+- Fixed white space below footer by implementing flexbox layout (body, container flex properties)
+- Added comprehensive debug logging for menu toggle troubleshooting
+- Materials page action menus now work perfectly in all scenarios (full list + search results)
+
 2025-08-20 Evening: ✅ Work Environment Database Migration Complete
 - Synchronized database from home to work dev environment
 - Verified 5 migrations applied: all schemas current and up-to-date

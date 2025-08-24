@@ -72,7 +72,7 @@ unset($material);
                                    autocomplete="off">
                             
                             <!-- Recent Searches -->
-                            <div class="recent-searches" id="recentSearches" style="display: none;">
+                            <div class="recent-searches" id="recentSearches">
                                 <div class="recent-searches-label">Recent:</div>
                                 <div class="recent-searches-list" id="recentSearchesList"></div>
                             </div>
@@ -252,7 +252,7 @@ unset($material);
                             </button>
                             <?php endif; ?>
                             
-                            <button class="action-menu-toggle" onclick="toggleActionMenu(<?php echo $material['id']; ?>)" type="button">
+                            <button class="action-menu-toggle" type="button">
                                 ⋮
                             </button>
                             <div class="action-menu" id="menu-<?php echo $material['id']; ?>">
@@ -328,7 +328,68 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize recent searches
     initializeRecentSearches();
+    
+    // Setup action menu toggles using event delegation
+    setupActionMenus();
 });
+
+// Setup action menus with proper event delegation
+function setupActionMenus() {
+    console.log('Setting up action menus...');
+    
+    // Remove any existing inline onclick handlers and use event delegation instead
+    document.addEventListener('click', function(e) {
+        // Handle action menu toggle clicks
+        if (e.target.closest('.action-menu-toggle')) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            console.log('Action menu toggle clicked');
+            
+            const toggleBtn = e.target.closest('.action-menu-toggle');
+            const listItem = toggleBtn.closest('.list-item');
+            
+            if (listItem && listItem.dataset.id) {
+                const materialId = listItem.dataset.id;
+                const menu = document.getElementById('menu-' + materialId);
+                
+                console.log('Material ID:', materialId, 'Menu element:', menu);
+                
+                if (!menu) {
+                    console.error('Menu not found for material ID:', materialId);
+                    // Try to debug what IDs exist
+                    const allMenus = document.querySelectorAll('[id^="menu-"]');
+                    console.log('Available menu IDs:', Array.from(allMenus).map(m => m.id));
+                    return;
+                }
+                
+                // Close all other menus
+                document.querySelectorAll('.action-menu').forEach(m => {
+                    if (m !== menu) {
+                        m.classList.remove('show');
+                    }
+                });
+                
+                // Toggle current menu
+                menu.classList.toggle('show');
+                
+                console.log('Toggled menu for material:', materialId, 'Menu visible:', menu.classList.contains('show'));
+            } else {
+                console.error('Could not find list item or material ID');
+            }
+        }
+        // Handle clicks outside menus to close them
+        else if (!e.target.closest('.action-menu')) {
+            document.querySelectorAll('.action-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
+    });
+    
+    // Log how many action menu toggles we found
+    const toggleButtons = document.querySelectorAll('.action-menu-toggle');
+    console.log('Found', toggleButtons.length, 'action menu toggle buttons');
+}
 
 // Recent searches functionality
 function initializeRecentSearches() {
@@ -338,18 +399,8 @@ function initializeRecentSearches() {
     
     if (!searchInput || !recentSearches || !recentSearchesList) return;
     
-    // Show recent searches on input focus
-    searchInput.addEventListener('focus', function() {
-        updateRecentSearchesDisplay();
-    });
-    
-    // Hide recent searches when clicking outside (but not on autocomplete)
-    document.addEventListener('click', function(event) {
-        if (!event.target.closest('.search-input-section') && 
-            !event.target.closest('.autocomplete-dropdown')) {
-            recentSearches.style.display = 'none';
-        }
-    });
+    // Show recent searches immediately on page load
+    updateRecentSearchesDisplay();
     
     // Save search when form is submitted
     const searchForm = document.getElementById('searchForm');
@@ -372,9 +423,13 @@ function updateRecentSearchesDisplay() {
     const searches = getRecentSearches();
     
     if (searches.length === 0) {
+        // Hide only if there are no searches
         recentSearches.style.display = 'none';
         return;
     }
+    
+    // Always show if there are searches
+    recentSearches.style.display = 'block';
     
     // Clear existing items
     recentSearchesList.innerHTML = '';
@@ -390,8 +445,6 @@ function updateRecentSearchesDisplay() {
         };
         recentSearchesList.appendChild(item);
     });
-    
-    recentSearches.style.display = 'block';
 }
 
 function getRecentSearches() {
@@ -417,38 +470,15 @@ function saveRecentSearch(query) {
         searches = searches.slice(0, 10);
         
         localStorage.setItem('materialRecentSearches', JSON.stringify(searches));
+        
+        // Update display immediately after saving
+        updateRecentSearchesDisplay();
     } catch (e) {
         // Fail silently if localStorage is not available
     }
 }
 
-// Action Menu Toggle
-function toggleActionMenu(materialId) {
-    const menu = document.getElementById('menu-' + materialId);
-    const allMenus = document.querySelectorAll('.action-menu');
-    
-    // Close all other menus
-    allMenus.forEach(m => {
-        if (m !== menu) {
-            m.classList.remove('show');
-        }
-    });
-    
-    // Toggle current menu
-    menu.classList.toggle('show');
-    
-    // Prevent event bubbling
-    event.stopPropagation();
-}
-
-// Close menus when clicking outside
-document.addEventListener('click', function(event) {
-    if (!event.target.closest('.action-menu-toggle')) {
-        document.querySelectorAll('.action-menu').forEach(menu => {
-            menu.classList.remove('show');
-        });
-    }
-});
+// Note: Action menu toggle is handled by setupActionMenus() using event delegation
 
 // Bulk Actions Management
 function updateBulkActions() {
