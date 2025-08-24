@@ -128,6 +128,12 @@ This is a modular MRP → ERP Manufacturing System built with PHP and MySQL. The
 - `production_order_materials` - Material reservations
 - `production_order_status_history` - Status change tracking
 
+**Phase 2 Complete (Document Management):**
+- `documents` - File metadata with material/product associations
+- Storage path: `storage/documents/[entity_type]/[category]/`
+- API endpoints: `/api/documents.php`, `/api/document-download.php`
+- Supported formats: PDF, DOC, DOCX, images
+
 **Phase 3+ (Purchasing & ERP):**
 - `purchase_orders` - Supplier orders (planned)
 - `suppliers` - Supplier management (ready)
@@ -142,21 +148,61 @@ php -S localhost:8000 -t public/
 # MySQL database access
 mysql -u root -p mrp_erp
 
-# Check PHP syntax
-php -l filename.php
+# Database Migration Management
+cd /var/www/html/mrp_erp/database
+./scripts/migrate.sh status              # Check migration status
+./scripts/migrate.sh up --dry-run        # Preview pending migrations  
+./scripts/migrate.sh up --backup         # Apply migrations with backup
+./scripts/migrate.sh down --steps=1      # Rollback last migration
+./scripts/migrate.sh create <name>       # Create new migration file
 
-# Run PHP built-in linter on all files
-find . -name "*.php" -exec php -l {} \;
+# Quick Backup System
+./scripts/quick-backup.sh               # Create timestamped backup
+./scripts/quick-restore.sh              # Restore latest backup
+./scripts/backup.sh                     # Full backup with compression
+./scripts/restore.sh <backup_file>      # Restore specific backup
+
+# Health Check & Troubleshooting
+curl http://localhost/mrp_erp/public/verify_setup.php  # System health check
+php /var/www/html/mrp_erp/debug_mrp.php               # Debug MRP calculations
+php /var/www/html/mrp_erp/debug_bom.php               # Debug BOM issues
+
+# API Testing
+php test_search_api.php                 # Test search APIs
+php test_mrp_validation.php             # Test MRP calculations
+php test_form_debug.php                 # Debug form submissions
+
+# Fix Common WSL2 Permission Issues
+sudo chmod 755 /var/www/html/mrp_erp/database/scripts/*.sh
+sudo chown -R www-data:www-data /var/www/html/mrp_erp/storage/
+sudo chmod 755 /var/www/html/mrp_erp/storage/ -R
+
+# PHP Code Quality
+php -l filename.php                     # Check PHP syntax
+find . -name "*.php" -exec php -l {} \; # Run PHP linter on all files
 ```
 
 ## Testing Approach
 
+### Manual Testing
 - Manual testing through web interface initially
 - Database transaction testing for MRP calculations
 - Test with realistic manufacturing scenarios:
   - Multi-level BOMs
   - Inventory shortages
   - Production scheduling conflicts
+
+### Automated Testing & Health Checks
+- **System Health**: `curl http://localhost/mrp_erp/public/verify_setup.php`
+- **MRP Validation**: `php test_mrp_validation.php`
+- **Search API Testing**: `php test_search_api.php`
+- **Form Debugging**: `php test_form_debug.php`
+- **Migration Status**: `cd database && ./scripts/migrate.sh status`
+
+### Debug Scripts
+- `debug_mrp.php` - Debug MRP calculation issues
+- `debug_bom.php` - Debug Bill of Materials problems
+- Migration dry-run: `./scripts/migrate.sh up --dry-run`
 
 ## Key Implementation Notes
 
@@ -175,6 +221,205 @@ find . -name "*.php" -exec php -l {} \;
 - Fast page loads (< 2 seconds)
 - Works on phones, tablets, and desktops
 - Tooltips on all form fields that need guidance
+
+### Modern UI Patterns & Components
+**Established in Phase 2** - Use these patterns for consistent, professional interfaces across all pages.
+
+#### **Modern Search Interface Pattern**
+**Files:** `/public/materials/index.php`, `/public/css/materials-modern.css`
+
+**Structure:**
+```html
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h2>Page Title</h2>
+        </div>
+        
+        <!-- Search Bar with Add Button -->
+        <div class="search-bar">
+            <div class="search-bar-header">
+                <div class="search-form-container">
+                    <form method="GET" id="searchForm">
+                        <!-- Stacked search elements -->
+                        <div class="search-input-section">
+                            <input type="text" data-autocomplete-preset="entity-search">
+                            <div class="recent-searches" id="recentSearches">
+                                <!-- Recent searches as clean links -->
+                            </div>
+                        </div>
+                        <div class="search-controls">
+                            <div class="search-buttons">
+                                <button class="btn btn-secondary">Search</button>
+                                <a href="index.php" class="btn btn-outline">Clear</a>
+                            </div>
+                            <label class="checkbox-label">
+                                <input type="checkbox"> Filter Option
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="search-actions">
+                    <a href="create.php" class="btn btn-primary">Add Entity</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+**Key Features:**
+- **Seamless search unit**: Input → Recent searches → Controls stacked vertically
+- **No visual separators**: Borderless flow between search elements
+- **Action button in search area**: "Add" button positioned logically with content
+- **Clean recent searches**: Underlined text links, not pill-shaped buttons
+- **Grouped controls**: Related buttons (Search/Clear) grouped together
+
+#### **Modern List Interface Pattern**
+**Replaces card-based layouts for better information density**
+
+**Structure:**
+```html
+<div class="materials-list-modern">
+    <div class="materials-list-header">
+        <h2 class="list-title">Entity Inventory</h2>
+        <div class="list-meta">X entities found</div>
+    </div>
+    
+    <div class="filter-panel">
+        <div class="quick-filters">
+            <button class="filter-btn active">All Items</button>
+            <button class="filter-btn alert">Low Stock <span class="badge">3</span></button>
+            <button class="filter-btn alert">Critical <span class="badge">5</span></button>
+        </div>
+    </div>
+    
+    <div class="bulk-actions-bar" id="bulkActionsBar">
+        <div class="bulk-info">X items selected</div>
+        <div class="bulk-actions">
+            <button class="bulk-btn">Export</button>
+            <button class="bulk-btn primary">Bulk Action</button>
+        </div>
+    </div>
+    
+    <div class="materials-list">
+        <div class="list-item" data-attributes="">
+            <div class="item-selector">
+                <input type="checkbox" class="item-checkbox">
+            </div>
+            <div class="item-primary">
+                <div class="item-header">
+                    <span class="entity-code">CODE-001</span>
+                    <div class="status-indicators">
+                        <span class="stock-status critical"></span>
+                        <span class="type-badge">Type</span>
+                    </div>
+                </div>
+                <h3 class="entity-name">Entity Name</h3>
+                <div class="item-meta">
+                    <span>Category: Value</span>
+                    <span>UOM: Each</span>
+                </div>
+            </div>
+            <div class="item-metrics">
+                <div class="metric">
+                    <label>Metric 1</label>
+                    <span class="value">100.00</span>
+                </div>
+            </div>
+            <div class="item-actions">
+                <button class="action-quick" title="Quick Action">⚡</button>
+                <button class="action-menu-toggle">⋮</button>
+            </div>
+        </div>
+    </div>
+</div>
+```
+
+**Benefits:**
+- **50% more items visible** per screen vs card layout
+- **Better scanning** with consistent information hierarchy
+- **Smart filtering** with visual badges and counts
+- **Bulk operations** with checkbox selection
+- **Quick actions** for common tasks
+
+#### **Filter Button Standards**
+**Consistent sizing and behavior across all interfaces**
+
+**CSS Requirements:**
+```css
+.filter-btn {
+    height: 32px; /* Consistent height - no min-height */
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    box-sizing: border-box;
+}
+```
+
+**Alert States:**
+- **Normal filters**: White background, gray border
+- **Alert filters**: Yellow background for warnings (Low Stock, etc.)
+- **Active state**: Blue background for currently selected
+- **Badges**: Small red circles with white numbers
+
+#### **Autocomplete Integration**
+**Disable conflicting systems to maintain clean recent searches**
+
+**AutocompleteManager Configuration:**
+```javascript
+// Disable built-in history to use custom recent searches
+'entity-search': {
+    enableHistory: false,  // Important: prevents pill-shaped chips
+    behavior: 'search-submit',
+    // ... other config
+}
+```
+
+**Recent Searches Implementation:**
+- Use localStorage with entity-specific keys
+- Display as clean underlined links, not pills
+- Limit to 5 most recent, store up to 10
+- Integrate with form submission, not autocomplete selection
+
+#### **Z-Index Layer Management**
+**Consistent layering prevents UI conflicts**
+
+```css
+.filter-panel { z-index: 50; }        /* Always visible */
+.bulk-actions-bar { z-index: 30; }    /* Below filters */
+.autocomplete-dropdown { z-index: 1000; } /* Above everything */
+```
+
+#### **Implementation Checklist**
+**Use this checklist when applying to new pages:**
+
+- [ ] Replace card layout with list-based design
+- [ ] Implement stacked search (input → recents → controls)
+- [ ] Add filter buttons with consistent heights and badges
+- [ ] Configure autocomplete with `enableHistory: false`
+- [ ] Add bulk selection and actions bar
+- [ ] Implement quick actions (⚡ button pattern)
+- [ ] Add proper z-index layering
+- [ ] Test mobile responsiveness
+- [ ] Ensure touch-friendly targets (44px minimum)
+
+#### **CSS Files to Include**
+```html
+<link rel="stylesheet" href="../css/materials-modern.css">
+<link rel="stylesheet" href="../css/autocomplete.css">
+```
+
+#### **JavaScript Dependencies**
+```html
+<script src="../js/autocomplete.js"></script>
+<script src="../js/autocomplete-manager.js"></script>
+```
+
+**Status:** ✅ **Materials page complete** - Use as reference for other entity pages
 
 ### Entity Edit Link Guidelines
 **Standard Pattern:** Use `includes/ui-helpers.php` for contextual edit links throughout the system.
@@ -372,6 +617,7 @@ All autocomplete APIs should return JSON arrays with this structure:
 - ✅ **Products search** (products/index.php) - **MIGRATED** to AutocompleteManager
 - ✅ **Materials search** (materials/index.php) - **MIGRATED** to AutocompleteManager  
 - ✅ **BOM material selection** (bom/create.php) - **MIGRATED** to AutocompleteManager
+- ✅ **Document management** (documents/index.php) - **COMPLETE** with file upload/download
 - 🔄 BOM edit page (bom/edit.php) - Needs migration
 - 🔄 Inventory forms (item selection) - Needs implementation
 - 🔄 Order forms (product selection) - Needs implementation
@@ -427,6 +673,7 @@ All autocomplete APIs should return JSON arrays with this structure:
 - **Operation Tracking**: Real-time status updates for individual operations
 - **Material Reservations**: Automatic allocation from BOM requirements
 - **Status History**: Complete audit trail of production order changes
+- **Document Management**: File attachments for materials/products with API support
 
 ### Database Views for Performance
 - `v_work_center_capacity` - Aggregated capacity data for planning
@@ -550,20 +797,23 @@ IMPORTANT - DATA PRESERVATION:
 ### 🐛 Known Issues
 ```
 Active Bugs:
-- MPS module incomplete (60% done)
-- Production reporting dashboard not implemented
-- Some legacy autocomplete code needs migration
+- MPS module incomplete (estimated 60% done, needs verification)
+- Production reporting integration with document management system
+- Some legacy autocomplete code needs migration to AutocompleteManager
 
 COMMON SCHEMA MISMATCH ISSUE:
 - Problem: Blank pages after database migration/restore
 - Cause: PHP code expects columns that don't exist (supplier_moq, supplier_part_number)
-- Quick Fix: Run http://localhost/mrp_erp/public/check_health.php
+- Quick Fix: curl http://localhost/mrp_erp/public/verify_setup.php
+- Health Check: Access verify_setup.php for detailed system status
 - Permanent Fix: Either update PHP code OR add missing columns via migration
 
-Workarounds:
-- Use production dashboard instead of MPS
-- Check migrations with --dry-run first
-- Run health check after any database changes
+Troubleshooting Steps:
+1. Check migration status: cd database && ./scripts/migrate.sh status
+2. Run health check: curl http://localhost/mrp_erp/public/verify_setup.php  
+3. Check migrations with --dry-run first
+4. Use production dashboard instead of MPS for current workflow
+5. Fix permissions if needed (see Development Commands)
 ```
 
 ### 💡 Recent Discoveries
@@ -629,17 +879,27 @@ cd /var/www/html/mrp_erp/database
 ./scripts/migrate.sh up --dry-run    # Preview changes
 ./scripts/migrate.sh up --backup     # Apply with safety
 
+# Health & Troubleshooting
+curl http://localhost/mrp_erp/public/verify_setup.php  # System health check
+php debug_mrp.php                    # Debug MRP calculations  
+php debug_bom.php                    # Debug BOM issues
+
 # Database Access
 mysql -u root -ppassgas1989 mrp_erp
 
-# Testing
-php -S localhost:8000 -t public/
+# Local Development
+php -S localhost:8000 -t public/     # Start dev server
+sudo service apache2 start           # Start Apache (if needed)
+
+# Fix Permissions (Common WSL2 Issues)
+sudo chmod 755 database/scripts/*.sh
+sudo chown -R www-data:www-data storage/
 
 # Git Sync (End of Day)
 cd database && ./scripts/quick-backup.sh
 git add -A && git commit -m "Work backup $(date +%Y-%m-%d)" && git push
 
-# Git Sync (Start of Day)
+# Git Sync (Start of Day)  
 git pull origin main && cd database && ./scripts/quick-restore.sh
 ```
 

@@ -34,45 +34,10 @@ unset($material);
 <div class="container">
     <div class="card">
         <div class="card-header">
-            Materials Management
-            <div style="float: right;">
-                <a href="create.php" class="btn btn-primary">Add Material</a>
-            </div>
-            <div style="clear: both;"></div>
+            <h2>Materials Management</h2>
         </div>
-        
-        <div class="search-bar">
-            <form method="GET" action="" id="searchForm">
-                <div class="form-row">
-                    <div class="form-group">
-                        <input type="text" 
-                               id="searchInput"
-                               name="search" 
-                               placeholder="Search by code or name..." 
-                               value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>"
-                               data-autocomplete-preset="materials-search"
-                               autocomplete="off">
-                    </div>
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" 
-                                   name="show_inactive" 
-                                   value="1"
-                                   <?php echo $showInactive ? 'checked' : ''; ?>
-                                   onchange="this.form.submit();">
-                            Show Inactive Materials
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-secondary">Search</button>
-                        <?php if (!empty($_GET['search']) || $showInactive): ?>
-                            <a href="index.php" class="btn btn-outline">Clear All</a>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </form>
-        </div>
-        
+    
+        <!-- Alerts -->
         <?php if (isset($_SESSION['success'])): ?>
             <div class="alert alert-success">
                 <?php 
@@ -91,459 +56,530 @@ unset($material);
             </div>
         <?php endif; ?>
         
+        <!-- Search Bar with Add Button -->
+        <div class="search-bar">
+            <div class="search-bar-header">
+                <div class="search-form-container">
+                    <form method="GET" action="" id="searchForm">
+                        <!-- Search Input Field -->
+                        <div class="search-input-section">
+                            <input type="text" 
+                                   id="searchInput"
+                                   name="search" 
+                                   placeholder="Search materials by code, name, or category..." 
+                                   value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>"
+                                   data-autocomplete-preset="materials-search"
+                                   autocomplete="off">
+                            
+                            <!-- Recent Searches -->
+                            <div class="recent-searches" id="recentSearches" style="display: none;">
+                                <div class="recent-searches-label">Recent:</div>
+                                <div class="recent-searches-list" id="recentSearchesList"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Search Controls -->
+                        <div class="search-controls">
+                            <div class="search-buttons">
+                                <button type="submit" class="btn btn-secondary">Search</button>
+                                <?php if (!empty($_GET['search']) || $showInactive): ?>
+                                    <a href="index.php" class="btn btn-outline">Clear</a>
+                                <?php endif; ?>
+                            </div>
+                            <label class="checkbox-label">
+                                <input type="checkbox" 
+                                       name="show_inactive" 
+                                       value="1"
+                                       <?php echo $showInactive ? 'checked' : ''; ?>
+                                       onchange="this.form.submit();">
+                                Include Inactive Materials
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="search-actions">
+                    <a href="create.php" class="btn btn-primary">Add Material</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Materials Content -->
         <?php if (empty($materials)): ?>
-            <div class="alert alert-info">
-                <?php if ($search): ?>
-                    No materials found matching your search.
-                <?php else: ?>
-                    No materials have been created yet. <a href="create.php">Create your first material</a>
-                <?php endif; ?>
+            <div class="materials-list-modern">
+                <div class="empty-state-modern">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M9 1v6m6-6v6"/>
+                        </svg>
+                    </div>
+                    <h3>No Materials Found</h3>
+                    <?php if ($search): ?>
+                        <p>No materials match your search criteria.<br>
+                        <a href="index.php" class="btn btn-outline btn-sm">Clear search</a> or 
+                        <a href="create.php" class="btn btn-primary btn-sm">add a new material</a></p>
+                    <?php else: ?>
+                        <p>Get started by creating your first material for inventory tracking and BOM management.</p>
+                        <a href="create.php" class="btn btn-primary">Create First Material</a>
+                    <?php endif; ?>
+                </div>
             </div>
         <?php else: ?>
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Code</th>
-                        <th>Name</th>
-                        <th>Type</th>
-                        <th>UOM</th>
-                        <th>Status</th>
-                        <th>Current Stock</th>
-                        <th>Reorder Point</th>
-                        <th>Cost/Unit</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <!-- Modern Materials List -->
+            <div class="materials-list-modern">
+                <div class="materials-list-header">
+                    <h2 class="list-title">Materials Inventory</h2>
+                    <div class="list-meta"><?php echo count($materials); ?> materials found</div>
+                </div>
+                
+                <!-- Filter Panel -->
+                <div class="filter-panel">
+                    <div class="quick-filters" id="quickFilters">
+                        <button class="filter-btn active" data-filter="all" onclick="filterMaterials('all')">All Materials</button>
+                        <button class="filter-btn alert" data-filter="low-stock" onclick="filterMaterials('low-stock')">
+                            Low Stock
+                            <?php 
+                            $lowStock = array_filter($materials, fn($m) => $m['current_stock'] < $m['reorder_point'] && $m['current_stock'] > 0);
+                            if (count($lowStock) > 0) echo '<span class="badge">' . count($lowStock) . '</span>';
+                            ?>
+                        </button>
+                        <button class="filter-btn alert" data-filter="out-of-stock" onclick="filterMaterials('out-of-stock')">
+                            Out of Stock
+                            <?php 
+                            $outOfStock = array_filter($materials, fn($m) => $m['current_stock'] <= 0);
+                            if (count($outOfStock) > 0) echo '<span class="badge">' . count($outOfStock) . '</span>';
+                            ?>
+                        </button>
+                        <button class="filter-btn" data-filter="need-reorder" onclick="filterMaterials('need-reorder')">
+                            Need Reorder
+                            <?php 
+                            $needReorder = array_filter($materials, fn($m) => $m['current_stock'] < $m['reorder_point']);
+                            if (count($needReorder) > 0) echo '<span class="badge">' . count($needReorder) . '</span>';
+                            ?>
+                        </button>
+                    </div>
+                    
+                </div>
+                
+                <!-- Bulk Actions Bar (Hidden by default) -->
+                <div class="bulk-actions-bar" id="bulkActionsBar">
+                    <div class="bulk-info">
+                        <span id="selectedCount">0</span> materials selected
+                    </div>
+                    <div class="bulk-actions">
+                        <button class="bulk-btn" onclick="bulkExport()">Export</button>
+                        <button class="bulk-btn" onclick="bulkStockAdjust()">Stock Adjust</button>
+                        <button class="bulk-btn primary" onclick="bulkReorder()">Create PO</button>
+                    </div>
+                </div>
+                
+                <!-- Materials List -->
+                <div class="materials-list" id="materialsList">
                     <?php foreach ($materials as $material): ?>
-                    <tr<?php echo !$material['is_active'] ? ' class="inactive-row"' : ''; ?>>
-                        <td><?php echo htmlspecialchars($material['material_code']); ?></td>
-                        <td><?php echo htmlspecialchars($material['name']); ?></td>
-                        <td><span class="badge badge-secondary"><?php echo ucfirst($material['material_type']); ?></span></td>
-                        <td><?php echo htmlspecialchars($material['uom_code']); ?></td>
-                        <td>
-                            <?php if ($material['is_active']): ?>
-                                <span class="badge badge-success">Active</span>
-                            <?php else: ?>
-                                <span class="badge badge-danger">Inactive</span>
-                            <?php endif; ?>
-                        </td>
-                        <td><?php echo number_format($material['current_stock'], 2); ?></td>
-                        <td><?php echo number_format($material['reorder_point'], 2); ?></td>
-                        <td>$<?php echo number_format($material['cost_per_unit'], 2); ?></td>
-                    </tr>
-                    <tr class="action-row" id="action-row-<?php echo $material['id']; ?>">
-                        <td colspan="8">
-                            <div class="actions-container">
-                                <button class="actions-toggle" onclick="toggleActions(<?php echo $material['id']; ?>)" type="button">
-                                    <span class="toggle-text">Actions</span>
-                                    <span class="toggle-icon">▼</span>
-                                </button>
-                                <div class="action-buttons" id="actions-<?php echo $material['id']; ?>" style="display: none;">
-                                    <a href="view.php?id=<?php echo $material['id']; ?>" class="btn-action btn-view" title="View Details">
-                                        <span class="text">View</span>
-                                    </a>
-                                    <a href="edit.php?id=<?php echo $material['id']; ?>" class="btn-action btn-edit" title="Edit Material">
-                                        <span class="text">Edit</span>
-                                    </a>
-                                    <a href="../inventory/adjust.php?type=material&id=<?php echo $material['id']; ?>" class="btn-action btn-inventory" title="Adjust Stock">
-                                        <span class="text">Stock</span>
-                                    </a>
-                                    <a href="../bom/index.php?material_id=<?php echo $material['id']; ?>" class="btn-action btn-usage" title="View BOM Usage">
-                                        <span class="text">Usage</span>
-                                    </a>
-                                    <?php if ($material['current_stock'] < $material['reorder_point']): ?>
-                                    <a href="../purchase/create.php?material_id=<?php echo $material['id']; ?>" class="btn-action btn-reorder" title="Create Purchase Order">
-                                        <span class="text">Reorder</span>
-                                    </a>
+                    <?php 
+                    $stockLevel = 'good';
+                    if ($material['current_stock'] <= 0) {
+                        $stockLevel = 'critical';
+                    } elseif ($material['current_stock'] < $material['reorder_point']) {
+                        $stockLevel = 'warning';
+                    }
+                    ?>
+                    
+                    <div class="list-item <?php echo !$material['is_active'] ? 'inactive' : ''; ?> <?php echo $stockLevel; ?>" 
+                         data-id="<?php echo $material['id']; ?>" 
+                         data-type="<?php echo strtolower($material['material_type']); ?>"
+                         data-stock-level="<?php echo $stockLevel; ?>"
+                         data-name="<?php echo strtolower($material['name']); ?>"
+                         data-code="<?php echo strtolower($material['material_code']); ?>"
+                         data-cost="<?php echo $material['cost_per_unit']; ?>">
+                         
+                        <div class="item-selector">
+                            <input type="checkbox" class="item-checkbox" value="<?php echo $material['id']; ?>" onchange="updateBulkActions()">
+                        </div>
+                        
+                        <div class="item-primary" onclick="window.location.href='view.php?id=<?php echo $material['id']; ?>'">
+                            <div class="item-header">
+                                <span class="material-code"><?php echo htmlspecialchars($material['material_code']); ?></span>
+                                <div class="status-indicators">
+                                    <span class="stock-status <?php echo $stockLevel; ?>"></span>
+                                    <span class="type-badge <?php echo strtolower($material['material_type']); ?>">
+                                        <?php echo ucfirst(str_replace('_', ' ', $material['material_type'])); ?>
+                                    </span>
+                                    <?php if (!$material['is_active']): ?>
+                                    <span class="status-badge inactive">Inactive</span>
                                     <?php endif; ?>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
+                            <h3 class="material-name"><?php echo htmlspecialchars($material['name']); ?></h3>
+                            <div class="item-meta">
+                                <span>Category: <?php echo htmlspecialchars($material['category'] ?? 'General'); ?></span>
+                                <span>UOM: <?php echo htmlspecialchars($material['uom_code']); ?></span>
+                                <?php if (isset($material['supplier_name'])): ?>
+                                <span>Supplier: <?php echo htmlspecialchars($material['supplier_name']); ?></span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        
+                        <div class="item-metrics">
+                            <div class="metric">
+                                <label>Current Stock</label>
+                                <span class="value <?php echo $stockLevel; ?>">
+                                    <?php echo number_format($material['current_stock'], 2); ?> <?php echo htmlspecialchars($material['uom_code']); ?>
+                                </span>
+                            </div>
+                            
+                            <div class="metric">
+                                <label>Reorder Point</label>
+                                <span class="value">
+                                    <?php echo number_format($material['reorder_point'], 2); ?> <?php echo htmlspecialchars($material['uom_code']); ?>
+                                </span>
+                            </div>
+                            
+                            <div class="metric">
+                                <label>Cost/Unit</label>
+                                <span class="value">$<?php echo number_format($material['cost_per_unit'], 2); ?></span>
+                            </div>
+                        </div>
+                        
+                        <div class="item-actions">
+                            <?php if ($material['current_stock'] < $material['reorder_point']): ?>
+                            <button class="action-quick primary" title="Quick Reorder" onclick="quickReorder(<?php echo $material['id']; ?>)">
+                                ⚡
+                            </button>
+                            <?php else: ?>
+                            <button class="action-quick" title="Quick Stock Adjust" onclick="quickStockAdjust(<?php echo $material['id']; ?>)">
+                                ⚡
+                            </button>
+                            <?php endif; ?>
+                            
+                            <button class="action-menu-toggle" onclick="toggleActionMenu(<?php echo $material['id']; ?>)" type="button">
+                                ⋮
+                            </button>
+                            <div class="action-menu" id="menu-<?php echo $material['id']; ?>">
+                                <a href="view.php?id=<?php echo $material['id']; ?>" class="action-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                    View Details
+                                </a>
+                                <a href="edit.php?id=<?php echo $material['id']; ?>" class="action-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
+                                    </svg>
+                                    Edit Material
+                                </a>
+                                <a href="../inventory/adjust.php?type=material&id=<?php echo $material['id']; ?>" class="action-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
+                                    </svg>
+                                    Stock History
+                                </a>
+                                <a href="../bom/index.php?material_id=<?php echo $material['id']; ?>" class="action-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                    </svg>
+                                    BOM Usage
+                                </a>
+                                <?php if ($material['current_stock'] < $material['reorder_point']): ?>
+                                <a href="../purchase/create.php?material_id=<?php echo $material['id']; ?>" class="action-item reorder">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="9" cy="21" r="1"/>
+                                        <circle cx="20" cy="21" r="1"/>
+                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                                    </svg>
+                                    Create Purchase Order
+                                </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
                     <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="summary-info">
-            <p>Total Materials: <strong><?php echo count($materials); ?></strong></p>
-            
-            <?php
-            // Calculate materials below reorder point
-            $belowReorder = 0;
-            foreach ($materials as $material) {
-                if ($material['reorder_point'] > 0 && ($material['current_stock'] ?? 0) < $material['reorder_point']) {
-                    $belowReorder++;
-                }
-            }
-            if ($belowReorder > 0): ?>
-                <p class="text-danger">Materials Below Reorder Point: <strong><?php echo $belowReorder; ?></strong></p>
-            <?php endif; ?>
-        </div>
+                </div>
+            </div>
         <?php endif; ?>
     </div>
 </div>
 
 <link rel="stylesheet" href="../css/autocomplete.css">
+<link rel="stylesheet" href="../css/materials-modern.css">
 <script src="../js/autocomplete.js"></script>
 <script src="../js/search-history-manager.js"></script>
 <script src="../js/autocomplete-manager.js"></script>
 
 <script>
-function toggleActions(materialId) {
-    const actionsDiv = document.getElementById('actions-' + materialId);
-    const toggleBtn = document.querySelector('#action-row-' + materialId + ' .actions-toggle');
+// Modern Materials List JavaScript
+let selectedMaterials = new Set();
+let currentFilter = 'all';
+let allMaterials = [];
+
+// Initialize materials data on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Store all materials for client-side filtering
+    allMaterials = Array.from(document.querySelectorAll('.list-item')).map(item => ({
+        element: item,
+        id: item.dataset.id,
+        type: item.dataset.type,
+        stockLevel: item.dataset.stockLevel,
+        name: item.dataset.name,
+        code: item.dataset.code,
+        cost: parseFloat(item.dataset.cost || 0)
+    }));
     
-    if (actionsDiv.style.display === 'none' || actionsDiv.style.display === '') {
-        // Show actions
-        actionsDiv.style.display = 'flex';
-        toggleBtn.classList.add('expanded');
-        
-        // Hide other open action menus
-        document.querySelectorAll('.action-buttons').forEach(div => {
-            if (div !== actionsDiv) {
-                div.style.display = 'none';
+    // Initialize recent searches
+    initializeRecentSearches();
+});
+
+// Recent searches functionality
+function initializeRecentSearches() {
+    const searchInput = document.getElementById('searchInput');
+    const recentSearches = document.getElementById('recentSearches');
+    const recentSearchesList = document.getElementById('recentSearchesList');
+    
+    if (!searchInput || !recentSearches || !recentSearchesList) return;
+    
+    // Show recent searches on input focus
+    searchInput.addEventListener('focus', function() {
+        updateRecentSearchesDisplay();
+    });
+    
+    // Hide recent searches when clicking outside (but not on autocomplete)
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.search-input-section') && 
+            !event.target.closest('.autocomplete-dropdown')) {
+            recentSearches.style.display = 'none';
+        }
+    });
+    
+    // Save search when form is submitted
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function() {
+            const query = searchInput.value.trim();
+            if (query) {
+                saveRecentSearch(query);
             }
         });
-        document.querySelectorAll('.actions-toggle').forEach(btn => {
-            if (btn !== toggleBtn) {
-                btn.classList.remove('expanded');
-            }
-        });
-    } else {
-        // Hide actions
-        actionsDiv.style.display = 'none';
-        toggleBtn.classList.remove('expanded');
     }
 }
 
-// Close actions when clicking outside
+function updateRecentSearchesDisplay() {
+    const recentSearches = document.getElementById('recentSearches');
+    const recentSearchesList = document.getElementById('recentSearchesList');
+    
+    if (!recentSearches || !recentSearchesList) return;
+    
+    const searches = getRecentSearches();
+    
+    if (searches.length === 0) {
+        recentSearches.style.display = 'none';
+        return;
+    }
+    
+    // Clear existing items
+    recentSearchesList.innerHTML = '';
+    
+    // Add recent search items (limit to 5 most recent)
+    searches.slice(0, 5).forEach(search => {
+        const item = document.createElement('span');
+        item.className = 'recent-search-item';
+        item.textContent = search;
+        item.onclick = function() {
+            document.getElementById('searchInput').value = search;
+            document.getElementById('searchForm').submit();
+        };
+        recentSearchesList.appendChild(item);
+    });
+    
+    recentSearches.style.display = 'block';
+}
+
+function getRecentSearches() {
+    try {
+        const searches = localStorage.getItem('materialRecentSearches');
+        return searches ? JSON.parse(searches) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function saveRecentSearch(query) {
+    try {
+        let searches = getRecentSearches();
+        
+        // Remove if already exists
+        searches = searches.filter(s => s !== query);
+        
+        // Add to beginning
+        searches.unshift(query);
+        
+        // Keep only last 10
+        searches = searches.slice(0, 10);
+        
+        localStorage.setItem('materialRecentSearches', JSON.stringify(searches));
+    } catch (e) {
+        // Fail silently if localStorage is not available
+    }
+}
+
+// Action Menu Toggle
+function toggleActionMenu(materialId) {
+    const menu = document.getElementById('menu-' + materialId);
+    const allMenus = document.querySelectorAll('.action-menu');
+    
+    // Close all other menus
+    allMenus.forEach(m => {
+        if (m !== menu) {
+            m.classList.remove('show');
+        }
+    });
+    
+    // Toggle current menu
+    menu.classList.toggle('show');
+    
+    // Prevent event bubbling
+    event.stopPropagation();
+}
+
+// Close menus when clicking outside
 document.addEventListener('click', function(event) {
-    if (!event.target.closest('.actions-container')) {
-        document.querySelectorAll('.action-buttons').forEach(div => {
-            div.style.display = 'none';
+    if (!event.target.closest('.action-menu-toggle')) {
+        document.querySelectorAll('.action-menu').forEach(menu => {
+            menu.classList.remove('show');
         });
-        document.querySelectorAll('.actions-toggle').forEach(btn => {
-            btn.classList.remove('expanded');
+    }
+});
+
+// Bulk Actions Management
+function updateBulkActions() {
+    const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+    const bulkBar = document.getElementById('bulkActionsBar');
+    const countSpan = document.getElementById('selectedCount');
+    
+    selectedMaterials.clear();
+    checkboxes.forEach(cb => selectedMaterials.add(cb.value));
+    
+    countSpan.textContent = selectedMaterials.size;
+    
+    if (selectedMaterials.size > 0) {
+        bulkBar.classList.add('show');
+    } else {
+        bulkBar.classList.remove('show');
+    }
+}
+
+// Filter Materials
+function filterMaterials(filter) {
+    currentFilter = filter;
+    
+    // Update filter button states
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.filter === filter);
+    });
+    
+    // Filter materials
+    allMaterials.forEach(material => {
+        let show = true;
+        
+        switch(filter) {
+            case 'low-stock':
+                show = material.stockLevel === 'warning';
+                break;
+            case 'out-of-stock':
+                show = material.stockLevel === 'critical';
+                break;
+            case 'need-reorder':
+                show = material.stockLevel === 'warning' || material.stockLevel === 'critical';
+                break;
+            case 'all':
+            default:
+                show = true;
+                break;
+        }
+        
+        material.element.style.display = show ? 'flex' : 'none';
+    });
+    
+    updateListMeta();
+}
+
+
+
+// Update list metadata
+function updateListMeta() {
+    const visibleCount = allMaterials.filter(m => m.element.style.display !== 'none').length;
+    const metaElement = document.querySelector('.list-meta');
+    if (metaElement) {
+        metaElement.textContent = `${visibleCount} materials found`;
+    }
+}
+
+// Quick Actions
+function quickStockAdjust(materialId) {
+    // For now, redirect to stock adjust page
+    // TODO: Implement modal for quick stock adjustment
+    window.location.href = `../inventory/adjust.php?type=material&id=${materialId}`;
+}
+
+function quickReorder(materialId) {
+    // For now, redirect to purchase order creation
+    // TODO: Implement quick reorder modal
+    window.location.href = `../purchase/create.php?material_id=${materialId}`;
+}
+
+// Bulk Operations
+function bulkExport() {
+    if (selectedMaterials.size === 0) {
+        alert('Please select materials to export');
+        return;
+    }
+    
+    // TODO: Implement bulk export functionality
+    alert(`Exporting ${selectedMaterials.size} materials (Feature coming soon)`);
+}
+
+function bulkStockAdjust() {
+    if (selectedMaterials.size === 0) {
+        alert('Please select materials for stock adjustment');
+        return;
+    }
+    
+    // TODO: Implement bulk stock adjustment modal
+    alert(`Adjusting stock for ${selectedMaterials.size} materials (Feature coming soon)`);
+}
+
+function bulkReorder() {
+    if (selectedMaterials.size === 0) {
+        alert('Please select materials to reorder');
+        return;
+    }
+    
+    // TODO: Implement bulk purchase order creation
+    alert(`Creating PO for ${selectedMaterials.size} materials (Feature coming soon)`);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(event) {
+    // Escape key closes all menus
+    if (event.key === 'Escape') {
+        document.querySelectorAll('.action-menu').forEach(menu => {
+            menu.classList.remove('show');
         });
+    }
+    
+    // Ctrl/Cmd + A selects all visible materials
+    if ((event.ctrlKey || event.metaKey) && event.key === 'a') {
+        event.preventDefault();
+        const visibleCheckboxes = Array.from(document.querySelectorAll('.item-checkbox'))
+            .filter(cb => cb.closest('.list-item').style.display !== 'none');
+        
+        const allChecked = visibleCheckboxes.every(cb => cb.checked);
+        visibleCheckboxes.forEach(cb => cb.checked = !allChecked);
+        updateBulkActions();
     }
 });
 </script>
 
-<style>
-.search-bar {
-    margin: 20px 0;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 5px;
-}
-
-.search-bar .form-row {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.search-bar input[type="text"] {
-    width: 300px;
-}
-
-.badge {
-    display: inline-block;
-    padding: 3px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 3px;
-}
-
-.badge-secondary {
-    background-color: #6c757d;
-    color: white;
-}
-
-.badge-success {
-    background-color: #28a745;
-    color: white;
-}
-
-.badge-danger {
-    background-color: #dc3545;
-    color: white;
-}
-
-.alert {
-    padding: 15px;
-    margin-bottom: 20px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-}
-
-.alert-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-}
-
-.alert-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-}
-
-.alert-info {
-    color: #0c5460;
-    background-color: #d1ecf1;
-    border-color: #bee5eb;
-}
-
-.summary-info {
-    margin-top: 20px;
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 5px;
-}
-
-.summary-info p {
-    margin: 5px 0;
-}
-
-.text-danger {
-    color: #dc3545;
-}
-
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin: 0;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-.checkbox-label input[type="checkbox"] {
-    margin: 0;
-}
-
-.inactive-row {
-    background-color: #f8f9fa;
-    opacity: 0.7;
-}
-
-.inactive-row td {
-    color: #6c757d;
-}
-
-/* Action Row Styling */
-.action-row {
-    background-color: #fafbfc;
-    border-bottom: 1px solid #e1e4e8;
-}
-
-.action-row td {
-    padding: 4px 12px;
-    border-bottom: none;
-}
-
-.inactive-row + .action-row {
-    background-color: #f6f8fa;
-    opacity: 0.7;
-}
-
-/* Actions Container */
-.actions-container {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-/* Actions Toggle Button */
-.actions-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 8px;
-    background-color: #ffffff;
-    border: 1px solid #d1d9e0;
-    border-radius: 3px;
-    color: #656d76;
-    font-size: 11px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-    min-height: 24px;
-    width: fit-content;
-}
-
-.actions-toggle:hover {
-    background-color: #f6f8fa;
-    border-color: #8c959f;
-}
-
-.actions-toggle.expanded {
-    background-color: #0969da;
-    color: white;
-    border-color: #0969da;
-}
-
-.actions-toggle.expanded .toggle-icon {
-    transform: rotate(180deg);
-}
-
-.toggle-icon {
-    font-size: 8px;
-    transition: transform 0.15s ease;
-    line-height: 1;
-}
-
-/* Action Buttons Styling */
-.action-buttons {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.btn-action {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px 10px;
-    border-radius: 3px;
-    text-decoration: none;
-    font-size: 11px;
-    font-weight: 600;
-    transition: all 0.15s ease;
-    white-space: nowrap;
-    border: 1px solid;
-    min-height: 24px;
-    line-height: 1;
-    text-transform: uppercase;
-    letter-spacing: 0.025em;
-}
-
-.btn-action .text {
-    display: inline;
-}
-
-/* Button Color Schemes - Subtle and Polished */
-.btn-view {
-    background-color: #ffffff;
-    color: #0969da;
-    border-color: #d1d9e0;
-}
-
-.btn-view:hover {
-    background-color: #0969da;
-    color: white;
-    border-color: #0969da;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.btn-edit {
-    background-color: #ffffff;
-    color: #fb8500;
-    border-color: #d1d9e0;
-}
-
-.btn-edit:hover {
-    background-color: #fb8500;
-    color: white;
-    border-color: #fb8500;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.btn-inventory {
-    background-color: #ffffff;
-    color: #2da44e;
-    border-color: #d1d9e0;
-}
-
-.btn-inventory:hover {
-    background-color: #2da44e;
-    color: white;
-    border-color: #2da44e;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.btn-usage {
-    background-color: #ffffff;
-    color: #8250df;
-    border-color: #d1d9e0;
-}
-
-.btn-usage:hover {
-    background-color: #8250df;
-    color: white;
-    border-color: #8250df;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.btn-reorder {
-    background-color: #fff8dc;
-    color: #9a6700;
-    border-color: #f5d90a;
-}
-
-.btn-reorder:hover {
-    background-color: #f5d90a;
-    color: #000000;
-    border-color: #e5c900;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-/* Mobile-optimized buttons */
-@media (max-width: 640px) {
-    .action-buttons {
-        display: flex;
-        gap: 4px;
-        justify-content: flex-start;
-        flex-wrap: wrap;
-    }
-    
-    .btn-action {
-        min-height: 28px;
-        padding: 5px 10px;
-    }
-    
-    .action-row td {
-        padding: 6px 12px;
-    }
-}
-
-@media (max-width: 768px) {
-    .search-bar .form-row {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .search-bar input[type="text"] {
-        width: 100%;
-    }
-}
-
-/* Custom autocomplete styles for materials page */
-.autocomplete-item .item-main {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.autocomplete-item .item-code {
-    font-weight: 600;
-    color: #333;
-    font-size: 14px;
-    font-family: monospace;
-}
-
-.autocomplete-item .item-name {
-    color: #666;
-    font-size: 13px;
-    font-weight: normal;
-}
-</style>
 
 
 <?php require_once '../../includes/footer.php'; ?>
