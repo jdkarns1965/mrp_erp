@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../../includes/header-tailwind.php';
+require_once '../../includes/search-component.php';
 require_once '../../classes/Database.php';
 require_once '../../classes/Product.php';
 
@@ -122,8 +123,10 @@ $stats = $stats ?: [
 ];
 ?>
 
+<!-- Standardized Search Component -->
+<?php echo getSearchComponentCSS(); ?>
+
 <link rel="stylesheet" href="../css/materials-modern.css">
-<link rel="stylesheet" href="../css/autocomplete.css">
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style="padding-top: 2rem;">
     <!-- Page Header -->
@@ -165,52 +168,27 @@ $stats = $stats ?: [
                 </div>
             <?php endif; ?>
         
-            <form method="GET" action="" id="searchForm" class="space-y-4">
-                <?php if ($productId): ?>
-                    <input type="hidden" name="product_id" value="<?php echo $productId; ?>">
-                <?php endif; ?>
-                
-                <!-- Search Input -->
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </div>
-                    <input type="text" 
-                           id="searchInput"
-                           name="search" 
-                           placeholder="Search BOMs by product code, name, or description..." 
-                           value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>"
-                           data-autocomplete-preset="bom-search"
-                           autocomplete="off"
-                           class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                </div>
-
-                <!-- Search Controls -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <button type="submit" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
-                            Search
-                        </button>
-                        <?php if (!empty($_GET['search']) || $showInactive || $filterStatus !== 'all'): ?>
-                            <a href="<?php echo $productId ? 'index.php?product_id=' . $productId : 'index.php'; ?>" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200">
-                                Clear
-                            </a>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <label class="inline-flex items-center">
-                        <input type="checkbox" 
-                               name="show_inactive" 
-                               value="1"
-                               <?php echo $showInactive ? 'checked' : ''; ?>
-                               onchange="this.form.submit();"
-                               class="rounded border-gray-300 text-primary shadow-sm focus:border-primary focus:ring-primary">
-                        <span class="ml-2 text-sm text-gray-600">Include Inactive BOMs</span>
-                    </label>
-                </div>
-            </form>
+            <!-- BOM Search with Product Filter -->
+            <?php if ($productId): ?>
+                <input type="hidden" form="searchForm" name="product_id" value="<?php echo $productId; ?>">
+            <?php endif; ?>
+            
+            <?php 
+            echo renderSearchComponent([
+                'entity' => 'bom',
+                'placeholder' => 'Search BOMs by product code, name, or description...',
+                'current_search' => $search,
+                'clear_url' => $productId ? 'index.php?product_id=' . $productId : 'index.php',
+                'show_filters' => [
+                    [
+                        'name' => 'show_inactive',
+                        'value' => '1',
+                        'label' => 'Include Inactive BOMs',
+                        'onchange' => 'this.form.submit();'
+                    ]
+                ]
+            ]);
+            ?>
         </div>
     </div>
     <!-- Products without BOMs Alert -->
@@ -477,9 +455,7 @@ $stats = $stats ?: [
     <?php endif; ?>
 </div>
 
-<script src="../js/autocomplete.js"></script>
-<script src="../js/search-history-manager.js"></script>
-<script src="../js/autocomplete-manager.js"></script>
+<?php includeSearchComponentJS(); ?>
 <script>
 // AutocompleteManager will auto-initialize search history based on data-autocomplete-preset attribute
 

@@ -18,14 +18,14 @@ if (typeof AutocompleteManager === 'undefined') {
     static presets = {
         // Search page configurations with history
         'products-search': {
-            apiUrl: 'search-api.php',
+            apiUrl: '../api/products-search.php',
             displayField: 'code',
             valueField: 'code',
             showCategory: true,
             behavior: 'search-submit',
             placeholder: 'Search products by code or name...',
             minChars: 1,
-            enableHistory: true,
+            enableHistory: false,
             entityType: 'products',
             customTemplate: function(item, index, query) {
                 const highlightedCode = this.highlightMatch(item.code, query);
@@ -51,7 +51,7 @@ if (typeof AutocompleteManager === 'undefined') {
             behavior: 'search-submit',
             placeholder: 'Search materials by code or name...',
             minChars: 1,
-            enableHistory: true,
+            enableHistory: false,
             entityType: 'materials',
             customTemplate: function(item, index, query) {
                 const highlightedCode = this.highlightMatch(item.code, query);
@@ -158,7 +158,7 @@ if (typeof AutocompleteManager === 'undefined') {
             behavior: 'search-submit',
             placeholder: 'Search BOMs by product code, name, or description...',
             minChars: 1,
-            enableHistory: true,
+            enableHistory: false,
             entityType: 'bom',
             customTemplate: function(item, index, query) {
                 const highlightedCode = this.highlightMatch(item.product_code, query);
@@ -190,7 +190,7 @@ if (typeof AutocompleteManager === 'undefined') {
             behavior: 'search-submit',
             placeholder: 'Search inventory by item code, name, or lot number...',
             minChars: 1,
-            enableHistory: true,
+            enableHistory: false,
             entityType: 'inventory',
             customTemplate: function(item, index, query) {
                 const highlightedCode = this.highlightMatch(item.code, query);
@@ -219,6 +219,123 @@ if (typeof AutocompleteManager === 'undefined') {
                                 <span class="item-type">${item.item_type}</span>
                                 <span class="item-available">Available: ${item.available}</span>
                                 ${item.location ? `<span class="item-location">${item.location}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        },
+        
+        // MRP search configuration
+        'mrp-search': {
+            apiUrl: '../api/mrp-search.php',
+            displayField: 'code',
+            valueField: 'code',
+            showCategory: true,
+            behavior: 'search-submit',
+            placeholder: 'Search orders by number or customer name...',
+            minChars: 1,
+            enableHistory: false,
+            entityType: 'mrp',
+            customTemplate: function(item, index, query) {
+                const highlightedCode = this.highlightMatch(item.code, query);
+                const highlightedName = this.highlightMatch(item.name, query);
+                
+                // Priority colors for orders
+                const priorityColors = {
+                    'overdue': '#ef4444',
+                    'urgent': '#f59e0b',
+                    'normal': '#10b981'
+                };
+                
+                // Type-specific display
+                if (item.type === 'order') {
+                    return `
+                        <div class="autocomplete-item" data-index="${index}">
+                            <div class="item-main">
+                                <div class="item-code">${highlightedCode}</div>
+                                <div class="item-name">Customer: ${highlightedName}</div>
+                            </div>
+                            <div class="item-meta">
+                                <div class="item-status-row">
+                                    ${item.priority ? `<span class="priority-indicator" style="color: ${priorityColors[item.priority] || '#6b7280'};">${item.priority.charAt(0).toUpperCase() + item.priority.slice(1)}</span>` : ''}
+                                    <span class="item-date">Due: ${new Date(item.required_date).toLocaleDateString()}</span>
+                                    <span class="item-items">${item.item_count} items</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (item.type === 'calculation') {
+                    return `
+                        <div class="autocomplete-item" data-index="${index}">
+                            <div class="item-main">
+                                <div class="item-code">${highlightedCode}</div>
+                                <div class="item-name">Customer: ${highlightedName}</div>
+                            </div>
+                            <div class="item-meta">
+                                <div class="item-status-row">
+                                    <span class="calculation-type">MRP Calculation</span>
+                                    <span class="item-date">Calculated: ${new Date(item.calculation_date).toLocaleDateString()}</span>
+                                    ${item.shortage_count > 0 ? 
+                                        `<span class="shortage-count" style="color: #f59e0b;">${item.shortage_count} shortages</span>` : 
+                                        `<span class="shortage-count" style="color: #10b981;">Complete</span>`
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Fallback template
+                return `
+                    <div class="autocomplete-item" data-index="${index}">
+                        <div class="item-main">
+                            <div class="item-code">${highlightedCode}</div>
+                            <div class="item-name">${highlightedName}</div>
+                        </div>
+                        ${item.category ? `<span class="item-category">${item.category}</span>` : ''}
+                    </div>
+                `;
+            }
+        },
+        
+        'orders-search': {
+            apiUrl: '../api/orders-search.php',
+            displayField: 'code',
+            valueField: 'code',
+            showCategory: true,
+            behavior: 'search-submit',
+            placeholder: 'Search by order number or customer name...',
+            minChars: 1,
+            enableHistory: false,
+            entityType: 'orders',
+            customTemplate: function(item, index, query) {
+                const highlightedCode = this.highlightMatch(item.code, query);
+                const highlightedName = this.highlightMatch(item.name, query);
+                
+                // Status colors
+                const statusColors = {
+                    'pending': '#94a3b8',
+                    'confirmed': '#3b82f6',
+                    'in_production': '#06b6d4',
+                    'completed': '#10b981',
+                    'cancelled': '#ef4444',
+                    'on_hold': '#f59e0b'
+                };
+                
+                return `
+                    <div class="autocomplete-item" data-index="${index}">
+                        <div class="item-main">
+                            <div class="item-code">${highlightedCode}</div>
+                            <div class="item-name">${highlightedName}</div>
+                        </div>
+                        <div class="item-meta">
+                            <div class="item-status-row">
+                                <span class="status-badge" style="background-color: ${statusColors[item.status] || '#6b7280'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">
+                                    ${item.status ? item.status.replace('_', ' ') : 'unknown'}
+                                </span>
+                                <span class="item-date">Due: ${item.required_date}</span>
+                                ${item.total_amount ? `<span class="item-amount">$${item.total_amount}</span>` : ''}
                             </div>
                         </div>
                     </div>

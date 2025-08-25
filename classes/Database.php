@@ -166,7 +166,11 @@ class Database {
             if (empty($types)) {
                 $types = str_repeat('s', count($params));
             } else {
-                $types = implode('', $types);
+                // Handle both string and array types
+                if (is_array($types)) {
+                    $types = implode('', $types);
+                }
+                // If it's already a string, use as-is
             }
             
             $stmt->bind_param($types, ...$params);

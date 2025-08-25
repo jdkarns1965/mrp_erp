@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../../includes/header-tailwind.php';
+require_once '../../includes/search-component.php';
 require_once '../../classes/Inventory.php';
 require_once '../../classes/Material.php';
 require_once '../../classes/Database.php';
@@ -132,40 +133,33 @@ $expiringItems = array_filter($inventory, function($item) {
             <h2>Inventory Management</h2>
         </div>
         
-        <!-- Search Bar with Add Button -->
-        <div class="search-bar">
-            <div class="search-bar-header">
-                <div class="search-form-container">
-                    <form method="GET" id="searchForm">
-                        <div class="search-input-section">
-                            <input type="text" name="search" id="search" placeholder="Search inventory by item code, name, or lot number..."
-                                   data-autocomplete-preset="inventory-search"
-                                   value="<?php echo htmlspecialchars($search); ?>"
-                                   autocomplete="off">
-                            <div class="recent-searches" id="recentSearches">
-                                <!-- Recent searches populated by JavaScript -->
-                            </div>
-                        </div>
-                        <div class="search-controls">
-                            <div class="search-buttons">
-                                <button type="submit" class="btn btn-secondary">Search</button>
-                                <a href="index.php" class="btn btn-outline">Clear</a>
-                            </div>
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="include_reserved" value="1"
-                                       <?php echo !empty($_GET['include_reserved']) ? 'checked' : ''; ?>>
-                                Include Reserved
-                            </label>
-                        </div>
-                        <!-- Hidden filters -->
-                        <input type="hidden" name="item_type" value="<?php echo htmlspecialchars($itemType); ?>">
-                        <input type="hidden" name="stock_status" value="<?php echo htmlspecialchars($stockStatus); ?>">
-                    </form>
-                </div>
-                <div class="search-actions">
-                    <a href="receive.php" class="btn btn-primary">Receive Inventory</a>
-                </div>
-            </div>
+        <!-- Standardized Search Component -->
+        <div class="px-6 py-4">
+            <?php 
+            echo renderSearchComponent([
+                'entity' => 'inventory',
+                'placeholder' => 'Search inventory by item code, name, or lot number...',
+                'current_search' => $search,
+                'show_filters' => [
+                    [
+                        'name' => 'include_reserved',
+                        'value' => '1',
+                        'label' => 'Include Reserved'
+                    ]
+                ]
+            ]);
+            ?>
+            
+            <!-- Hidden filters (preserved for filtering functionality) -->
+            <form id="hiddenFilters" method="GET" style="display: none;">
+                <input type="hidden" name="item_type" value="<?php echo htmlspecialchars($itemType); ?>">
+                <input type="hidden" name="stock_status" value="<?php echo htmlspecialchars($stockStatus); ?>">
+            </form>
+        </div>
+        
+        <!-- Action Button -->
+        <div class="px-6 pb-4">
+            <a href="receive.php" class="btn btn-primary">Receive Inventory</a>
         </div>
         
         <!-- Summary Cards -->
@@ -359,6 +353,22 @@ $expiringItems = array_filter($inventory, function($item) {
 .inventory-list-modern { overflow: visible; }
 .inventory-list { overflow: visible; }
 
+/* Action menu positioning - critical for proper dropdown behavior */
+.item-actions { position: relative; }
+.action-menu { 
+    z-index: 1000; 
+    overflow: visible;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    min-width: 160px;
+}
+.list-item { overflow: visible; }
+
 /* Stock status indicators */
 .stock-status {
     width: 12px;
@@ -404,14 +414,23 @@ $expiringItems = array_filter($inventory, function($item) {
 .inventory-list-modern .materials-list { display: contents; }
 </style>
 
-<script src="../js/autocomplete.js"></script>
-<script src="../js/search-history-manager.js"></script>
-<script src="../js/autocomplete-manager.js"></script>
+<!-- Standardized Search Component -->
+<?php echo getSearchComponentCSS(); ?>
+<?php includeSearchComponentJS(); ?>
 
 <script>
 // Inventory-specific JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Inventory page loaded');
+    
+    // Verify AutocompleteManager is loaded
+    if (typeof AutocompleteManager !== 'undefined') {
+        console.log('AutocompleteManager available - will auto-initialize via data-autocomplete-preset');
+        // AutocompleteManager will auto-initialize elements with data-autocomplete-preset
+        // No manual init needed to avoid duplicate history
+    } else {
+        console.error('AutocompleteManager not available');
+    }
     
     // Setup bulk selection
     setupBulkSelection();
@@ -455,8 +474,11 @@ function setupActionMenus() {
         const toggleButton = e.target.closest('.action-menu-toggle');
         if (toggleButton) {
             e.preventDefault();
+            console.log('Action menu toggle clicked');
             
             const menu = toggleButton.nextElementSibling;
+            console.log('Associated menu:', menu);
+            
             if (menu && menu.classList.contains('action-menu')) {
                 // Close all other menus first
                 document.querySelectorAll('.action-menu').forEach(otherMenu => {
@@ -469,9 +491,13 @@ function setupActionMenus() {
                 const isHidden = menu.classList.contains('hidden');
                 if (isHidden) {
                     menu.classList.remove('hidden');
+                    console.log('Menu opened');
                 } else {
                     menu.classList.add('hidden');
+                    console.log('Menu closed');
                 }
+            } else {
+                console.error('Menu not found or invalid structure');
             }
             return;
         }
@@ -479,9 +505,17 @@ function setupActionMenus() {
         // Close all menus when clicking outside
         if (!e.target.closest('.action-menu')) {
             const openMenus = document.querySelectorAll('.action-menu:not(.hidden)');
-            openMenus.forEach(menu => menu.classList.add('hidden'));
+            if (openMenus.length > 0) {
+                console.log('Closing menus due to outside click');
+                openMenus.forEach(menu => menu.classList.add('hidden'));
+            }
         }
     });
+    
+    // Log initial setup completion
+    const toggles = document.querySelectorAll('.action-menu-toggle');
+    const menus = document.querySelectorAll('.action-menu');
+    console.log(`Action menu setup complete: ${toggles.length} toggles, ${menus.length} menus`);
 }
 
 // Bulk action functions
