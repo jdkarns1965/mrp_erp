@@ -1,0 +1,479 @@
+/**
+ * Action Buttons UI/UX System
+ * Collapsible action buttons that hide under list items
+ * Provides clean, modern interface with improved usability
+ */
+
+/* ========================================
+   Action Row Base Styles
+   ======================================== */
+.action-row {
+    background-color: #fafbfc;
+    border-bottom: 1px solid #e1e4e8;
+    transition: background-color 0.15s ease;
+}
+
+.action-row td {
+    padding: 4px 12px;
+    border-bottom: none;
+}
+
+.action-row:hover {
+    background-color: #f6f8fa;
+}
+
+/* Inactive rows styling */
+.inactive-row + .action-row {
+    background-color: #f6f8fa;
+    opacity: 0.7;
+}
+
+/* ========================================
+   Actions Container
+   ======================================== */
+.actions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+}
+
+/* ========================================
+   Actions Toggle Button
+   ======================================== */
+.actions-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background-color: #ffffff;
+    border: 1px solid #d1d9e0;
+    border-radius: 3px;
+    color: #656d76;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    min-height: 24px;
+    width: fit-content;
+    user-select: none;
+    position: relative;
+}
+
+.actions-toggle:hover {
+    background-color: #f6f8fa;
+    border-color: #8c959f;
+    transform: translateY(-1px);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.actions-toggle:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.actions-toggle.expanded {
+    background-color: #0969da;
+    color: white;
+    border-color: #0969da;
+    box-shadow: 0 2px 4px rgba(9,105,218,0.2);
+}
+
+.actions-toggle.expanded:hover {
+    background-color: #0860ca;
+    border-color: #0860ca;
+}
+
+/* Toggle Icon Animation */
+.toggle-icon {
+    font-size: 8px;
+    transition: transform 0.15s ease;
+    line-height: 1;
+    display: inline-block;
+}
+
+.actions-toggle.expanded .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* ========================================
+   Action Buttons Container
+   ======================================== */
+.action-buttons {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 6px;
+    padding: 6px 0;
+    animation: slideDown 0.2s ease;
+}
+
+.action-buttons[style*="display: none"] {
+    animation: none;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   Individual Action Buttons
+   ======================================== */
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    border: 1px solid;
+    min-height: 24px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-action::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-action:hover::before {
+    left: 100%;
+}
+
+.btn-action .text {
+    display: inline;
+    position: relative;
+    z-index: 1;
+}
+
+.btn-action .icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* ========================================
+   Button Color Schemes
+   ======================================== */
+
+/* View Button */
+.btn-view {
+    background-color: #ffffff;
+    color: #0969da;
+    border-color: #d1d9e0;
+}
+
+.btn-view:hover {
+    background-color: #0969da;
+    color: white;
+    border-color: #0969da;
+    box-shadow: 0 1px 3px rgba(9,105,218,0.2);
+    transform: translateY(-1px);
+}
+
+/* Edit Button */
+.btn-edit {
+    background-color: #ffffff;
+    color: #fb8500;
+    border-color: #d1d9e0;
+}
+
+.btn-edit:hover {
+    background-color: #fb8500;
+    color: white;
+    border-color: #fb8500;
+    box-shadow: 0 1px 3px rgba(251,133,0,0.2);
+    transform: translateY(-1px);
+}
+
+/* Inventory/Stock Button */
+.btn-inventory,
+.btn-stock {
+    background-color: #ffffff;
+    color: #2da44e;
+    border-color: #d1d9e0;
+}
+
+.btn-inventory:hover,
+.btn-stock:hover {
+    background-color: #2da44e;
+    color: white;
+    border-color: #2da44e;
+    box-shadow: 0 1px 3px rgba(45,164,78,0.2);
+    transform: translateY(-1px);
+}
+
+/* Usage Button */
+.btn-usage {
+    background-color: #ffffff;
+    color: #8250df;
+    border-color: #d1d9e0;
+}
+
+.btn-usage:hover {
+    background-color: #8250df;
+    color: white;
+    border-color: #8250df;
+    box-shadow: 0 1px 3px rgba(130,80,223,0.2);
+    transform: translateY(-1px);
+}
+
+/* Reorder Button */
+.btn-reorder {
+    background-color: #fff8dc;
+    color: #9a6700;
+    border-color: #f5d90a;
+    animation: pulse 2s infinite;
+}
+
+.btn-reorder:hover {
+    background-color: #f5d90a;
+    color: #000000;
+    border-color: #e5c900;
+    box-shadow: 0 1px 3px rgba(245,217,10,0.3);
+    transform: translateY(-1px);
+    animation: none;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+/* Delete Button */
+.btn-delete,
+.btn-cancel {
+    background-color: #ffffff;
+    color: #cf222e;
+    border-color: #d1d9e0;
+}
+
+.btn-delete:hover,
+.btn-cancel:hover {
+    background-color: #cf222e;
+    color: white;
+    border-color: #cf222e;
+    box-shadow: 0 1px 3px rgba(207,34,46,0.2);
+    transform: translateY(-1px);
+}
+
+/* Start/Play Button */
+.btn-start,
+.btn-play {
+    background-color: #ffffff;
+    color: #2da44e;
+    border-color: #d1d9e0;
+}
+
+.btn-start:hover,
+.btn-play:hover {
+    background-color: #2da44e;
+    color: white;
+    border-color: #2da44e;
+    box-shadow: 0 1px 3px rgba(45,164,78,0.2);
+    transform: translateY(-1px);
+}
+
+/* Complete/Finish Button */
+.btn-complete,
+.btn-finish {
+    background-color: #ffffff;
+    color: #1a7f37;
+    border-color: #2da44e;
+}
+
+.btn-complete:hover,
+.btn-finish:hover {
+    background-color: #1a7f37;
+    color: white;
+    border-color: #1a7f37;
+    box-shadow: 0 1px 3px rgba(26,127,55,0.2);
+    transform: translateY(-1px);
+}
+
+/* Setup/Configure Button */
+.btn-setup,
+.btn-configure {
+    background-color: #ffffff;
+    color: #6e7781;
+    border-color: #d1d9e0;
+}
+
+.btn-setup:hover,
+.btn-configure:hover {
+    background-color: #6e7781;
+    color: white;
+    border-color: #6e7781;
+    box-shadow: 0 1px 3px rgba(110,119,129,0.2);
+    transform: translateY(-1px);
+}
+
+/* ========================================
+   Disabled State
+   ======================================== */
+.btn-action:disabled,
+.btn-action.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* ========================================
+   Loading State
+   ======================================== */
+.btn-action.loading {
+    color: transparent;
+    pointer-events: none;
+}
+
+.btn-action.loading::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    top: 50%;
+    left: 50%;
+    margin-left: -6px;
+    margin-top: -6px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+/* Tablet and Mobile */
+@media (max-width: 768px) {
+    .action-buttons {
+        gap: 6px;
+        padding: 8px 0;
+    }
+    
+    .btn-action {
+        min-height: 32px;
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .actions-toggle {
+        min-height: 28px;
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    .action-row td {
+        padding: 8px 12px;
+    }
+}
+
+/* Mobile Only */
+@media (max-width: 480px) {
+    .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-action {
+        width: 100%;
+        justify-content: center;
+        min-height: 36px;
+        padding: 8px 12px;
+    }
+    
+    .actions-container {
+        width: 100%;
+    }
+    
+    .actions-toggle {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ========================================
+   Accessibility
+   ======================================== */
+
+/* Focus States */
+.actions-toggle:focus,
+.btn-action:focus {
+    outline: 2px solid #0969da;
+    outline-offset: 2px;
+}
+
+.actions-toggle:focus:not(:focus-visible),
+.btn-action:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .actions-toggle,
+    .btn-action,
+    .toggle-icon,
+    .action-buttons {
+        transition: none;
+        animation: none;
+    }
+    
+    .btn-action::before {
+        display: none;
+    }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+    .actions-toggle,
+    .btn-action {
+        border-width: 2px;
+    }
+    
+    .actions-toggle.expanded {
+        outline: 2px solid white;
+        outline-offset: -2px;
+    }
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+@media print {
+    .action-row,
+    .actions-container,
+    .actions-toggle,
+    .action-buttons {
+        display: none !important;
+    }
+}
