@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Materials Action Menu</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            padding: 8px 16px;
+            margin: 5px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Materials Page Action Menu Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Instructions</h2>
+        <ol>
+            <li>Open the materials page in your browser</li>
+            <li>Click the "Run Tests" button below</li>
+            <li>Try searching for "resin" or "cushion"</li>
+            <li>Click the ⋮ (three dots) button on any material item</li>
+            <li>Verify the action menu appears</li>
+            <li>Click outside to close the menu</li>
+            <li>Try with both full list and search results</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h2>Quick Access Links</h2>
+        <p>
+            <button onclick="window.open('/mrp_erp/public/materials/', '_blank')">Open Materials Page</button>
+            <button onclick="window.open('/mrp_erp/public/materials/index.php?search=resin', '_blank')">Test Search: Resin</button>
+            <button onclick="window.open('/mrp_erp/public/materials/index.php?search=cushion', '_blank')">Test Search: Cushion</button>
+        </p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Automated Tests</h2>
+        <button onclick="runTests()">Run Tests</button>
+        <div id="testResults"></div>
+    </div>
+    
+    <script>
+        function runTests() {
+            const results = document.getElementById('testResults');
+            results.innerHTML = '<div class="test-result info">Running tests...</div>';
+            
+            // Test 1: Check if materials page loads
+            fetch('/mrp_erp/public/materials/')
+                .then(response => {
+                    if (response.ok) {
+                        results.innerHTML += '<div class="test-result success">✓ Materials page loads successfully</div>';
+                        return response.text();
+                    } else {
+                        throw new Error('Materials page failed to load');
+                    }
+                })
+                .then(html => {
+                    // Test 2: Check for toggleActionMenu function
+                    if (html.includes('function toggleActionMenu')) {
+                        results.innerHTML += '<div class="test-result success">✓ toggleActionMenu function found</div>';
+                    } else {
+                        results.innerHTML += '<div class="test-result error">✗ toggleActionMenu function not found</div>';
+                    }
+                    
+                    // Test 3: Check for event parameter in onclick
+                    if (html.includes('toggleActionMenu') && html.includes(', event)')) {
+                        results.innerHTML += '<div class="test-result success">✓ Event parameter properly passed</div>';
+                    } else {
+                        results.innerHTML += '<div class="test-result error">✗ Event parameter missing in onclick</div>';
+                    }
+                    
+                    // Test 4: Check for event delegation backup
+                    if (html.includes('materialsList.addEventListener')) {
+                        results.innerHTML += '<div class="test-result success">✓ Event delegation backup implemented</div>';
+                    } else {
+                        results.innerHTML += '<div class="test-result error">✗ Event delegation backup not found</div>';
+                    }
+                    
+                    // Test search results
+                    return fetch('/mrp_erp/public/materials/index.php?search=resin');
+                })
+                .then(response => response.text())
+                .then(html => {
+                    // Test 5: Check search results have action menus
+                    const menuCount = (html.match(/action-menu-toggle/g) || []).length;
+                    if (menuCount > 0) {
+                        results.innerHTML += '<div class="test-result success">✓ Search results have ' + menuCount + ' action menu toggles</div>';
+                    } else {
+                        results.innerHTML += '<div class="test-result error">✗ No action menu toggles in search results</div>';
+                    }
+                    
+                    results.innerHTML += '<div class="test-result info">Tests completed! Please manually verify the menu toggle works.</div>';
+                })
+                .catch(error => {
+                    results.innerHTML += '<div class="test-result error">✗ Error: ' + error.message + '</div>';
+                });
+        }
+    </script>
+</body>
+</html>

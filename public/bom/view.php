@@ -4,7 +4,7 @@ session_start();
 // Debug: Log page access
 error_log("BOM view.php accessed at " . date('Y-m-d H:i:s') . " with ID: " . ($_GET['id'] ?? 'none'));
 
-require_once '../../includes/header.php';
+require_once '../../includes/header-tailwind.php';
 require_once '../../includes/ui-helpers.php';
 require_once '../../classes/BOM.php';
 require_once '../../classes/Database.php';
@@ -49,7 +49,7 @@ foreach ($bomDetails as $detail) {
 }
 ?>
 
-<div class="container">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="card">
         <div class="card-header">
             Bill of Materials - <?php echo htmlspecialchars($bom['product_code']); ?>
@@ -206,4 +206,7 @@ foreach ($bomDetails as $detail) {
 }
 </style>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php
+$include_autocomplete = true;
+require_once '../../includes/footer-tailwind.php';
+?>

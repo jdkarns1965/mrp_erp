@@ -468,7 +468,122 @@ footer { margin-top: auto; }  /* Footer sticks to bottom */
 <script src="../js/autocomplete-manager.js"></script>
 ```
 
-**Status:** ✅ **Materials page complete** - Use as reference for other entity pages
+#### **⚠️ CRITICAL: Common Modernization Issues & Solutions**
+**When modernizing entity pages (Materials → Products → BOM → etc.), these issues ALWAYS occur:**
+
+##### **Issue #1: Duplicate Search History Display**
+**Problem**: Search history appears twice (one above the other)  
+**Root Cause**: Duplicate script loading + conflicting initialization systems  
+**Symptoms**: Two identical recent searches sections stacked vertically  
+
+**Solution Pattern:**
+```php
+<!-- Load scripts manually at end of page -->
+<script src="../js/autocomplete.js"></script>
+<script src="../js/search-history-manager.js"></script>
+<script src="../js/autocomplete-manager.js"></script>
+
+<?php 
+$include_autocomplete = false; // CRITICAL: Prevent footer from loading scripts again
+require_once '../../includes/footer-tailwind.php'; 
+?>
+```
+
+**Root Fix Steps:**
+1. ✅ Remove manual recent searches HTML (old `<div id="recentSearches">` elements)
+2. ✅ Enable history in AutocompleteManager: `enableHistory: true` in preset
+3. ✅ Set `$include_autocomplete = false` to prevent duplicate script loading
+4. ✅ Let AutocompleteManager auto-initialize via `data-autocomplete-preset` attribute
+
+##### **Issue #2: Action Menu Buttons (⋮) Not Working** 
+**Problem**: Action menu toggle buttons don't respond to clicks  
+**Root Cause**: Old JavaScript uses `style.display`, new Tailwind uses `hidden` classes  
+**Symptoms**: ⋮ buttons visible but clicking does nothing, no dropdown appears  
+
+**Solution Pattern:**
+```javascript
+// OLD (Broken with Tailwind):
+menu.style.display = isVisible ? 'none' : 'block';
+
+// NEW (Works with Tailwind):
+const isHidden = menu.classList.contains('hidden');
+if (isHidden) {
+    menu.classList.remove('hidden');
+} else {
+    menu.classList.add('hidden');
+}
+```
+
+**Complete Fix (Copy this setupActionMenus function):**
+```javascript
+function setupActionMenus() {
+    console.log('Setting up action menus...');
+    
+    // Use event delegation to handle both static and dynamic content
+    document.addEventListener('click', function(e) {
+        // Check if click is on or inside action menu toggle
+        const toggleButton = e.target.closest('.action-menu-toggle');
+        if (toggleButton) {
+            e.preventDefault();
+            
+            const menu = toggleButton.nextElementSibling;
+            if (menu && menu.classList.contains('action-menu')) {
+                // Close all other menus first
+                document.querySelectorAll('.action-menu').forEach(otherMenu => {
+                    if (otherMenu !== menu) {
+                        otherMenu.classList.add('hidden');
+                    }
+                });
+                
+                // Toggle this menu using hidden classes
+                const isHidden = menu.classList.contains('hidden');
+                if (isHidden) {
+                    menu.classList.remove('hidden');
+                } else {
+                    menu.classList.add('hidden');
+                }
+            }
+            return;
+        }
+        
+        // Close all menus when clicking outside
+        if (!e.target.closest('.action-menu')) {
+            const openMenus = document.querySelectorAll('.action-menu:not(.hidden)');
+            openMenus.forEach(menu => menu.classList.add('hidden'));
+        }
+    });
+}
+```
+
+**Key Technical Details:**
+- ✅ Use `e.target.closest('.action-menu-toggle')` to handle SVG icon clicks
+- ✅ Use `hidden` class manipulation, NOT `style.display`
+- ✅ Event delegation pattern handles dynamic content
+- ✅ Proper z-index: `z-50` or `z-1000` for menus
+
+##### **Issue #3: AutocompleteManager Preset Configuration**
+**Problem**: Search history not working after enabling  
+**Cause**: Wrong `enableHistory` setting in AutocompleteManager presets  
+
+**Fix for each entity type:**
+```javascript
+// In autocomplete-manager.js, update presets:
+'materials-search': { enableHistory: true, entityType: 'materials' }
+'products-search': { enableHistory: true, entityType: 'products' }  
+'bom-search': { enableHistory: true, entityType: 'bom' }
+```
+
+##### **Modernization Process (Step-by-step)**
+**Use this exact sequence for BOM page and future entity pages:**
+
+1. **Update HTML Structure** (Page header, search form, list container)
+2. **Update List Items** (Replace custom CSS with Tailwind classes)  
+3. **Fix Search History** (Remove manual system, enable AutocompleteManager)
+4. **Fix Action Menus** (Update JavaScript to use `hidden` classes)
+5. **Verify Script Loading** (Prevent duplicates with `$include_autocomplete = false`)
+6. **Test Functionality** (Search, filters, bulk actions, menus)
+
+**Status:** ✅ **Materials & Products pages complete** - Use as reference for BOM modernization
 
 ### Entity Edit Link Guidelines
 **Standard Pattern:** Use `includes/ui-helpers.php` for contextual edit links throughout the system.
@@ -550,11 +665,13 @@ The new system eliminates code duplication and provides preset configurations fo
 
 ### API Endpoints
 - `public/api/materials-search.php` - Material search with type, category, UOM info
+- `public/api/products-search.php` - Product search with BOM and inventory data
+- `public/api/bom-search.php` - BOM search with version and material counts
+- `public/api/inventory-search.php` - Inventory search with stock status and lot tracking
 - `public/api/categories-search.php` - Product/material categories (use ?type=material for materials)
 - `public/api/uom-search.php` - Units of measure
 - `public/api/suppliers-search.php` - Supplier information
 - `public/api/locations-search.php` - Warehouse/location data
-- `public/products/search-api.php` - Product search (existing)
 
 ### **NEW Implementation Patterns (Recommended)**
 
@@ -666,9 +783,10 @@ All autocomplete APIs should return JSON arrays with this structure:
 - ✅ **Products search** (products/index.php) - **MIGRATED** to AutocompleteManager
 - ✅ **Materials search** (materials/index.php) - **MIGRATED** to AutocompleteManager  
 - ✅ **BOM material selection** (bom/create.php) - **MIGRATED** to AutocompleteManager
+- ✅ **BOM search** (bom/index.php) - **MIGRATED** to AutocompleteManager
+- ✅ **Inventory search** (inventory/index.php) - **MIGRATED** to AutocompleteManager
 - ✅ **Document management** (documents/index.php) - **COMPLETE** with file upload/download
 - 🔄 BOM edit page (bom/edit.php) - Needs migration
-- 🔄 Inventory forms (item selection) - Needs implementation
 - 🔄 Order forms (product selection) - Needs implementation
 - 🔄 Category/UOM dropdowns (throughout forms) - Needs implementation
 
@@ -969,6 +1087,20 @@ Database: mrp_erp
 
 ### 📅 Session History
 ```
+2025-08-25 Early Morning: ✅ Inventory Management Page Modernization Complete
+- Fully transformed Inventory page from legacy table to modern list interface matching Materials/Products/BOMs
+- Created inventory-search.php API with intelligent ranking by item code, name, lot number, and location
+- Added inventory-search preset to AutocompleteManager with custom template showing stock status indicators
+- Implemented comprehensive filter panel with All Items, Materials, Products, Expiring Soon, Low Stock, Out of Stock
+- Added bulk selection system with Export, Adjust Stock, and Transfer operations
+- Created action menu system with Adjust Stock, Transfer, Issue, and View Details using event delegation
+- Fixed database compatibility issues with category table joins (material_categories, product_categories)
+- Implemented responsive summary cards with proper horizontal layout using Tailwind CSS grid
+- Added stock status calculation system (normal, low_stock, out_of_stock, expiring, expired)
+- All four major entity pages (Materials, Products, BOMs, Inventory) now use identical modern UI patterns
+- 50% better information density with professional list-based design vs old table layout
+- Complete UI/UX consistency achieved across core MRP entity management interfaces
+
 2025-08-24 Very Late Evening: ✅ BOM Management UI/UX Complete & Products Page Data Integration Fixed
 - Fully transformed BOM page from legacy table to modern list interface matching Materials/Products
 - Added comprehensive search with autocomplete and recent searches functionality  

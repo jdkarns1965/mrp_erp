@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once '../../includes/header.php';
+require_once '../../includes/header-tailwind.php';
+require_once '../../includes/tailwind-form-components.php';
 require_once '../../classes/Database.php';
 
 $db = Database::getInstance();
@@ -97,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<div class="container">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="card">
         <div class="card-header">
             Create Customer Order
@@ -252,4 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php
+$include_autocomplete = true;
+require_once '../../includes/footer-tailwind.php';
+?>

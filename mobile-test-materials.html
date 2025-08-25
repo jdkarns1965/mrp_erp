@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materials Mobile Test - Galaxy S20 Ultra (412px)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        'primary-dark': '#1d4ed8',
+                        'primary-light': '#3b82f6'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="public/css/materials-modern.css">
+    <style>
+        /* Test container to simulate Galaxy S20 Ultra */
+        .mobile-frame {
+            max-width: 412px;
+            margin: 20px auto;
+            border: 2px solid #333;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #fff;
+        }
+        
+        .frame-header {
+            background: #f0f0f0;
+            padding: 10px;
+            text-align: center;
+            font-family: system-ui, -apple-system, sans-serif;
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="frame-header">
+        Galaxy S20 Ultra Simulation (412px × 915px)
+    </div>
+    
+    <div class="mobile-frame">
+        <!-- Navigation Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <h1 class="text-xl font-bold text-gray-900">MRP/ERP</h1>
+                    </div>
+                    <button class="bg-white p-2 rounded-md text-gray-400 hover:text-gray-500">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 bg-gray-50">
+            <div class="px-3 py-4">
+                <!-- Page Header -->
+                <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl mb-6">
+                    <div class="px-4 py-4 border-b border-gray-200 bg-gray-50 rounded-t-xl">
+                        <div class="flex justify-between items-center flex-wrap gap-2">
+                            <h1 class="text-xl font-semibold text-gray-900">Materials</h1>
+                            <a href="#" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
+                                <svg class="mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Add
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Search Section -->
+                    <div class="px-4 py-4">
+                        <form class="space-y-4">
+                            <div class="relative">
+                                <input type="text" 
+                                       placeholder="Search materials..." 
+                                       class="block w-full pl-4 pr-3 py-3 border border-gray-300 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       style="font-size: 16px;">
+                            </div>
+                            <div class="flex flex-col gap-3">
+                                <div class="flex items-center gap-3">
+                                    <button type="submit" class="px-4 py-2 bg-gray-600 text-white rounded-md text-sm">
+                                        Search
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Materials List -->
+                <div class="space-y-6">
+                    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
+                        <div class="px-4 py-4 border-b border-gray-200">
+                            <div class="flex flex-col gap-4">
+                                <div>
+                                    <h2 class="text-lg font-medium text-gray-900">Materials Inventory</h2>
+                                    <p class="text-sm text-gray-500">3 materials found</p>
+                                </div>
+                                
+                                <!-- Filter Buttons - Mobile Optimized -->
+                                <div class="overflow-x-auto pb-2 -mx-2">
+                                    <div class="flex space-x-2 px-2 min-w-max">
+                                        <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 filter-btn active">
+                                            <span class="whitespace-nowrap">All Materials</span>
+                                        </button>
+                                        <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-yellow-200 text-yellow-800 bg-yellow-50 filter-btn">
+                                            <span class="whitespace-nowrap">Low Stock</span>
+                                            <span class="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-medium bg-yellow-200 text-yellow-900">2</span>
+                                        </button>
+                                        <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-red-200 text-red-800 bg-red-50 filter-btn">
+                                            <span class="whitespace-nowrap">Out of Stock</span>
+                                            <span class="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-medium bg-red-200 text-red-900">1</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Materials List Items -->
+                        <div class="divide-y divide-gray-200">
+                            <!-- Material 1 - Good Stock -->
+                            <div class="px-4 py-4">
+                                <div class="flex flex-col gap-3">
+                                    <div class="flex items-center space-x-3 flex-1 min-w-0">
+                                        <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-primary">
+                                        <div class="flex-shrink-0">
+                                            <span class="inline-block h-3 w-3 rounded-full bg-green-400"></span>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <p class="text-sm font-semibold text-gray-900 truncate">MAT-001</p>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 flex-shrink-0">Raw Material</span>
+                                            </div>
+                                            <p class="text-sm text-gray-900 font-medium mb-1 line-clamp-1">Plastic Resin Grade A Premium Quality</p>
+                                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                                                <span>Category: Raw Materials</span>
+                                                <span>UOM: KG</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-3 text-right">
+                                        <div class="min-w-0">
+                                            <p class="text-xs font-medium text-gray-500 mb-1">Current Stock</p>
+                                            <p class="text-sm font-semibold truncate text-gray-900">250.00 KG</p>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-xs font-medium text-gray-500 mb-1">Reorder Point</p>
+                                            <p class="text-sm text-gray-600 truncate">100.00 KG</p>
+                                        </div>
+                                        <div class="min-w-0 col-span-2">
+                                            <p class="text-xs font-medium text-gray-500 mb-1">Cost/Unit</p>
+                                            <p class="text-sm text-gray-900 truncate">$2.50</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-end space-x-2">
+                                        <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary rounded-lg border border-gray-200 action-quick">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg border border-gray-200 action-menu-toggle">
+                                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Material 2 - Low Stock Warning -->
+                            <div class="border-l-4 border-yellow-500 bg-yellow-50 px-4 py-4">
+                                <div class="flex flex-col gap-3">
+                                    <div class="flex items-center space-x-3 flex-1 min-w-0">
+                                        <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-primary">
+                                        <div class="flex-shrink-0">
+                                            <span class="inline-block h-3 w-3 rounded-full bg-yellow-400"></span>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <p class="text-sm font-semibold text-gray-900 truncate">MAT-002</p>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 flex-shrink-0">Component</span>
+                                            </div>
+                                            <p class="text-sm text-gray-900 font-medium mb-1 line-clamp-1">Metal Insert Stainless Steel 316L</p>
+                                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                                                <span>Category: Components</span>
+                                                <span>UOM: PCS</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-3 text-right">
+                                        <div class="min-w-0">
+                                            <p class="text-xs font-medium text-gray-500 mb-1">Current Stock</p>
+                                            <p class="text-sm font-semibold truncate text-yellow-600">25 PCS</p>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-xs font-medium text-gray-500 mb-1">Reorder Point</p>
+                                            <p class="text-sm text-gray-600 truncate">50 PCS</p>
+                                        </div>
+                                        <div class="min-w-0 col-span-2">
+                                            <p class="text-xs font-medium text-gray-500 mb-1">Cost/Unit</p>
+                                            <p class="text-sm text-gray-900 truncate">$0.75</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-end space-x-2">
+                                        <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary rounded-lg border border-gray-200 action-quick">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg border border-gray-200 action-menu-toggle">
+                                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Material 3 - Critical Stock -->
+                            <div class="border-l-4 border-red-500 bg-red-50 px-4 py-4">
+                                <div class="flex flex-col gap-3">
+                                    <div class="flex items-center space-x-3 flex-1 min-w-0">
+                                        <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-primary">
+                                        <div class="flex-shrink-0">
+                                            <span class="inline-block h-3 w-3 rounded-full bg-red-400"></span>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <p class="text-sm font-semibold text-gray-900 truncate">MAT-003</p>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 flex-shrink-0">Packaging</span>
+                                            </div>
+                                            <p class="text-sm text-gray-900 font-medium mb-1 line-clamp-1">Cardboard Box 12x8x6 Heavy Duty</p>
+                                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                                                <span>Category: Packaging</span>
+                                                <span>UOM: PCS</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-3 text-right">
+                                        <div class="min-w-0">
+                                            <p class="text-xs font-medium text-gray-500 mb-1">Current Stock</p>
+                                            <p class="text-sm font-semibold truncate text-red-600">0 PCS</p>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <p class="text-xs font-medium text-gray-500 mb-1">Reorder Point</p>
+                                            <p class="text-sm text-gray-600 truncate">25 PCS</p>
+                                        </div>
+                                        <div class="min-w-0 col-span-2">
+                                            <p class="text-xs font-medium text-gray-500 mb-1">Cost/Unit</p>
+                                            <p class="text-sm text-gray-900 truncate">$1.25</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-end space-x-2">
+                                        <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary rounded-lg border border-gray-200 action-quick">
+                                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                            </svg>
+                                        </button>
+                                        <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-lg border border-gray-200 action-menu-toggle">
+                                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Add touch feedback for demonstration
+        document.querySelectorAll('.action-quick, .action-menu-toggle').forEach(button => {
+            button.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.95)';
+            });
+            button.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+        // Add haptic feedback if supported
+        document.querySelectorAll('.filter-btn, .action-quick, .action-menu-toggle').forEach(element => {
+            element.addEventListener('click', function() {
+                if (navigator.vibrate) {
+                    navigator.vibrate(10);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -631,3 +631,67 @@
         color: #a0aec0;
     }
 }
+
+/* Inventory-specific autocomplete styles */
+.autocomplete-dropdown .item-lot {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    margin-top: 2px;
+    font-weight: 500;
+}
+
+.autocomplete-dropdown .item-status-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.autocomplete-dropdown .stock-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.autocomplete-dropdown .item-type {
+    font-size: 0.75rem;
+    background-color: #e5e7eb;
+    color: #374151;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.autocomplete-dropdown .item-available {
+    font-size: 0.75rem;
+    color: #059669;
+    font-weight: 600;
+}
+
+.autocomplete-dropdown .item-location {
+    font-size: 0.75rem;
+    color: #6b7280;
+    background-color: #f3f4f6;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Dark mode for inventory autocomplete */
+@media (prefers-color-scheme: dark) {
+    .autocomplete-dropdown .item-type {
+        background-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .autocomplete-dropdown .item-available {
+        color: #68d391;
+    }
+    
+    .autocomplete-dropdown .item-location {
+        background-color: #4a5568;
+        color: #a0aec0;
+    }
+}

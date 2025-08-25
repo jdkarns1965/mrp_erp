@@ -59,10 +59,10 @@ if ($activeBOM) {
 }
 
 // Include header after all redirect logic
-require_once '../../includes/header.php';
+require_once '../../includes/header-tailwind.php';
 ?>
 
-<div class="container">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="card">
         <div class="card-header">
             <h2>Product Details: <?php echo htmlspecialchars($productData['product_code']); ?></h2>
@@ -462,4 +462,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php
+$include_autocomplete = true;
+require_once '../../includes/footer-tailwind.php';
+?>

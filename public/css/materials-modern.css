@@ -9,6 +9,16 @@
     margin: 1rem 0 2rem 0;
 }
 
+/* Account for fixed header navigation */
+body {
+    padding-top: 1rem; /* Add space below fixed header */
+}
+
+/* Main content container spacing */
+.max-w-7xl {
+    margin-top: 1rem; /* Additional top margin for content */
+}
+
 .header-content {
     display: flex;
     justify-content: space-between;
@@ -313,15 +323,111 @@
 }
 
 /* ================================
-   RECENT SEARCHES
+   RECENT SEARCHES - OVERRIDE PILL STYLES
    ================================ */
+/* Override SearchHistoryManager pill styles with clean links */
+.recent-searches-wrapper {
+    margin-top: 6px;
+}
+
+.recent-searches-container {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+}
+
 .recent-searches {
+    background: transparent !important;
+    gap: 0 !important;
+    align-items: baseline !important;
     margin-top: 4px;
     padding: 4px 8px;
     background: #f9fafb;
     border-radius: 4px;
     border: none;
     font-size: 0.75rem;
+}
+
+.recent-label {
+    display: inline !important;
+    color: #6b7280 !important;
+    font-weight: 500 !important;
+    font-size: 0.75rem !important;
+    margin-right: 8px !important;
+}
+
+/* Transform pills into clean underlined links */
+.recent-chip {
+    display: inline !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    margin: 0 12px 0 0 !important;
+    color: #6b7280 !important;
+    font-size: 0.75rem !important;
+    text-decoration: underline !important;
+    cursor: pointer !important;
+    box-shadow: none !important;
+    transform: none !important;
+    gap: 0 !important;
+}
+
+.recent-chip:hover {
+    color: #2563eb !important;
+    background: transparent !important;
+    border: none !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Hide icons and keep only text */
+.recent-icon {
+    display: none !important;
+}
+
+.recent-text {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+}
+
+/* Style remove buttons as simple × */
+.recent-remove {
+    display: inline !important;
+    background: transparent !important;
+    border: none !important;
+    color: #9ca3af !important;
+    font-size: 0.75rem !important;
+    margin-left: 4px !important;
+    padding: 0 !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+.recent-remove:hover {
+    color: #ef4444 !important;
+    background: transparent !important;
+}
+
+/* Style clear all button */
+.recent-clear-all {
+    display: inline !important;
+    background: transparent !important;
+    border: none !important;
+    color: #9ca3af !important;
+    font-size: 0.75rem !important;
+    text-decoration: underline !important;
+    margin-left: 16px !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+}
+
+.recent-clear-all:hover {
+    color: #ef4444 !important;
+    background: transparent !important;
+    border: none !important;
 }
 
 .recent-searches-label {
@@ -495,6 +601,19 @@
     z-index: 50;
 }
 
+/* Filter buttons container - prevent cutoff at top */
+.overflow-x-auto {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    margin-top: 0.25rem !important;
+}
+
+/* Ensure filter buttons have proper spacing */
+#quickFilters {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
 .quick-filters {
     display: flex;
     gap: 0.5rem;
@@ -595,6 +714,24 @@
 .materials-list {
     position: relative;
     overflow: visible; /* Ensure action menus aren't clipped */
+}
+
+/* Ensure all parent containers allow action menu overflow */
+.materials-list-modern,
+.products-list-modern,
+#materialsList,
+.divide-y {
+    overflow: visible !important; /* Important to override any conflicting styles */
+}
+
+.materials-list-modern .divide-y,
+.products-list-modern .divide-y {
+    overflow: visible !important;
+}
+
+/* Override any Tailwind overflow classes that might interfere */
+.relative {
+    overflow: visible !important;
 }
 
 /* ================================
@@ -908,21 +1045,26 @@
 }
 
 .action-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: white;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-    z-index: 1000; /* Increased from 50 to ensure menu appears above everything */
-    display: none;
-    min-width: 180px; /* Slightly wider for better readability */
-    margin-top: 0.25rem;
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+    background: white !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06) !important;
+    z-index: 1000 !important; /* Override Tailwind z-50 */
+    min-width: 180px !important; /* Slightly wider for better readability */
+    margin-top: 0.25rem !important;
+    overflow: visible !important; /* Ensure content isn't clipped */
 }
 
-.action-menu.show {
-    display: block;
+.action-menu.hidden {
+    display: none !important;
+}
+
+.action-menu.show,
+.action-menu:not(.hidden) {
+    display: block !important;
 }
 
 .action-item {
@@ -1109,6 +1251,15 @@
 }
 
 @media (max-width: 768px) {
+    /* Extra top padding on mobile for better spacing */
+    body {
+        padding-top: 1.5rem;
+    }
+    
+    .max-w-7xl {
+        margin-top: 1.5rem;
+    }
+    
     .search-bar-header {
         flex-direction: column;
         gap: 0.75rem;
@@ -1211,6 +1362,149 @@
     .bulk-actions {
         width: 100%;
         justify-content: center;
+    }
+}
+
+/* ================================
+   UTILITY CLASSES
+   ================================ */
+.line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+/* ================================
+   SCROLLBAR HIDE UTILITY
+   ================================ */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Touch optimizations for mobile devices */
+.touch-action-btn {
+    transform: scale(1);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.touch-action-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.touch-menu-item {
+    min-height: 48px;
+    padding: 0.75rem 1rem !important;
+}
+
+/* ================================
+   GALAXY S20 ULTRA MOBILE OPTIMIZATIONS (412px)
+   ================================ */
+@media (max-width: 480px) {
+    /* Ensure no horizontal overflow */
+    .max-w-7xl {
+        max-width: 100%;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+    
+    /* Search input larger for mobile */
+    .search-input-section input[type="text"] {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 12px 16px;
+        min-height: 48px; /* Minimum touch target */
+    }
+    
+    /* Filter buttons optimized for Galaxy S20 Ultra */
+    .filter-btn {
+        min-height: 44px; /* Apple/Android recommended minimum */
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+    
+    /* Badge sizing for readability */
+    .filter-btn .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        min-width: 20px;
+        height: 20px;
+    }
+    
+    /* Material list item mobile layout */
+    .list-item {
+        padding: 1rem 0.75rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    
+    /* Mobile-first action buttons */
+    .action-quick,
+    .action-menu-toggle {
+        width: 44px;
+        height: 44px;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    /* Action menu improvements for touch */
+    .action-menu {
+        width: 240px;
+        border-radius: 0.75rem;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        margin-top: 0.5rem;
+    }
+    
+    .action-item {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Typography adjustments for mobile */
+    .material-name {
+        font-size: 1rem;
+        line-height: 1.4;
+        white-space: normal;
+        -webkit-line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    /* Metrics layout for narrow screens */
+    .grid-cols-2 {
+        gap: 1rem;
+    }
+    
+    /* Bulk actions mobile */
+    .bulk-actions-bar {
+        padding: 1rem 0.75rem;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .bulk-btn {
+        min-height: 44px;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
     }
 }
 

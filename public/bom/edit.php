@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once '../../includes/header.php';
+require_once '../../includes/header-tailwind.php';
+require_once '../../includes/tailwind-form-components.php';
 require_once '../../classes/BOM.php';
 require_once '../../classes/Database.php';
 
@@ -156,7 +157,7 @@ if (!empty($bomDetails)) {
 }
 ?>
 
-<div class="container">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="card">
         <div class="card-header">
             Edit Bill of Materials (BOM) - <?php echo htmlspecialchars($bom['product_code']); ?>
@@ -359,4 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php
+$include_autocomplete = true;
+require_once '../../includes/footer-tailwind.php';
+?>

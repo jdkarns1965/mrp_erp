@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../includes/header.php';
+require_once '../../includes/header-tailwind.php';
 require_once '../../classes/Material.php';
 require_once '../../classes/Inventory.php';
 
@@ -31,150 +31,169 @@ foreach ($materials as &$material) {
 unset($material);
 ?>
 
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            <h2>Materials Management</h2>
-        </div>
-    
-        <!-- Alerts -->
-        <?php if (isset($_SESSION['success'])): ?>
-            <div class="alert alert-success">
-                <?php 
-                echo htmlspecialchars($_SESSION['success']);
-                unset($_SESSION['success']);
-                ?>
-            </div>
-        <?php endif; ?>
-        
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-danger">
-                <?php 
-                echo htmlspecialchars($_SESSION['error']);
-                unset($_SESSION['error']);
-                ?>
-            </div>
-        <?php endif; ?>
-        
-        <!-- Search Bar with Add Button -->
-        <div class="search-bar">
-            <div class="search-bar-header">
-                <div class="search-form-container">
-                    <form method="GET" action="" id="searchForm">
-                        <!-- Search Input Field -->
-                        <div class="search-input-section">
-                            <input type="text" 
-                                   id="searchInput"
-                                   name="search" 
-                                   placeholder="Search materials by code, name, or category..." 
-                                   value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>"
-                                   data-autocomplete-preset="materials-search"
-                                   autocomplete="off">
-                            
-                            <!-- Recent Searches -->
-                            <div class="recent-searches" id="recentSearches">
-                                <div class="recent-searches-label">Recent:</div>
-                                <div class="recent-searches-list" id="recentSearchesList"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Search Controls -->
-                        <div class="search-controls">
-                            <div class="search-buttons">
-                                <button type="submit" class="btn btn-secondary">Search</button>
-                                <?php if (!empty($_GET['search']) || $showInactive): ?>
-                                    <a href="index.php" class="btn btn-outline">Clear</a>
-                                <?php endif; ?>
-                            </div>
-                            <label class="checkbox-label">
-                                <input type="checkbox" 
-                                       name="show_inactive" 
-                                       value="1"
-                                       <?php echo $showInactive ? 'checked' : ''; ?>
-                                       onchange="this.form.submit();">
-                                Include Inactive Materials
-                            </label>
-                        </div>
-                    </form>
-                </div>
-                
-                <div class="search-actions">
-                    <a href="create.php" class="btn btn-primary">Add Material</a>
-                </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style="padding-top: 2rem;">
+    <!-- Page Header -->
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl mb-6">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 sm:rounded-t-xl">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-semibold text-gray-900">Materials Management</h1>
+                <a href="create.php" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200">
+                    <svg class="mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Add Material
+                </a>
             </div>
         </div>
-        
-        <!-- Materials Content -->
-        <?php if (empty($materials)): ?>
-            <div class="materials-list-modern">
-                <div class="empty-state-modern">
-                    <div class="icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M9 1v6m6-6v6"/>
+
+        <!-- Search Section -->
+        <div class="px-6 py-4">
+            <form method="GET" action="" id="searchForm" class="space-y-4">
+                <!-- Search Input -->
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
-                    <h3>No Materials Found</h3>
-                    <?php if ($search): ?>
-                        <p>No materials match your search criteria.<br>
-                        <a href="index.php" class="btn btn-outline btn-sm">Clear search</a> or 
-                        <a href="create.php" class="btn btn-primary btn-sm">add a new material</a></p>
-                    <?php else: ?>
-                        <p>Get started by creating your first material for inventory tracking and BOM management.</p>
-                        <a href="create.php" class="btn btn-primary">Create First Material</a>
-                    <?php endif; ?>
+                    <input type="text" 
+                           id="searchInput"
+                           name="search" 
+                           placeholder="Search materials by code, name, or category..." 
+                           value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>"
+                           data-autocomplete-preset="materials-search"
+                           autocomplete="off"
+                           class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                 </div>
-            </div>
-        <?php else: ?>
-            <!-- Modern Materials List -->
-            <div class="materials-list-modern">
-                <div class="materials-list-header">
-                    <h2 class="list-title">Materials Inventory</h2>
-                    <div class="list-meta"><?php echo count($materials); ?> materials found</div>
-                </div>
-                
-                <!-- Filter Panel -->
-                <div class="filter-panel">
-                    <div class="quick-filters" id="quickFilters">
-                        <button class="filter-btn active" data-filter="all" onclick="filterMaterials('all')">All Materials</button>
-                        <button class="filter-btn alert" data-filter="low-stock" onclick="filterMaterials('low-stock')">
-                            Low Stock
-                            <?php 
-                            $lowStock = array_filter($materials, fn($m) => $m['current_stock'] < $m['reorder_point'] && $m['current_stock'] > 0);
-                            if (count($lowStock) > 0) echo '<span class="badge">' . count($lowStock) . '</span>';
-                            ?>
+
+                <!-- Search Controls -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <button type="submit" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
+                            Search
                         </button>
-                        <button class="filter-btn alert" data-filter="out-of-stock" onclick="filterMaterials('out-of-stock')">
-                            Out of Stock
-                            <?php 
-                            $outOfStock = array_filter($materials, fn($m) => $m['current_stock'] <= 0);
-                            if (count($outOfStock) > 0) echo '<span class="badge">' . count($outOfStock) . '</span>';
-                            ?>
-                        </button>
-                        <button class="filter-btn" data-filter="need-reorder" onclick="filterMaterials('need-reorder')">
-                            Need Reorder
-                            <?php 
-                            $needReorder = array_filter($materials, fn($m) => $m['current_stock'] < $m['reorder_point']);
-                            if (count($needReorder) > 0) echo '<span class="badge">' . count($needReorder) . '</span>';
-                            ?>
-                        </button>
+                        <?php if (!empty($_GET['search']) || $showInactive): ?>
+                            <a href="index.php" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200">
+                                Clear
+                            </a>
+                        <?php endif; ?>
                     </div>
                     
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" 
+                               name="show_inactive" 
+                               value="1"
+                               <?php echo $showInactive ? 'checked' : ''; ?>
+                               onchange="this.form.submit();"
+                               class="rounded border-gray-300 text-primary shadow-sm focus:border-primary focus:ring-primary">
+                        <span class="ml-2 text-sm text-gray-600">Include Inactive Materials</span>
+                    </label>
                 </div>
-                
+            </form>
+        </div>
+    </div>
+
+    <!-- Materials Content -->
+    <?php if (empty($materials)): ?>
+        <!-- Empty State -->
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 48 48" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M34 40h10v-4a6 6 0 00-10.712-3.714M34 40H14m20 0v-4a9.971 9.971 0 00-.712-3.714M14 40H4v-4a6 6 0 0110.713-3.714M14 40v-4c0-1.313.253-2.566.713-3.714m0 0A10.003 10.003 0 0124 26c4.21 0 7.813 2.602 9.288 6.286M30 14a6 6 0 11-12 0 6 6 0 0112 0zm12 6a4 4 0 11-8 0 4 4 0 018 0zm-28 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No materials found</h3>
+                <?php if ($search): ?>
+                    <p class="mt-1 text-sm text-gray-500">
+                        No materials match your search criteria.<br>
+                        <a href="index.php" class="text-primary hover:text-primary-dark">Clear search</a> or 
+                        <a href="create.php" class="text-primary hover:text-primary-dark">add a new material</a>
+                    </p>
+                <?php else: ?>
+                    <p class="mt-1 text-sm text-gray-500">Get started by creating your first material for inventory tracking.</p>
+                    <div class="mt-6">
+                        <a href="create.php" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            <svg class="mr-2 -ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Create First Material
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php else: ?>
+        <!-- Materials List -->
+        <div class="space-y-6">
+            <!-- List Header & Filters -->
+            <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h2 class="text-lg font-medium text-gray-900">Materials Inventory</h2>
+                            <p class="text-sm text-gray-500"><?php echo count($materials); ?> materials found</p>
+                        </div>
+                        
+                        <!-- Filter Buttons - Mobile Optimized -->
+                        <div class="overflow-x-auto pb-2 -mx-2" style="padding-top: 0.5rem; margin-top: 0.25rem;">
+                            <div class="flex space-x-2 px-2 min-w-max" id="quickFilters" style="padding-top: 0.25rem; padding-bottom: 0.25rem;">
+                                <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200 filter-btn active" data-filter="all" onclick="filterMaterials('all')">
+                                    <span class="whitespace-nowrap">All Materials</span>
+                                </button>
+                                <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-yellow-200 text-yellow-800 bg-yellow-50 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors duration-200 filter-btn" data-filter="low-stock" onclick="filterMaterials('low-stock')">
+                                    <span class="whitespace-nowrap">Low Stock</span>
+                                    <?php 
+                                    $lowStock = array_filter($materials, fn($m) => $m['current_stock'] < $m['reorder_point'] && $m['current_stock'] > 0);
+                                    if (count($lowStock) > 0): ?>
+                                        <span class="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-medium bg-yellow-200 text-yellow-900">
+                                            <?php echo count($lowStock); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </button>
+                                <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-red-200 text-red-800 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 filter-btn" data-filter="out-of-stock" onclick="filterMaterials('out-of-stock')">
+                                    <span class="whitespace-nowrap">Out of Stock</span>
+                                    <?php 
+                                    $outOfStock = array_filter($materials, fn($m) => $m['current_stock'] <= 0);
+                                    if (count($outOfStock) > 0): ?>
+                                        <span class="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-medium bg-red-200 text-red-900">
+                                            <?php echo count($outOfStock); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </button>
+                                <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200 filter-btn" data-filter="need-reorder" onclick="filterMaterials('need-reorder')">
+                                    <span class="whitespace-nowrap">Need Reorder</span>
+                                    <?php 
+                                    $needReorder = array_filter($materials, fn($m) => $m['current_stock'] < $m['reorder_point']);
+                                    if (count($needReorder) > 0): ?>
+                                        <span class="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
+                                            <?php echo count($needReorder); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Bulk Actions Bar (Hidden by default) -->
-                <div class="bulk-actions-bar" id="bulkActionsBar">
-                    <div class="bulk-info">
-                        <span id="selectedCount">0</span> materials selected
-                    </div>
-                    <div class="bulk-actions">
-                        <button class="bulk-btn" onclick="bulkExport()">Export</button>
-                        <button class="bulk-btn" onclick="bulkStockAdjust()">Stock Adjust</button>
-                        <button class="bulk-btn primary" onclick="bulkReorder()">Create PO</button>
+                <div id="bulkActionsBar" class="hidden px-6 py-3 bg-blue-50 border-b border-blue-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <span class="text-sm font-medium text-blue-900" id="selectedCount">0</span>
+                            <span class="ml-1 text-sm text-blue-700">materials selected</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200" onclick="bulkExport()">
+                                Export
+                            </button>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200" onclick="bulkReorder()">
+                                Create PO
+                            </button>
+                        </div>
                     </div>
                 </div>
-                
+
                 <!-- Materials List -->
-                <div class="materials-list" id="materialsList">
+                <div class="divide-y divide-gray-200" id="materialsList">
                     <?php foreach ($materials as $material): ?>
                     <?php 
                     $stockLevel = 'good';
@@ -183,9 +202,21 @@ unset($material);
                     } elseif ($material['current_stock'] < $material['reorder_point']) {
                         $stockLevel = 'warning';
                     }
+                    
+                    $stockLevelClasses = [
+                        'critical' => 'border-l-4 border-red-500 bg-red-50',
+                        'warning' => 'border-l-4 border-yellow-500 bg-yellow-50',
+                        'good' => 'border-l-4 border-transparent'
+                    ];
+                    
+                    $stockDotClasses = [
+                        'critical' => 'bg-red-400',
+                        'warning' => 'bg-yellow-400', 
+                        'good' => 'bg-green-400'
+                    ];
                     ?>
                     
-                    <div class="list-item <?php echo !$material['is_active'] ? 'inactive' : ''; ?> <?php echo $stockLevel; ?>" 
+                    <div class="<?php echo $stockLevelClasses[$stockLevel]; ?> hover:bg-gray-50 transition-colors duration-200 list-item <?php echo !$material['is_active'] ? 'opacity-60' : ''; ?>" 
                          data-id="<?php echo $material['id']; ?>" 
                          data-type="<?php echo strtolower($material['material_type']); ?>"
                          data-stock-level="<?php echo $stockLevel; ?>"
@@ -193,333 +224,153 @@ unset($material);
                          data-code="<?php echo strtolower($material['material_code']); ?>"
                          data-cost="<?php echo $material['cost_per_unit']; ?>">
                          
-                        <div class="item-selector">
-                            <input type="checkbox" class="item-checkbox" value="<?php echo $material['id']; ?>" onchange="updateBulkActions()">
-                        </div>
-                        
-                        <div class="item-primary" onclick="window.location.href='view.php?id=<?php echo $material['id']; ?>'">
-                            <div class="item-header">
-                                <span class="material-code"><?php echo htmlspecialchars($material['material_code']); ?></span>
-                                <div class="status-indicators">
-                                    <span class="stock-status <?php echo $stockLevel; ?>"></span>
-                                    <span class="type-badge <?php echo strtolower($material['material_type']); ?>">
-                                        <?php echo ucfirst(str_replace('_', ' ', $material['material_type'])); ?>
-                                    </span>
-                                    <?php if (!$material['is_active']): ?>
-                                    <span class="status-badge inactive">Inactive</span>
-                                    <?php endif; ?>
+                        <div class="px-4 sm:px-6 py-4">
+                            <!-- Mobile-optimized layout -->
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                                <!-- Row 1: Checkbox + Material Identity -->
+                                <div class="flex items-center space-x-3 flex-1 min-w-0">
+                                    <!-- Checkbox -->
+                                    <input type="checkbox" 
+                                           class="w-4 h-4 rounded border-gray-300 text-primary shadow-sm focus:border-primary focus:ring-primary item-checkbox" 
+                                           value="<?php echo $material['id']; ?>" 
+                                           onchange="updateBulkActions()">
+                                    
+                                    <!-- Stock Status Dot -->
+                                    <div class="flex-shrink-0">
+                                        <span class="inline-block h-3 w-3 rounded-full <?php echo $stockDotClasses[$stockLevel]; ?>"></span>
+                                    </div>
+                                    
+                                    <!-- Material Details -->
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <p class="text-sm font-semibold text-gray-900 truncate">
+                                                <?php echo htmlspecialchars($material['material_code']); ?>
+                                            </p>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 flex-shrink-0">
+                                                <?php echo htmlspecialchars($material['material_type']); ?>
+                                            </span>
+                                        </div>
+                                        <p class="text-sm text-gray-900 font-medium mb-1 line-clamp-1">
+                                            <?php echo htmlspecialchars($material['name']); ?>
+                                        </p>
+                                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                                            <span>Category: <?php echo htmlspecialchars($material['category_name'] ?? 'Uncategorized'); ?></span>
+                                            <span>UOM: <?php echo htmlspecialchars($material['uom_code']); ?></span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <h3 class="material-name"><?php echo htmlspecialchars($material['name']); ?></h3>
-                            <div class="item-meta">
-                                <span>Category: <?php echo htmlspecialchars($material['category'] ?? 'General'); ?></span>
-                                <span>UOM: <?php echo htmlspecialchars($material['uom_code']); ?></span>
-                                <?php if (isset($material['supplier_name'])): ?>
-                                <span>Supplier: <?php echo htmlspecialchars($material['supplier_name']); ?></span>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                        
-                        <div class="item-metrics">
-                            <div class="metric">
-                                <label>Current Stock</label>
-                                <span class="value <?php echo $stockLevel; ?>">
-                                    <?php echo number_format($material['current_stock'], 2); ?> <?php echo htmlspecialchars($material['uom_code']); ?>
-                                </span>
-                            </div>
-                            
-                            <div class="metric">
-                                <label>Reorder Point</label>
-                                <span class="value">
-                                    <?php echo number_format($material['reorder_point'], 2); ?> <?php echo htmlspecialchars($material['uom_code']); ?>
-                                </span>
-                            </div>
-                            
-                            <div class="metric">
-                                <label>Cost/Unit</label>
-                                <span class="value">$<?php echo number_format($material['cost_per_unit'], 2); ?></span>
-                            </div>
-                        </div>
-                        
-                        <div class="item-actions">
-                            <?php if ($material['current_stock'] < $material['reorder_point']): ?>
-                            <button class="action-quick primary" title="Quick Reorder" onclick="quickReorder(<?php echo $material['id']; ?>)">
-                                ⚡
-                            </button>
-                            <?php else: ?>
-                            <button class="action-quick" title="Quick Stock Adjust" onclick="quickStockAdjust(<?php echo $material['id']; ?>)">
-                                ⚡
-                            </button>
-                            <?php endif; ?>
-                            
-                            <button class="action-menu-toggle" type="button">
-                                ⋮
-                            </button>
-                            <div class="action-menu" id="menu-<?php echo $material['id']; ?>">
-                                <a href="view.php?id=<?php echo $material['id']; ?>" class="action-item">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                    View Details
-                                </a>
-                                <a href="edit.php?id=<?php echo $material['id']; ?>" class="action-item">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/>
-                                    </svg>
-                                    Edit Material
-                                </a>
-                                <a href="../inventory/adjust.php?type=material&id=<?php echo $material['id']; ?>" class="action-item">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/>
-                                    </svg>
-                                    Stock History
-                                </a>
-                                <a href="../bom/index.php?material_id=<?php echo $material['id']; ?>" class="action-item">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
-                                    </svg>
-                                    BOM Usage
-                                </a>
-                                <?php if ($material['current_stock'] < $material['reorder_point']): ?>
-                                <a href="../purchase/create.php?material_id=<?php echo $material['id']; ?>" class="action-item reorder">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="9" cy="21" r="1"/>
-                                        <circle cx="20" cy="21" r="1"/>
-                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
-                                    </svg>
-                                    Create Purchase Order
-                                </a>
-                                <?php endif; ?>
+
+                                <!-- Row 2: Stock Metrics (Mobile: Stacked, Desktop: Horizontal) -->
+                                <div class="grid grid-cols-2 sm:flex sm:items-center gap-3 sm:gap-6 text-right sm:flex-shrink-0">
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-medium text-gray-500 mb-1">Current Stock</p>
+                                        <p class="text-sm font-semibold truncate <?php echo $stockLevel === 'critical' ? 'text-red-600' : ($stockLevel === 'warning' ? 'text-yellow-600' : 'text-gray-900'); ?>">
+                                            <?php echo number_format($material['current_stock'], 2); ?> <?php echo $material['uom_code']; ?>
+                                        </p>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-medium text-gray-500 mb-1">Reorder Point</p>
+                                        <p class="text-sm text-gray-600 truncate">
+                                            <?php echo number_format($material['reorder_point'], 2); ?> <?php echo $material['uom_code']; ?>
+                                        </p>
+                                    </div>
+                                    <div class="min-w-0 col-span-2 sm:col-span-1">
+                                        <p class="text-xs font-medium text-gray-500 mb-1">Cost/Unit</p>
+                                        <p class="text-sm text-gray-900 truncate">
+                                            $<?php echo number_format($material['cost_per_unit'], 2); ?>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Row 3: Actions -->
+                                <div class="flex items-center justify-end space-x-2 sm:flex-shrink-0">
+                                    <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200" title="Quick Action">
+                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="relative">
+                                        <button class="action-menu-toggle w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200">
+                                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                            </svg>
+                                        </button>
+                                        <div class="action-menu absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50 hidden">
+                                            <div class="py-2">
+                                                <a href="view.php?id=<?php echo $material['id']; ?>" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                    </svg>
+                                                    View Details
+                                                </a>
+                                                <a href="edit.php?id=<?php echo $material['id']; ?>" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                    </svg>
+                                                    Edit Material
+                                                </a>
+                                                <a href="../inventory/receive.php?material_id=<?php echo $material['id']; ?>" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M9 1v6m6-6v6"></path>
+                                                    </svg>
+                                                    Receive Stock
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <?php endforeach; ?>
                 </div>
             </div>
-        <?php endif; ?>
-    </div>
+        </div>
+    <?php endif; ?>
 </div>
 
-<link rel="stylesheet" href="../css/autocomplete.css">
+<!-- Include CSS for mobile-optimized materials list -->
 <link rel="stylesheet" href="../css/materials-modern.css">
 <script src="../js/autocomplete.js"></script>
 <script src="../js/search-history-manager.js"></script>
 <script src="../js/autocomplete-manager.js"></script>
 
+<!-- Scripts loaded directly to ensure SearchHistoryManager availability -->
+
 <script>
-// Modern Materials List JavaScript
-let selectedMaterials = new Set();
-let currentFilter = 'all';
-let allMaterials = [];
+// AutocompleteManager will auto-initialize based on data-autocomplete-preset attribute
+// No manual initialization needed
 
-// Initialize materials data on page load
-document.addEventListener('DOMContentLoaded', function() {
-    // Store all materials for client-side filtering
-    allMaterials = Array.from(document.querySelectorAll('.list-item')).map(item => ({
-        element: item,
-        id: item.dataset.id,
-        type: item.dataset.type,
-        stockLevel: item.dataset.stockLevel,
-        name: item.dataset.name,
-        code: item.dataset.code,
-        cost: parseFloat(item.dataset.cost || 0)
-    }));
-    
-    // Initialize recent searches
-    initializeRecentSearches();
-    
-    // Setup action menu toggles using event delegation
-    setupActionMenus();
-});
-
-// Setup action menus with proper event delegation
-function setupActionMenus() {
-    console.log('Setting up action menus...');
-    
-    // Remove any existing inline onclick handlers and use event delegation instead
-    document.addEventListener('click', function(e) {
-        // Handle action menu toggle clicks
-        if (e.target.closest('.action-menu-toggle')) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            console.log('Action menu toggle clicked');
-            
-            const toggleBtn = e.target.closest('.action-menu-toggle');
-            const listItem = toggleBtn.closest('.list-item');
-            
-            if (listItem && listItem.dataset.id) {
-                const materialId = listItem.dataset.id;
-                const menu = document.getElementById('menu-' + materialId);
-                
-                console.log('Material ID:', materialId, 'Menu element:', menu);
-                
-                if (!menu) {
-                    console.error('Menu not found for material ID:', materialId);
-                    // Try to debug what IDs exist
-                    const allMenus = document.querySelectorAll('[id^="menu-"]');
-                    console.log('Available menu IDs:', Array.from(allMenus).map(m => m.id));
-                    return;
-                }
-                
-                // Close all other menus
-                document.querySelectorAll('.action-menu').forEach(m => {
-                    if (m !== menu) {
-                        m.classList.remove('show');
-                    }
-                });
-                
-                // Toggle current menu
-                menu.classList.toggle('show');
-                
-                console.log('Toggled menu for material:', materialId, 'Menu visible:', menu.classList.contains('show'));
-            } else {
-                console.error('Could not find list item or material ID');
-            }
-        }
-        // Handle clicks outside menus to close them
-        else if (!e.target.closest('.action-menu')) {
-            document.querySelectorAll('.action-menu').forEach(menu => {
-                menu.classList.remove('show');
-            });
-        }
-    });
-    
-    // Log how many action menu toggles we found
-    const toggleButtons = document.querySelectorAll('.action-menu-toggle');
-    console.log('Found', toggleButtons.length, 'action menu toggle buttons');
-}
-
-// Recent searches functionality
-function initializeRecentSearches() {
-    const searchInput = document.getElementById('searchInput');
-    const recentSearches = document.getElementById('recentSearches');
-    const recentSearchesList = document.getElementById('recentSearchesList');
-    
-    if (!searchInput || !recentSearches || !recentSearchesList) return;
-    
-    // Show recent searches immediately on page load
-    updateRecentSearchesDisplay();
-    
-    // Save search when form is submitted
-    const searchForm = document.getElementById('searchForm');
-    if (searchForm) {
-        searchForm.addEventListener('submit', function() {
-            const query = searchInput.value.trim();
-            if (query) {
-                saveRecentSearch(query);
-            }
-        });
-    }
-}
-
-function updateRecentSearchesDisplay() {
-    const recentSearches = document.getElementById('recentSearches');
-    const recentSearchesList = document.getElementById('recentSearchesList');
-    
-    if (!recentSearches || !recentSearchesList) return;
-    
-    const searches = getRecentSearches();
-    
-    if (searches.length === 0) {
-        // Hide only if there are no searches
-        recentSearches.style.display = 'none';
-        return;
-    }
-    
-    // Always show if there are searches
-    recentSearches.style.display = 'block';
-    
-    // Clear existing items
-    recentSearchesList.innerHTML = '';
-    
-    // Add recent search items (limit to 5 most recent)
-    searches.slice(0, 5).forEach(search => {
-        const item = document.createElement('span');
-        item.className = 'recent-search-item';
-        item.textContent = search;
-        item.onclick = function() {
-            document.getElementById('searchInput').value = search;
-            document.getElementById('searchForm').submit();
-        };
-        recentSearchesList.appendChild(item);
-    });
-}
-
-function getRecentSearches() {
-    try {
-        const searches = localStorage.getItem('materialRecentSearches');
-        return searches ? JSON.parse(searches) : [];
-    } catch (e) {
-        return [];
-    }
-}
-
-function saveRecentSearch(query) {
-    try {
-        let searches = getRecentSearches();
-        
-        // Remove if already exists
-        searches = searches.filter(s => s !== query);
-        
-        // Add to beginning
-        searches.unshift(query);
-        
-        // Keep only last 10
-        searches = searches.slice(0, 10);
-        
-        localStorage.setItem('materialRecentSearches', JSON.stringify(searches));
-        
-        // Update display immediately after saving
-        updateRecentSearchesDisplay();
-    } catch (e) {
-        // Fail silently if localStorage is not available
-    }
-}
-
-// Note: Action menu toggle is handled by setupActionMenus() using event delegation
-
-// Bulk Actions Management
-function updateBulkActions() {
-    const checkboxes = document.querySelectorAll('.item-checkbox:checked');
-    const bulkBar = document.getElementById('bulkActionsBar');
-    const countSpan = document.getElementById('selectedCount');
-    
-    selectedMaterials.clear();
-    checkboxes.forEach(cb => selectedMaterials.add(cb.value));
-    
-    countSpan.textContent = selectedMaterials.size;
-    
-    if (selectedMaterials.size > 0) {
-        bulkBar.classList.add('show');
-    } else {
-        bulkBar.classList.remove('show');
-    }
-}
-
-// Filter Materials
+// Material filtering functions (preserved from original)
 function filterMaterials(filter) {
-    currentFilter = filter;
+    const materials = document.querySelectorAll('.list-item');
+    const filterBtns = document.querySelectorAll('.filter-btn');
     
-    // Update filter button states
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.filter === filter);
+    // Update active filter button
+    filterBtns.forEach(btn => {
+        btn.classList.remove('active');
+        btn.classList.remove('ring-2', 'ring-primary');
     });
     
-    // Filter materials
-    allMaterials.forEach(material => {
+    const activeBtn = document.querySelector(`[data-filter="${filter}"]`);
+    if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.classList.add('ring-2', 'ring-primary');
+    }
+    
+    materials.forEach(material => {
         let show = true;
         
-        switch(filter) {
+        switch (filter) {
             case 'low-stock':
-                show = material.stockLevel === 'warning';
+                show = material.dataset.stockLevel === 'warning';
                 break;
             case 'out-of-stock':
-                show = material.stockLevel === 'critical';
+                show = material.dataset.stockLevel === 'critical';
                 break;
             case 'need-reorder':
-                show = material.stockLevel === 'warning' || material.stockLevel === 'critical';
+                show = ['warning', 'critical'].includes(material.dataset.stockLevel);
                 break;
             case 'all':
             default:
@@ -527,89 +378,140 @@ function filterMaterials(filter) {
                 break;
         }
         
-        material.element.style.display = show ? 'flex' : 'none';
+        material.style.display = show ? 'block' : 'none';
+    });
+}
+
+// Action menu functionality with improved debugging
+function setupActionMenus() {
+    console.log('Setting up action menus...');
+    
+    // Use event delegation to handle both static and dynamic content
+    document.addEventListener('click', function(e) {
+        console.log('Click detected:', e.target);
+        
+        // Check if click is on or inside action menu toggle
+        const toggleButton = e.target.closest('.action-menu-toggle');
+        if (toggleButton) {
+            e.preventDefault();
+            console.log('Action menu toggle clicked:', toggleButton);
+            
+            const menu = toggleButton.nextElementSibling;
+            console.log('Associated menu:', menu);
+            
+            if (menu && menu.classList.contains('action-menu')) {
+                // Close all other menus first
+                document.querySelectorAll('.action-menu').forEach(otherMenu => {
+                    if (otherMenu !== menu) {
+                        otherMenu.classList.add('hidden');
+                    }
+                });
+                
+                // Toggle this menu
+                const isHidden = menu.classList.contains('hidden');
+                if (isHidden) {
+                    menu.classList.remove('hidden');
+                    console.log('Menu opened');
+                } else {
+                    menu.classList.add('hidden');
+                    console.log('Menu closed');
+                }
+            } else {
+                console.error('Menu not found or invalid structure');
+            }
+            return;
+        }
+        
+        // Close all menus when clicking outside
+        if (!e.target.closest('.action-menu')) {
+            const openMenus = document.querySelectorAll('.action-menu:not(.hidden)');
+            if (openMenus.length > 0) {
+                console.log('Closing menus due to outside click');
+                openMenus.forEach(menu => menu.classList.add('hidden'));
+            }
+        }
     });
     
-    updateListMeta();
+    // Log initial setup completion
+    const toggles = document.querySelectorAll('.action-menu-toggle');
+    const menus = document.querySelectorAll('.action-menu');
+    console.log(`Action menu setup complete: ${toggles.length} toggles, ${menus.length} menus`);
 }
 
-
-
-// Update list metadata
-function updateListMeta() {
-    const visibleCount = allMaterials.filter(m => m.element.style.display !== 'none').length;
-    const metaElement = document.querySelector('.list-meta');
-    if (metaElement) {
-        metaElement.textContent = `${visibleCount} materials found`;
+// Bulk actions functionality (preserved from original)
+function updateBulkActions() {
+    const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+    const bulkBar = document.getElementById('bulkActionsBar');
+    const selectedCount = document.getElementById('selectedCount');
+    
+    if (checkboxes.length > 0) {
+        bulkBar.classList.remove('hidden');
+        selectedCount.textContent = checkboxes.length;
+    } else {
+        bulkBar.classList.add('hidden');
     }
 }
 
-// Quick Actions
-function quickStockAdjust(materialId) {
-    // For now, redirect to stock adjust page
-    // TODO: Implement modal for quick stock adjustment
-    window.location.href = `../inventory/adjust.php?type=material&id=${materialId}`;
-}
-
-function quickReorder(materialId) {
-    // For now, redirect to purchase order creation
-    // TODO: Implement quick reorder modal
-    window.location.href = `../purchase/create.php?material_id=${materialId}`;
-}
-
-// Bulk Operations
 function bulkExport() {
-    if (selectedMaterials.size === 0) {
-        alert('Please select materials to export');
-        return;
-    }
-    
-    // TODO: Implement bulk export functionality
-    alert(`Exporting ${selectedMaterials.size} materials (Feature coming soon)`);
-}
-
-function bulkStockAdjust() {
-    if (selectedMaterials.size === 0) {
-        alert('Please select materials for stock adjustment');
-        return;
-    }
-    
-    // TODO: Implement bulk stock adjustment modal
-    alert(`Adjusting stock for ${selectedMaterials.size} materials (Feature coming soon)`);
+    const selected = Array.from(document.querySelectorAll('.item-checkbox:checked')).map(cb => cb.value);
+    console.log('Export materials:', selected);
+    // Implement export functionality
 }
 
 function bulkReorder() {
-    if (selectedMaterials.size === 0) {
-        alert('Please select materials to reorder');
-        return;
-    }
-    
-    // TODO: Implement bulk purchase order creation
-    alert(`Creating PO for ${selectedMaterials.size} materials (Feature coming soon)`);
+    const selected = Array.from(document.querySelectorAll('.item-checkbox:checked')).map(cb => cb.value);
+    console.log('Create PO for materials:', selected);
+    // Implement bulk reorder functionality
 }
 
-// Keyboard shortcuts
-document.addEventListener('keydown', function(event) {
-    // Escape key closes all menus
-    if (event.key === 'Escape') {
-        document.querySelectorAll('.action-menu').forEach(menu => {
-            menu.classList.remove('show');
+// Mobile touch enhancements
+function enhanceMobileExperience() {
+    // Add touch feedback for action buttons
+    const actionButtons = document.querySelectorAll('.action-quick, .action-menu-toggle');
+    actionButtons.forEach(button => {
+        button.addEventListener('touchstart', function() {
+            this.style.transform = 'scale(0.95)';
+        });
+        button.addEventListener('touchend', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+    
+    // Improve filter button scrolling for mobile
+    const filterContainer = document.querySelector('#quickFilters');
+    if (filterContainer && window.innerWidth <= 480) {
+        let isScrolling = false;
+        filterContainer.addEventListener('scroll', function() {
+            isScrolling = true;
+            setTimeout(function() {
+                isScrolling = false;
+            }, 100);
         });
     }
     
-    // Ctrl/Cmd + A selects all visible materials
-    if ((event.ctrlKey || event.metaKey) && event.key === 'a') {
-        event.preventDefault();
-        const visibleCheckboxes = Array.from(document.querySelectorAll('.item-checkbox'))
-            .filter(cb => cb.closest('.list-item').style.display !== 'none');
-        
-        const allChecked = visibleCheckboxes.every(cb => cb.checked);
-        visibleCheckboxes.forEach(cb => cb.checked = !allChecked);
-        updateBulkActions();
-    }
+    // Add haptic feedback for mobile (if supported)
+    const addHapticFeedback = (element) => {
+        element.addEventListener('click', function() {
+            if (navigator.vibrate && window.innerWidth <= 480) {
+                navigator.vibrate(10); // Very short haptic feedback
+            }
+        });
+    };
+    
+    // Apply haptic feedback to interactive elements
+    document.querySelectorAll('.filter-btn, .action-quick, .action-menu-toggle, .item-checkbox').forEach(addHapticFeedback);
+}
+
+// Initialize all functionality
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing functions...');
+    setupActionMenus();
+    enhanceMobileExperience();
+    console.log('Initialization complete');
 });
 </script>
 
-
-
-<?php require_once '../../includes/footer.php'; ?>
+<?php 
+$include_autocomplete = false; // Scripts already loaded above
+require_once '../../includes/footer-tailwind.php'; 
+?>

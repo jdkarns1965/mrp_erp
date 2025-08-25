@@ -11,7 +11,9 @@
  * });
  */
 
-class AutoComplete {
+// Prevent redeclaration if already loaded
+if (typeof AutoComplete === 'undefined') {
+    class AutoComplete {
     constructor(inputElement, options = {}) {
         this.input = inputElement;
         this.options = {
@@ -325,6 +327,10 @@ class AutoComplete {
         this.dropdown = null;
         this.suggestions = [];
     }
+    } // End class AutoComplete
+
+    // Make AutoComplete available globally
+    window.AutoComplete = AutoComplete;
 }
 
 // Auto-initialize autocomplete fields with data attributes
@@ -341,6 +347,3 @@ document.addEventListener('DOMContentLoaded', function() {
         new AutoComplete(input, options);
     });
 });
-
-// Make AutoComplete available globally
-window.AutoComplete = AutoComplete;

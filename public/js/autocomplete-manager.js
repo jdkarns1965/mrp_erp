@@ -9,7 +9,9 @@
  * AutocompleteManager.init('materials-form', '.material-input');
  */
 
-class AutocompleteManager {
+// Prevent redeclaration if already loaded
+if (typeof AutocompleteManager === 'undefined') {
+    class AutocompleteManager {
     static instances = new Map();
     
     // Predefined configurations for common use cases
@@ -23,7 +25,7 @@ class AutocompleteManager {
             behavior: 'search-submit',
             placeholder: 'Search products by code or name...',
             minChars: 1,
-            enableHistory: false,
+            enableHistory: true,
             entityType: 'products',
             customTemplate: function(item, index, query) {
                 const highlightedCode = this.highlightMatch(item.code, query);
@@ -49,7 +51,7 @@ class AutocompleteManager {
             behavior: 'search-submit',
             placeholder: 'Search materials by code or name...',
             minChars: 1,
-            enableHistory: false,
+            enableHistory: true,
             entityType: 'materials',
             customTemplate: function(item, index, query) {
                 const highlightedCode = this.highlightMatch(item.code, query);
@@ -156,7 +158,7 @@ class AutocompleteManager {
             behavior: 'search-submit',
             placeholder: 'Search BOMs by product code, name, or description...',
             minChars: 1,
-            enableHistory: false,
+            enableHistory: true,
             entityType: 'bom',
             customTemplate: function(item, index, query) {
                 const highlightedCode = this.highlightMatch(item.product_code, query);
@@ -173,6 +175,51 @@ class AutocompleteManager {
                         <div class="item-meta">
                             <span class="item-status ${item.is_active ? 'active' : 'inactive'}">${item.is_active ? 'Active' : 'Inactive'}</span>
                             <span class="item-materials">${item.material_count} materials</span>
+                        </div>
+                    </div>
+                `;
+            }
+        },
+        
+        // Inventory search configuration
+        'inventory-search': {
+            apiUrl: '../api/inventory-search.php',
+            displayField: 'code',
+            valueField: 'code',
+            showCategory: true,
+            behavior: 'search-submit',
+            placeholder: 'Search inventory by item code, name, or lot number...',
+            minChars: 1,
+            enableHistory: true,
+            entityType: 'inventory',
+            customTemplate: function(item, index, query) {
+                const highlightedCode = this.highlightMatch(item.code, query);
+                const highlightedName = this.highlightMatch(item.name, query);
+                const highlightedLot = item.lot_number ? this.highlightMatch(item.lot_number, query) : null;
+                
+                // Status indicator colors
+                const statusColors = {
+                    'normal': '#10b981',
+                    'low_stock': '#f59e0b', 
+                    'out_of_stock': '#ef4444',
+                    'expiring': '#f97316',
+                    'expired': '#991b1b'
+                };
+                
+                return `
+                    <div class="autocomplete-item" data-index="${index}">
+                        <div class="item-main">
+                            <div class="item-code">${highlightedCode}</div>
+                            <div class="item-name">${highlightedName}</div>
+                            ${highlightedLot ? `<div class="item-lot">Lot: ${highlightedLot}</div>` : ''}
+                        </div>
+                        <div class="item-meta">
+                            <div class="item-status-row">
+                                <span class="stock-indicator" style="background-color: ${statusColors[item.stock_status] || '#6b7280'};"></span>
+                                <span class="item-type">${item.item_type}</span>
+                                <span class="item-available">Available: ${item.available}</span>
+                                ${item.location ? `<span class="item-location">${item.location}</span>` : ''}
+                            </div>
                         </div>
                     </div>
                 `;
@@ -537,12 +584,15 @@ class AutocompleteManager {
     static escapeRegex(str) {
         return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
+    } // End class AutocompleteManager
+
+    // Make available globally
+    window.AutocompleteManager = AutocompleteManager;
 }
 
 // Auto-initialize on DOM ready
 document.addEventListener('DOMContentLoaded', function() {
-    AutocompleteManager.autoInit();
+    if (typeof AutocompleteManager !== 'undefined') {
+        AutocompleteManager.autoInit();
+    }
 });
-
-// Make available globally
-window.AutocompleteManager = AutocompleteManager;

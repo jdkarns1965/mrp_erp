@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../includes/header.php';
+require_once '../../includes/header-tailwind.php';
 require_once '../../classes/Product.php';
 $product = new Product();
 
@@ -68,158 +68,188 @@ try {
 
 ?>
 
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            <h2>Products Management</h2>
-        </div>
-    
-        <!-- Alerts -->
-        <?php if (isset($_SESSION['success'])): ?>
-            <div class="alert alert-success">
-                <?php 
-                echo htmlspecialchars($_SESSION['success']);
-                unset($_SESSION['success']);
-                ?>
-            </div>
-        <?php endif; ?>
-        
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="alert alert-danger">
-                <?php 
-                echo htmlspecialchars($_SESSION['error']);
-                unset($_SESSION['error']);
-                ?>
-            </div>
-        <?php endif; ?>
-        
-        <!-- Search Bar with Add Button -->
-        <div class="search-bar">
-            <div class="search-bar-header">
-                <div class="search-form-container">
-                    <form method="GET" action="" id="searchForm">
-                        <!-- Search Input Field -->
-                        <div class="search-input-section">
-                            <input type="text" 
-                                   id="searchInput"
-                                   name="search" 
-                                   placeholder="Search products by code, name, or category..." 
-                                   value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>"
-                                   data-autocomplete-preset="products-search"
-                                   autocomplete="off">
-                            
-                            <!-- Recent Searches -->
-                            <div class="recent-searches" id="recentSearches">
-                                <div class="recent-searches-label">Recent:</div>
-                                <div class="recent-searches-list" id="recentSearchesList"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Search Controls -->
-                        <div class="search-controls">
-                            <div class="search-buttons">
-                                <button type="submit" class="btn btn-secondary">Search</button>
-                                <?php if (!empty($_GET['search']) || $showInactive): ?>
-                                    <a href="index.php" class="btn btn-outline">Clear</a>
-                                <?php endif; ?>
-                            </div>
-                            <label class="checkbox-label">
-                                <input type="checkbox" 
-                                       name="show_inactive" 
-                                       value="1"
-                                       <?php echo $showInactive ? 'checked' : ''; ?>
-                                       onchange="this.form.submit();">
-                                Include Inactive Products
-                            </label>
-                        </div>
-                    </form>
-                </div>
-                
-                <div class="search-actions">
-                    <a href="create.php" class="btn btn-primary">Add Product</a>
-                </div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style="padding-top: 2rem;">
+    <!-- Page Header -->
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl mb-6">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 sm:rounded-t-xl">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl font-semibold text-gray-900">Products Management</h1>
+                <a href="create.php" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200">
+                    <svg class="mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Add Product
+                </a>
             </div>
         </div>
-        
-        <!-- Products Content -->
-        <?php if (empty($products)): ?>
-            <div class="products-list-modern">
-                <div class="empty-state-modern">
-                    <div class="icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                            <path d="M7 8h10m-10 4h8m-8 4h6M3 3h18v18H3z"/>
+
+        <!-- Search Section -->
+        <div class="px-6 py-4">
+            <!-- Alerts -->
+            <?php if (isset($_SESSION['success'])): ?>
+                <div class="mb-4 p-4 text-sm text-green-700 bg-green-100 rounded-lg border border-green-200">
+                    <?php 
+                    echo htmlspecialchars($_SESSION['success']);
+                    unset($_SESSION['success']);
+                    ?>
+                </div>
+            <?php endif; ?>
+            
+            <?php if (isset($_SESSION['error'])): ?>
+                <div class="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg border border-red-200">
+                    <?php 
+                    echo htmlspecialchars($_SESSION['error']);
+                    unset($_SESSION['error']);
+                    ?>
+                </div>
+            <?php endif; ?>
+            <form method="GET" action="" id="searchForm" class="space-y-4">
+                <!-- Search Input -->
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                     </div>
-                    <h3>No Products Found</h3>
-                    <?php if ($search): ?>
-                        <p>No products match your search criteria.<br>
-                        <a href="index.php" class="btn btn-outline btn-sm">Clear search</a> or 
-                        <a href="create.php" class="btn btn-primary btn-sm">add a new product</a></p>
-                    <?php else: ?>
-                        <p>Get started by creating your first product for inventory tracking and BOM management.</p>
-                        <a href="create.php" class="btn btn-primary">Create First Product</a>
-                    <?php endif; ?>
+                    <input type="text" 
+                           id="searchInput"
+                           name="search" 
+                           placeholder="Search products by code, name, or category..." 
+                           value="<?php echo htmlspecialchars($_GET['search'] ?? ''); ?>"
+                           data-autocomplete-preset="products-search"
+                           autocomplete="off"
+                           class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
                 </div>
-            </div>
-        <?php else: ?>
-            <!-- Modern Products List -->
-            <div class="products-list-modern">
-                <div class="materials-list-header">
-                    <h2 class="list-title">Products Inventory</h2>
-                    <div class="list-meta"><?php echo count($products); ?> products found</div>
-                </div>
-                
-                <!-- Filter Panel -->
-                <div class="filter-panel">
-                    <div class="quick-filters" id="quickFilters">
-                        <button class="filter-btn active" data-filter="all" onclick="filterProducts('all')">All Products</button>
-                        <button class="filter-btn alert" data-filter="low-stock" onclick="filterProducts('low-stock')">
-                            Low Stock
-                            <?php 
-                            $lowStock = array_filter($products, fn($p) => $p['current_stock'] < $p['safety_stock_qty'] && $p['current_stock'] > 0);
-                            if (count($lowStock) > 0) echo '<span class="badge">' . count($lowStock) . '</span>';
-                            ?>
+
+                <!-- Search Controls -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <button type="submit" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
+                            Search
                         </button>
-                        <button class="filter-btn alert" data-filter="out-of-stock" onclick="filterProducts('out-of-stock')">
-                            Out of Stock
-                            <?php 
-                            $outOfStock = array_filter($products, fn($p) => $p['current_stock'] <= 0);
-                            if (count($outOfStock) > 0) echo '<span class="badge">' . count($outOfStock) . '</span>';
-                            ?>
-                        </button>
-                        <button class="filter-btn" data-filter="no-bom" onclick="filterProducts('no-bom')">
-                            No BOM
-                            <?php 
-                            $noBom = array_filter($products, fn($p) => empty($p['bom_count']));
-                            if (count($noBom) > 0) echo '<span class="badge">' . count($noBom) . '</span>';
-                            ?>
-                        </button>
-                        <?php if ($showInactive): ?>
-                        <button class="filter-btn" data-filter="inactive" onclick="filterProducts('inactive')">
-                            Inactive
-                            <?php 
-                            $inactive = array_filter($products, fn($p) => !$p['is_active']);
-                            if (count($inactive) > 0) echo '<span class="badge">' . count($inactive) . '</span>';
-                            ?>
-                        </button>
+                        <?php if (!empty($_GET['search']) || $showInactive): ?>
+                            <a href="index.php" class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200">
+                                Clear
+                            </a>
                         <?php endif; ?>
                     </div>
+                    
+                    <label class="inline-flex items-center">
+                        <input type="checkbox" 
+                               name="show_inactive" 
+                               value="1"
+                               <?php echo $showInactive ? 'checked' : ''; ?>
+                               onchange="this.form.submit();"
+                               class="rounded border-gray-300 text-primary shadow-sm focus:border-primary focus:ring-primary">
+                        <span class="ml-2 text-sm text-gray-600">Include Inactive Products</span>
+                    </label>
                 </div>
-                
+            </form>
+        </div>
+    </div>
+    <!-- Products Content -->
+    <?php if (empty($products)): ?>
+        <!-- Empty State -->
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+            <div class="text-center py-12">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 48 48" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M34 40h10v-4a6 6 0 00-10.712-3.714M34 40H14m20 0v-4a9.971 9.971 0 00-.712-3.714M14 40H4v-4a6 6 0 0110.713-3.714M14 40v-4c0-1.313.253-2.566.713-3.714m0 0A10.003 10.003 0 0124 26c4.21 0 7.813 2.602 9.288 6.286M30 14a6 6 0 11-12 0 6 6 0 0112 0zm12 6a4 4 0 11-8 0 4 4 0 018 0zm-28 0a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <h3 class="mt-2 text-sm font-medium text-gray-900">No products found</h3>
+                <?php if ($search): ?>
+                    <p class="mt-1 text-sm text-gray-500">
+                        No products match your search criteria.<br>
+                        <a href="index.php" class="text-primary hover:text-primary-dark">Clear search</a> or 
+                        <a href="create.php" class="text-primary hover:text-primary-dark">add a new product</a>
+                    </p>
+                <?php else: ?>
+                    <p class="mt-1 text-sm text-gray-500">Get started by creating your first product for inventory tracking and BOM management.</p>
+                    <div class="mt-6">
+                        <a href="create.php" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                            <svg class="mr-2 -ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Create First Product
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php else: ?>
+        <!-- Products List -->
+        <div class="space-y-6">
+            <!-- List Header & Filters -->
+            <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">
+                <div class="px-6 py-4 border-b border-gray-200">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <h2 class="text-lg font-medium text-gray-900">Products Inventory</h2>
+                            <p class="text-sm text-gray-500"><?php echo count($products); ?> products found</p>
+                        </div>
+                        
+                        <!-- Filter Buttons - Mobile Optimized -->
+                        <div class="overflow-x-auto pb-2 -mx-2" style="padding-top: 0.5rem; margin-top: 0.25rem;">
+                            <div class="flex space-x-2 px-2 min-w-max" id="quickFilters" style="padding-top: 0.25rem; padding-bottom: 0.25rem;">
+                                <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200 filter-btn active" data-filter="all" onclick="filterProducts('all')">
+                                    <span class="whitespace-nowrap">All Products</span>
+                                </button>
+                                <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-yellow-200 text-yellow-800 bg-yellow-50 hover:bg-yellow-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 transition-colors duration-200 filter-btn" data-filter="low-stock" onclick="filterProducts('low-stock')">
+                                    <span class="whitespace-nowrap">Low Stock</span>
+                                    <?php 
+                                    $lowStock = array_filter($products, fn($p) => ($p['current_stock'] ?? 0) < ($p['safety_stock_qty'] ?? 0) && ($p['current_stock'] ?? 0) > 0);
+                                    if (count($lowStock) > 0): ?>
+                                        <span class="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-medium bg-yellow-200 text-yellow-900">
+                                            <?php echo count($lowStock); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </button>
+                                <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-red-200 text-red-800 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200 filter-btn" data-filter="out-of-stock" onclick="filterProducts('out-of-stock')">
+                                    <span class="whitespace-nowrap">Out of Stock</span>
+                                    <?php 
+                                    $outOfStock = array_filter($products, fn($p) => ($p['current_stock'] ?? 0) <= 0);
+                                    if (count($outOfStock) > 0): ?>
+                                        <span class="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-medium bg-red-200 text-red-900">
+                                            <?php echo count($outOfStock); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </button>
+                                <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200 filter-btn" data-filter="no-bom" onclick="filterProducts('no-bom')">
+                                    <span class="whitespace-nowrap">No BOM</span>
+                                    <?php 
+                                    $noBom = array_filter($products, fn($p) => empty($p['bom_count']));
+                                    if (count($noBom) > 0): ?>
+                                        <span class="ml-2 inline-flex items-center justify-center w-5 h-5 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
+                                            <?php echo count($noBom); ?>
+                                        </span>
+                                    <?php endif; ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Bulk Actions Bar (Hidden by default) -->
-                <div class="bulk-actions-bar" id="bulkActionsBar">
-                    <div class="bulk-info">
-                        <span id="selectedCount">0</span> products selected
-                    </div>
-                    <div class="bulk-actions">
-                        <button class="bulk-btn" onclick="bulkExport()">Export</button>
-                        <button class="bulk-btn" onclick="bulkStockAdjust()">Stock Adjust</button>
-                        <button class="bulk-btn primary" onclick="bulkCreateBom()">Create BOMs</button>
+                <div id="bulkActionsBar" class="hidden px-6 py-3 bg-blue-50 border-b border-blue-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <span class="text-sm font-medium text-blue-900" id="selectedCount">0</span>
+                            <span class="ml-1 text-sm text-blue-700">products selected</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200" onclick="bulkExport()">
+                                Export
+                            </button>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200" onclick="bulkStockAdjust()">
+                                Stock Adjust
+                            </button>
+                            <button class="inline-flex items-center px-3 py-1.5 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200" onclick="bulkCreateBom()">
+                                Create BOMs
+                            </button>
+                        </div>
                     </div>
                 </div>
-                
                 <!-- Products List -->
-                <div class="materials-list" id="productsList">
+                <div class="divide-y divide-gray-200" id="productsList">
                     <?php foreach ($products as $prod): ?>
                     <?php 
                     $currentStock = (float)($prod['current_stock'] ?? 0);
@@ -232,7 +262,21 @@ try {
                     }
                     ?>
                     
-                    <div class="list-item <?php echo !$prod['is_active'] ? 'inactive' : ''; ?> <?php echo $stockLevel; ?>" 
+                    <?php 
+                    $stockLevelClasses = [
+                        'critical' => 'border-l-4 border-red-500 bg-red-50',
+                        'warning' => 'border-l-4 border-yellow-500 bg-yellow-50',
+                        'good' => 'border-l-4 border-transparent'
+                    ];
+                    
+                    $stockDotClasses = [
+                        'critical' => 'bg-red-400',
+                        'warning' => 'bg-yellow-400', 
+                        'good' => 'bg-green-400'
+                    ];
+                    ?>
+                    
+                    <div class="<?php echo $stockLevelClasses[$stockLevel]; ?> hover:bg-gray-50 transition-colors duration-200 list-item <?php echo !$prod['is_active'] ? 'opacity-60' : ''; ?>" 
                          data-id="<?php echo $prod['id']; ?>" 
                          data-category="<?php echo strtolower($prod['category_name'] ?? ''); ?>"
                          data-stock-level="<?php echo $stockLevel; ?>"
@@ -241,140 +285,126 @@ try {
                          data-cost="<?php echo $prod['standard_cost']; ?>"
                          data-has-bom="<?php echo !empty($prod['bom_count']) ? 'yes' : 'no'; ?>">
                          
-                        <div class="item-selector">
-                            <input type="checkbox" class="item-checkbox" value="<?php echo $prod['id']; ?>" onchange="updateBulkActions()">
-                        </div>
-                        
-                        <div class="item-primary">
-                            <div class="item-header">
-                                <span class="entity-code"><?php echo htmlspecialchars($prod['product_code']); ?></span>
-                                <div class="status-indicators">
-                                    <?php if ($stockLevel === 'critical'): ?>
-                                        <span class="stock-status critical" title="Out of Stock"></span>
-                                    <?php elseif ($stockLevel === 'warning'): ?>
-                                        <span class="stock-status warning" title="Below Safety Stock"></span>
-                                    <?php else: ?>
-                                        <span class="stock-status good" title="Stock OK"></span>
-                                    <?php endif; ?>
+                        <div class="px-4 sm:px-6 py-4">
+                            <!-- Mobile-optimized layout -->
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                                <!-- Row 1: Checkbox + Product Identity -->
+                                <div class="flex items-center space-x-3 flex-1 min-w-0">
+                                    <!-- Checkbox -->
+                                    <input type="checkbox" 
+                                           class="w-4 h-4 rounded border-gray-300 text-primary shadow-sm focus:border-primary focus:ring-primary item-checkbox" 
+                                           value="<?php echo $prod['id']; ?>" 
+                                           onchange="updateBulkActions()">
                                     
-                                    <?php if (!empty($prod['category_name'])): ?>
-                                        <span class="type-badge"><?php echo htmlspecialchars($prod['category_name']); ?></span>
-                                    <?php endif; ?>
+                                    <!-- Stock Status Dot -->
+                                    <div class="flex-shrink-0">
+                                        <span class="inline-block h-3 w-3 rounded-full <?php echo $stockDotClasses[$stockLevel]; ?>"></span>
+                                    </div>
                                     
-                                    <?php if (!$prod['is_active']): ?>
-                                        <span class="type-badge inactive">Inactive</span>
-                                    <?php endif; ?>
-                                    
-                                    <?php if ($prod['is_lot_controlled']): ?>
-                                        <span class="type-badge lot">Lot Controlled</span>
-                                    <?php endif; ?>
+                                    <!-- Product Details -->
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center space-x-2 mb-1">
+                                            <p class="text-sm font-semibold text-gray-900 truncate">
+                                                <?php echo htmlspecialchars($prod['product_code']); ?>
+                                            </p>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 flex-shrink-0">
+                                                <?php echo htmlspecialchars($prod['category_name'] ?? 'Uncategorized'); ?>
+                                            </span>
+                                            <?php if (!empty($prod['bom_count'])): ?>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 flex-shrink-0">
+                                                    <?php echo $prod['bom_count']; ?> BOM<?php echo $prod['bom_count'] > 1 ? 's' : ''; ?>
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <p class="text-sm text-gray-900 font-medium mb-1 line-clamp-1">
+                                            <?php echo htmlspecialchars($prod['name']); ?>
+                                        </p>
+                                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                                            <span>UOM: <?php echo htmlspecialchars($prod['uom_code'] ?? 'N/A'); ?></span>
+                                            <span>Cost: $<?php echo number_format($prod['standard_cost'], 2); ?></span>
+                                            <span>Price: $<?php echo number_format($prod['selling_price'], 2); ?></span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <h3 class="entity-name"><?php echo htmlspecialchars($prod['name']); ?></h3>
-                            <div class="item-meta">
-                                <span>UOM: <?php echo htmlspecialchars($prod['uom_code'] ?? 'N/A'); ?></span>
-                                <span>Cost: $<?php echo number_format($prod['standard_cost'], 2); ?></span>
-                                <span>Price: $<?php echo number_format($prod['selling_price'], 2); ?></span>
-                                <?php if (!empty($prod['bom_count'])): ?>
-                                    <span>BOMs: <?php echo $prod['bom_count']; ?></span>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                        
-                        <div class="item-metrics">
-                            <div class="metric">
-                                <label>Current Stock</label>
-                                <span class="value <?php echo $stockLevel === 'critical' ? 'critical' : ($stockLevel === 'warning' ? 'warning' : ''); ?>">
-                                    <?php echo number_format($currentStock, 2); ?>
-                                </span>
-                            </div>
-                            <div class="metric">
-                                <label>Safety Stock</label>
-                                <span class="value"><?php echo number_format($safetyStock, 2); ?></span>
-                            </div>
-                        </div>
-                        
-                        <div class="item-actions">
-                            <button class="action-quick" title="Quick View" onclick="window.location.href='view.php?id=<?php echo $prod['id']; ?>';">⚡</button>
-                            <button class="action-menu-toggle" title="More Actions">⋮</button>
-                            <div class="action-menu">
-                                <a href="view.php?id=<?php echo $prod['id']; ?>" class="action-item">
-                                    <span class="action-icon">👁️</span>
-                                    <span class="action-text">View Details</span>
-                                </a>
-                                <a href="edit.php?id=<?php echo $prod['id']; ?>" class="action-item">
-                                    <span class="action-icon">✏️</span>
-                                    <span class="action-text">Edit Product</span>
-                                </a>
-                                <?php if (!empty($prod['bom_count'])): ?>
-                                    <a href="../bom/index.php?product_id=<?php echo $prod['id']; ?>" class="action-item">
-                                        <span class="action-icon">📋</span>
-                                        <span class="action-text">View BOMs (<?php echo $prod['bom_count']; ?>)</span>
-                                    </a>
-                                <?php else: ?>
-                                    <a href="../bom/create.php?product_id=<?php echo $prod['id']; ?>" class="action-item">
-                                        <span class="action-icon">➕</span>
-                                        <span class="action-text">Create BOM</span>
-                                    </a>
-                                <?php endif; ?>
-                                <a href="../inventory/" class="action-item">
-                                    <span class="action-icon">📦</span>
-                                    <span class="action-text">Manage Inventory</span>
-                                </a>
-                                <div class="action-separator"></div>
-                                <a href="index.php?action=delete&id=<?php echo $prod['id']; ?>" 
-                                   class="action-item danger"
-                                   onclick="return confirm('Are you sure you want to delete this product? This action cannot be undone.');">
-                                    <span class="action-icon">🗑️</span>
-                                    <span class="action-text">Delete Product</span>
-                                </a>
+
+                                <!-- Row 2: Stock Metrics (Mobile: Stacked, Desktop: Horizontal) -->
+                                <div class="grid grid-cols-2 sm:flex sm:items-center gap-3 sm:gap-6 text-right sm:flex-shrink-0">
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-medium text-gray-500 mb-1">Current Stock</p>
+                                        <p class="text-sm font-semibold truncate <?php echo $stockLevel === 'critical' ? 'text-red-600' : ($stockLevel === 'warning' ? 'text-yellow-600' : 'text-gray-900'); ?>">
+                                            <?php echo number_format($currentStock, 2); ?> <?php echo $prod['uom_code'] ?? 'N/A'; ?>
+                                        </p>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <p class="text-xs font-medium text-gray-500 mb-1">Safety Stock</p>
+                                        <p class="text-sm text-gray-600 truncate">
+                                            <?php echo number_format($safetyStock, 2); ?> <?php echo $prod['uom_code'] ?? 'N/A'; ?>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Row 3: Actions -->
+                                <div class="flex items-center justify-end space-x-2 sm:flex-shrink-0">
+                                    <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200" title="Quick View" onclick="window.location.href='view.php?id=<?php echo $prod['id']; ?>';">
+                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="relative">
+                                        <button class="action-menu-toggle w-10 h-10 flex items-center justify-center text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200">
+                                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                            </svg>
+                                        </button>
+                                        <div class="action-menu absolute right-0 mt-2 w-56 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50 hidden">
+                                            <div class="py-2">
+                                                <a href="view.php?id=<?php echo $prod['id']; ?>" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                    </svg>
+                                                    View Details
+                                                </a>
+                                                <a href="edit.php?id=<?php echo $prod['id']; ?>" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                    </svg>
+                                                    Edit Product
+                                                </a>
+                                                <?php if (!empty($prod['bom_count'])): ?>
+                                                    <a href="../bom/index.php?product_id=<?php echo $prod['id']; ?>" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                                        <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                        </svg>
+                                                        View BOMs (<?php echo $prod['bom_count']; ?>)
+                                                    </a>
+                                                <?php else: ?>
+                                                    <a href="../bom/create.php?product_id=<?php echo $prod['id']; ?>" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                                        <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                                        </svg>
+                                                        Create BOM
+                                                    </a>
+                                                <?php endif; ?>
+                                                <a href="../inventory/" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50">
+                                                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M9 1v6m6-6v6"></path>
+                                                    </svg>
+                                                    Manage Inventory
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <?php endforeach; ?>
                 </div>
-                
-                <!-- Summary Info -->
-                <div class="summary-stats">
-                    <div class="stat-card">
-                        <div class="stat-value"><?php echo count($products); ?></div>
-                        <div class="stat-label">Total Products</div>
-                    </div>
-                    
-                    <?php
-                    $belowSafety = count(array_filter($products, fn($p) => $p['safety_stock_qty'] > 0 && ($p['current_stock'] ?? 0) < $p['safety_stock_qty']));
-                    $outOfStock = count(array_filter($products, fn($p) => ($p['current_stock'] ?? 0) <= 0));
-                    $withBom = count(array_filter($products, fn($p) => !empty($p['bom_count'])));
-                    ?>
-                    
-                    <?php if ($belowSafety > 0): ?>
-                    <div class="stat-card warning">
-                        <div class="stat-value"><?php echo $belowSafety; ?></div>
-                        <div class="stat-label">Below Safety Stock</div>
-                    </div>
-                    <?php endif; ?>
-                    
-                    <?php if ($outOfStock > 0): ?>
-                    <div class="stat-card critical">
-                        <div class="stat-value"><?php echo $outOfStock; ?></div>
-                        <div class="stat-label">Out of Stock</div>
-                    </div>
-                    <?php endif; ?>
-                    
-                    <div class="stat-card">
-                        <div class="stat-value"><?php echo $withBom; ?></div>
-                        <div class="stat-label">With BOMs</div>
-                    </div>
-                </div>
             </div>
-        <?php endif; ?>
-        
-        <div class="btn-group">
-            <a href="../" class="btn btn-secondary">Back to Dashboard</a>
-            <a href="../bom/" class="btn btn-primary">Manage BOMs</a>
-            <a href="../inventory/" class="btn btn-primary">Manage Inventory</a>
         </div>
-    </div>
+    <?php endif; ?>
 </div>
 
 <script>
@@ -452,133 +482,68 @@ function updateFilterCounts() {
     // Implementation can be added if needed
 }
 
-// Setup action menus using the established pattern
+// Action menu functionality with improved debugging
 function setupActionMenus() {
+    console.log('Setting up action menus...');
+    
+    // Use event delegation to handle both static and dynamic content
     document.addEventListener('click', function(e) {
-        console.log('Click detected:', e.target.className, e.target.textContent.trim());
+        console.log('Click detected:', e.target);
         
-        // Handle action menu toggles
-        if (e.target.classList.contains('action-menu-toggle')) {
-            console.log('Action menu toggle clicked');
+        // Check if click is on or inside action menu toggle
+        const toggleButton = e.target.closest('.action-menu-toggle');
+        if (toggleButton) {
             e.preventDefault();
-            e.stopPropagation();
+            console.log('Action menu toggle clicked:', toggleButton);
             
-            // Close all other menus
-            document.querySelectorAll('.action-menu').forEach(menu => {
-                if (menu !== e.target.nextElementSibling) {
-                    menu.style.display = 'none';
-                }
-            });
+            const menu = toggleButton.nextElementSibling;
+            console.log('Associated menu:', menu);
             
-            // Toggle this menu
-            const menu = e.target.nextElementSibling;
             if (menu && menu.classList.contains('action-menu')) {
-                const isVisible = menu.style.display === 'block';
-                menu.style.display = isVisible ? 'none' : 'block';
-                console.log('Menu toggled to:', menu.style.display);
+                // Close all other menus first
+                document.querySelectorAll('.action-menu').forEach(otherMenu => {
+                    if (otherMenu !== menu) {
+                        otherMenu.classList.add('hidden');
+                    }
+                });
+                
+                // Toggle this menu
+                const isHidden = menu.classList.contains('hidden');
+                if (isHidden) {
+                    menu.classList.remove('hidden');
+                    console.log('Menu opened');
+                } else {
+                    menu.classList.add('hidden');
+                    console.log('Menu closed');
+                }
+            } else {
+                console.error('Menu not found or invalid structure');
+            }
+            return;
+        }
+        
+        // Close all menus when clicking outside
+        if (!e.target.closest('.action-menu')) {
+            const openMenus = document.querySelectorAll('.action-menu:not(.hidden)');
+            if (openMenus.length > 0) {
+                console.log('Closing menus due to outside click');
+                openMenus.forEach(menu => menu.classList.add('hidden'));
             }
         }
-        // Close menus when clicking outside
-        else if (!e.target.closest('.item-actions')) {
-            document.querySelectorAll('.action-menu').forEach(menu => {
-                menu.style.display = 'none';
-            });
-        }
     });
+    
+    // Log initial setup completion
+    const toggles = document.querySelectorAll('.action-menu-toggle');
+    const menus = document.querySelectorAll('.action-menu');
+    console.log(`Action menu setup complete: ${toggles.length} toggles, ${menus.length} menus`);
 }
 
-// Recent searches functionality (copied from Materials page)
-function initializeRecentSearches() {
-    const searchInput = document.getElementById('searchInput');
-    const recentSearches = document.getElementById('recentSearches');
-    const recentSearchesList = document.getElementById('recentSearchesList');
-    
-    if (!searchInput || !recentSearches || !recentSearchesList) return;
-    
-    // Show recent searches immediately on page load
-    updateRecentSearchesDisplay();
-    
-    // Save search when form is submitted
-    const searchForm = document.getElementById('searchForm');
-    if (searchForm) {
-        searchForm.addEventListener('submit', function() {
-            const query = searchInput.value.trim();
-            if (query) {
-                saveRecentSearch(query);
-            }
-        });
-    }
-}
-
-function updateRecentSearchesDisplay() {
-    const recentSearches = document.getElementById('recentSearches');
-    const recentSearchesList = document.getElementById('recentSearchesList');
-    
-    if (!recentSearches || !recentSearchesList) return;
-    
-    const searches = getRecentSearches();
-    
-    if (searches.length === 0) {
-        // Hide only if there are no searches
-        recentSearches.style.display = 'none';
-        return;
-    }
-    
-    // Always show if there are searches
-    recentSearches.style.display = 'block';
-    
-    // Clear existing items
-    recentSearchesList.innerHTML = '';
-    
-    // Add recent search items (limit to 5 most recent)
-    searches.slice(0, 5).forEach(search => {
-        const item = document.createElement('span');
-        item.className = 'recent-search-item';
-        item.textContent = search;
-        item.onclick = function() {
-            document.getElementById('searchInput').value = search;
-            document.getElementById('searchForm').submit();
-        };
-        recentSearchesList.appendChild(item);
-    });
-}
-
-function getRecentSearches() {
-    try {
-        const searches = localStorage.getItem('productRecentSearches');
-        return searches ? JSON.parse(searches) : [];
-    } catch (e) {
-        return [];
-    }
-}
-
-function saveRecentSearch(query) {
-    try {
-        let searches = getRecentSearches();
-        
-        // Remove if already exists
-        searches = searches.filter(s => s !== query);
-        
-        // Add to beginning
-        searches.unshift(query);
-        
-        // Keep only last 10
-        searches = searches.slice(0, 10);
-        
-        localStorage.setItem('productRecentSearches', JSON.stringify(searches));
-        
-        // Update display immediately after saving
-        updateRecentSearchesDisplay();
-    } catch (e) {
-        // Fail silently if localStorage is not available
-    }
-}
+// AutocompleteManager will auto-initialize search history based on data-autocomplete-preset attribute
 
 // Initialize when page loads
 document.addEventListener('DOMContentLoaded', function() {
     setupActionMenus();
-    initializeRecentSearches();
-    console.log('Products page initialized with action menus and recent searches');
+    console.log('Products page initialized with action menus and automatic search history');
 });
 </script>
 
@@ -588,4 +553,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="../js/search-history-manager.js"></script>
 <script src="../js/autocomplete-manager.js"></script>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php 
+$include_autocomplete = false; // Scripts already loaded above
+require_once '../../includes/footer-tailwind.php'; 
+?>

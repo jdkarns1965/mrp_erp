@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../includes/header.php';
+require_once '../../includes/header-tailwind.php';
 require_once '../../classes/Database.php';
 require_once '../../includes/ui-helpers.php';
 
@@ -31,7 +31,7 @@ $order['total_amount'] = $totalResult['total_amount'] ?? 0;
 
 if (!$order) {
     echo "<div class='container'><div class='alert alert-error'>Order not found</div></div>";
-    require_once '../../includes/footer.php';
+    require_once '../../includes/footer-tailwind.php';
     exit;
 }
 
@@ -82,7 +82,7 @@ function getStatusColor($status) {
 }
 ?>
 
-<div class="container">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="card">
         <div class="card-header">
             <h3 style="margin: 0;">Order Details: <?php echo htmlspecialchars($order['order_number']); ?></h3>
@@ -315,4 +315,7 @@ function getStatusColor($status) {
 }
 </style>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php
+$include_autocomplete = true;
+require_once '../../includes/footer-tailwind.php';
+?>

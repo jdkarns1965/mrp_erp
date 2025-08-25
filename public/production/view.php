@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../includes/header.php';
+require_once '../../includes/header-tailwind.php';
 require_once '../../includes/help-system.php';
 require_once '../../classes/Database.php';
 
@@ -88,7 +88,7 @@ function getStatusBadge($status) {
 
 <?php echo HelpSystem::getHelpStyles(); ?>
 
-<div class="container">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="page-header">
         <h2>Production Order #<?php echo htmlspecialchars($order['order_number']); ?></h2>
         <div class="page-actions">
@@ -353,4 +353,7 @@ function getStatusBadge($status) {
 }
 </style>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php
+$include_autocomplete = true;
+require_once '../../includes/footer-tailwind.php';
+?>

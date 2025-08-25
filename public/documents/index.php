@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once '../../includes/header.php';
+require_once '../../includes/header-tailwind.php';
 require_once '../../classes/Document.php';
 
 $documentModel = new Document();
@@ -18,7 +18,7 @@ if ($searchQuery) {
 }
 ?>
 
-<div class="container">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="page-header">
         <h1>Documents</h1>
         <div class="header-actions">
@@ -290,4 +290,7 @@ function formatFileSize($bytes) {
 }
 ?>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php
+$include_autocomplete = true;
+require_once '../../includes/footer-tailwind.php';
+?>

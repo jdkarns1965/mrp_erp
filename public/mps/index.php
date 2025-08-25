@@ -6,7 +6,7 @@ require_once '../../includes/help-system.php';
 echo "<!-- Debug: Starting MPS page -->\n";
 
 try {
-    require_once '../../includes/header.php';
+    require_once '../../includes/header-tailwind.php';
     echo "<!-- Debug: Header included successfully -->\n";
 } catch (Exception $e) {
     die("Error including header: " . $e->getMessage());
@@ -41,13 +41,13 @@ try {
         echo "<p><strong>After running the script, refresh this page.</strong></p>";
         echo "</div>";
         echo "</div>";
-        require_once '../../includes/footer.php';
+        require_once '../../includes/footer-tailwind.php';
         exit;
     }
     echo "<!-- Debug: Planning calendar table exists -->\n";
 } catch (Exception $e) {
     echo "<div class='container'><div class='alert alert-danger'>Database error: " . $e->getMessage() . "</div></div>";
-    require_once '../../includes/footer.php';
+    require_once '../../includes/footer-tailwind.php';
     exit;
 }
 
@@ -61,7 +61,7 @@ try {
     echo "<!-- Debug: Found " . count($periods) . " planning periods -->\n";
 } catch (Exception $e) {
     echo "<div class='container'><div class='alert alert-danger'>Error fetching periods: " . $e->getMessage() . "</div></div>";
-    require_once '../../includes/footer.php';
+    require_once '../../includes/footer-tailwind.php';
     exit;
 }
 
@@ -81,7 +81,7 @@ try {
     echo "<!-- Debug: Found " . count($products) . " products -->\n";
 } catch (Exception $e) {
     echo "<div class='container'><div class='alert alert-danger'>Error fetching products: " . $e->getMessage() . "</div></div>";
-    require_once '../../includes/footer.php';
+    require_once '../../includes/footer-tailwind.php';
     exit;
 }
 
@@ -170,7 +170,7 @@ if (!empty($products)) {
 
 <?php echo HelpSystem::getHelpStyles(); ?>
 
-<div class="container">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="card">
         <div class="card-header">
             <h2>Master Production Schedule (MPS) <?php echo help_tooltip('mps', 'Plan production quantities for each time period'); ?></h2>
@@ -515,4 +515,7 @@ function showMessage(text, type) {
 
 <?php echo HelpSystem::getHelpScript(); ?>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php
+$include_autocomplete = true;
+require_once '../../includes/footer-tailwind.php';
+?>

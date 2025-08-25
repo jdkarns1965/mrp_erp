@@ -5,7 +5,7 @@
  */
 
 session_start();
-require_once '../../includes/header.php';
+require_once '../../includes/header-tailwind.php';
 require_once '../../classes/Database.php';
 require_once '../../classes/ProductionScheduler.php';
 require_once '../../includes/enum-helper.php';
@@ -177,7 +177,7 @@ $stats = $db->select("
         }
     </style>
 
-<div class="container">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="card">
         <div class="card-header">
             Production Orders
@@ -403,4 +403,7 @@ $stats = $db->select("
         }
     </script>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php
+$include_autocomplete = true;
+require_once '../../includes/footer-tailwind.php';
+?>

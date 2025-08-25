@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Menu Toggle</title>
+</head>
+<body>
+    <h1>Debug Action Menu Toggle</h1>
+    <p>Open the browser console (F12) and then navigate to the materials page to see debug output.</p>
+    
+    <button onclick="testMaterialsPage()">Test Materials Page</button>
+    
+    <iframe id="testFrame" style="width: 100%; height: 600px; border: 1px solid #ccc; margin-top: 20px;"></iframe>
+    
+    <script>
+        function testMaterialsPage() {
+            const iframe = document.getElementById('testFrame');
+            iframe.src = '/mrp_erp/public/materials/index.php?search=resin';
+            
+            iframe.onload = function() {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                
+                // Check for the setup function
+                if (iframe.contentWindow.setupActionMenus) {
+                    console.log('✓ setupActionMenus function exists');
+                } else {
+                    console.error('✗ setupActionMenus function not found');
+                }
+                
+                // Check for action menu toggles
+                const toggles = iframeDoc.querySelectorAll('.action-menu-toggle');
+                console.log('Found', toggles.length, 'action menu toggle buttons');
+                
+                // Check for action menus
+                const menus = iframeDoc.querySelectorAll('.action-menu');
+                console.log('Found', menus.length, 'action menus');
+                
+                // Try clicking the first toggle
+                if (toggles.length > 0) {
+                    console.log('Attempting to click first toggle button...');
+                    toggles[0].click();
+                    
+                    // Check if menu opened
+                    setTimeout(() => {
+                        const openMenus = iframeDoc.querySelectorAll('.action-menu.show');
+                        if (openMenus.length > 0) {
+                            console.log('✓ Menu opened successfully!');
+                        } else {
+                            console.error('✗ Menu did not open');
+                            
+                            // Check CSS
+                            const firstMenu = menus[0];
+                            if (firstMenu) {
+                                const computed = iframe.contentWindow.getComputedStyle(firstMenu);
+                                console.log('Menu display:', computed.display);
+                                console.log('Menu classes:', firstMenu.className);
+                            }
+                        }
+                    }, 100);
+                }
+            };
+        }
+    </script>
+</body>
+</html>
